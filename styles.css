@@ -1,0 +1,12 @@
+.local-bulkinstall-actions {
+    align-items: center;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin-top: 1rem;
+}
+
+.local-bulkinstall-actions .singlebutton,
+.local-bulkinstall-actions .singlebutton form {
+    margin: 0;
+}
