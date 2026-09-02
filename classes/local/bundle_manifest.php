@@ -10,7 +10,7 @@
 namespace local_bulkinstall\local;
 
 /**
- * Decodes and validates version 1 compatibility bundles and signed version 2 publisher bundles.
+ * Decodes version 1 compatibility bundles and signed publisher bundles (v2/v3).
  *
  * @package    local_bulkinstall
  * @copyright  2026 Andreas Giesen <andreas@108design.com>
@@ -21,7 +21,7 @@ class bundle_manifest {
     public const FORMAT = 'moodle-plugin-bundle';
 
     /** Currently supported manifest version. */
-    public const FORMAT_VERSION = 2;
+    public const FORMAT_VERSION = 3;
 
     /** Maximum manifest size (256 KiB). */
     public const MAX_BYTES = 262144;
@@ -29,7 +29,7 @@ class bundle_manifest {
     /** Allowed top-level properties. */
     private const TOP_LEVEL_PROPERTIES = [
         'format', 'formatversion', 'id', 'name', 'version', 'description',
-        'publisher', 'keyid', 'signature', 'plugins',
+        'publisher', 'keyid', 'signature', 'plugins', 'activation',
     ];
 
     /** Required top-level properties. */
@@ -77,10 +77,10 @@ class bundle_manifest {
         if ($document->format !== self::FORMAT) {
             $this->fail(get_string('errorbundleformat', 'local_bulkinstall', self::FORMAT));
         }
-        if (!is_int($document->formatversion) || !in_array($document->formatversion, [1, 2], true)) {
+        if (!is_int($document->formatversion) || !in_array($document->formatversion, [1, 2, 3], true)) {
             $this->fail(get_string('errorbundleformatversion', 'local_bulkinstall', self::FORMAT_VERSION));
         }
-        if ($document->formatversion === 2) {
+        if ($document->formatversion >= 2) {
             foreach (['description', 'publisher', 'keyid', 'signature'] as $property) {
                 if (!property_exists($document, $property) || !is_string($document->{$property})) {
                     $this->fail(get_string('errorbundlemissingproperty', 'local_bulkinstall', $property));
@@ -93,6 +93,12 @@ class bundle_manifest {
         } else if (property_exists($document, 'publisher') || property_exists($document, 'keyid')
                 || property_exists($document, 'signature')) {
             $this->fail(get_string('errorbundlepublisher', 'local_bulkinstall'));
+        }
+        if ($document->formatversion === 3 && !property_exists($document, 'activation')) {
+            $this->fail(get_string('errorbundlemissingproperty', 'local_bulkinstall', 'activation'));
+        }
+        if ($document->formatversion < 3 && property_exists($document, 'activation')) {
+            $this->fail(get_string('errorbundleunknownproperty', 'local_bulkinstall', 'activation'));
         }
         if (!is_string($document->id) || !preg_match('/^[a-z][a-z0-9_-]{1,99}$/', $document->id)) {
             $this->fail(get_string('errorbundleid', 'local_bulkinstall'));
@@ -157,6 +163,11 @@ class bundle_manifest {
             ];
         }
 
+        $activation = null;
+        if ($document->formatversion === 3) {
+            $activation = $this->activation($document->activation, $components);
+        }
+
         $manifest = [
             'format' => self::FORMAT,
             'formatversion' => (int) $document->formatversion,
@@ -165,12 +176,74 @@ class bundle_manifest {
             'version' => $document->version,
             'description' => property_exists($document, 'description') ? $document->description : null,
             'plugins' => $plugins,
+            'activation' => $activation,
         ];
-        if ($document->formatversion === 2
+        if ($document->formatversion >= 2
                 && !bundle_signature::verify($manifest, (string) $document->signature)) {
             $this->fail(get_string('errorbundlesignature', 'local_bulkinstall'));
         }
         return $manifest;
+    }
+
+    /** Validate publisher-owned activation hints. They coordinate UX but never prove a licence. */
+    private function activation(mixed $value, array $bundlecomponents): array {
+        if (!$value instanceof \stdClass) {
+            $this->fail(get_string('errorbundleactivation', 'local_bulkinstall'));
+        }
+        $properties = array_keys(get_object_vars($value));
+        $allowed = ['storeproduct', 'licencemanager', 'entitlements'];
+        if (array_diff($properties, $allowed) || array_diff($allowed, $properties)) {
+            $this->fail(get_string('errorbundleactivation', 'local_bulkinstall'));
+        }
+        if (!is_string($value->storeproduct)
+                || preg_match('/^[a-z][a-z0-9_-]{1,99}$/D', $value->storeproduct) !== 1
+                || !$value->licencemanager instanceof \stdClass
+                || array_diff(array_keys(get_object_vars($value->licencemanager)), ['required', 'minimumversion'])
+                || array_diff(['required', 'minimumversion'], array_keys(get_object_vars($value->licencemanager)))
+                || !is_bool($value->licencemanager->required)
+                || !is_int($value->licencemanager->minimumversion)
+                || $value->licencemanager->minimumversion < 0
+                || !is_array($value->entitlements) || $value->entitlements === []
+                || count($value->entitlements) > 100) {
+            $this->fail(get_string('errorbundleactivation', 'local_bulkinstall'));
+        }
+        $entitlements = [];
+        $seen = [];
+        foreach ($value->entitlements as $entitlement) {
+            if (!$entitlement instanceof \stdClass
+                    || array_diff(array_keys(get_object_vars($entitlement)), ['code', 'licencemodel', 'components'])
+                    || array_diff(['code', 'licencemodel', 'components'], array_keys(get_object_vars($entitlement)))
+                    || !is_string($entitlement->code)
+                    || preg_match('/^[a-z][a-z0-9_.-]{1,190}$/D', $entitlement->code) !== 1
+                    || isset($seen[$entitlement->code])
+                    || !in_array($entitlement->licencemodel, ['commercial', 'permanent_free'], true)
+                    || !is_array($entitlement->components) || $entitlement->components === []) {
+                $this->fail(get_string('errorbundleactivation', 'local_bulkinstall'));
+            }
+            $componentlist = [];
+            foreach ($entitlement->components as $component) {
+                if (!is_string($component) || !isset($bundlecomponents[$component])
+                        || isset($componentlist[$component])) {
+                    $this->fail(get_string('errorbundleactivationcomponent', 'local_bulkinstall',
+                        is_scalar($component) ? (string) $component : '?'));
+                }
+                $componentlist[$component] = true;
+            }
+            $seen[$entitlement->code] = true;
+            $entitlements[] = [
+                'code' => $entitlement->code,
+                'licencemodel' => $entitlement->licencemodel,
+                'components' => array_keys($componentlist),
+            ];
+        }
+        return [
+            'storeproduct' => $value->storeproduct,
+            'licencemanager' => [
+                'required' => $value->licencemanager->required,
+                'minimumversion' => $value->licencemanager->minimumversion,
+            ],
+            'entitlements' => $entitlements,
+        ];
     }
 
     /** Validate one required, non-empty text field. */

@@ -107,9 +107,10 @@ class staging_manager {
      * Inspect and cross-check every package in a staged batch.
      *
      * @param string $storageid
+     * @param bool $overridecompatibility Ignore only declared supported-range errors; private service use only
      * @return array
      */
-    public function analyse(string $storageid): array {
+    public function analyse(string $storageid, bool $overridecompatibility = false): array {
         $record = $this->get_record($storageid);
         $directory = $this->directory($storageid);
         $inspector = new package_inspector();
@@ -133,6 +134,12 @@ class staging_manager {
                     'actual' => $package['component'],
                 ]));
             }
+            if ($overridecompatibility && !empty($package['compatibilityerrors'])) {
+                $package['errors'] = array_values(array_diff(
+                    $package['errors'],
+                    $package['compatibilityerrors']
+                ));
+            }
             $totaluncompressed += $package['uncompressedbytes'];
             $packages[] = $package;
         }
@@ -152,6 +159,29 @@ class staging_manager {
                 $bycomponent[$package['component']][] = $index;
             }
         }
+
+        $pluginmanager = plugin_manager::instance();
+        $activation = $record['bundle']['activation'] ?? null;
+        if (is_array($activation) && !empty($activation['licencemanager']['required'])) {
+            $required = (int) ($activation['licencemanager']['minimumversion'] ?? 0);
+            $available = null;
+            if (isset($bycomponent['local_lmh108']) && count($bycomponent['local_lmh108']) === 1) {
+                $available = (int) $packages[$bycomponent['local_lmh108'][0]]['version'];
+            } else {
+                $info = $pluginmanager->get_plugin_info('local_lmh108');
+                if ($info !== null && $info->versiondb !== null) {
+                    $available = (int) $info->versiondb;
+                }
+            }
+            if ($available === null) {
+                $batcherrors[] = get_string('errorbundlelmhmissing', 'local_bulkinstall');
+            } else if ($available < $required) {
+                $batcherrors[] = get_string('errorbundlelmhversion', 'local_bulkinstall', (object) [
+                    'required' => $required,
+                    'available' => $available,
+                ]);
+            }
+        }
         foreach ($bycomponent as $component => $indexes) {
             if (count($indexes) > 1) {
                 foreach ($indexes as $index) {
@@ -163,7 +193,6 @@ class staging_manager {
             }
         }
 
-        $pluginmanager = plugin_manager::instance();
         foreach ($packages as $index => $package) {
             foreach ($package['dependencies'] as $dependency => $requiredversion) {
                 $availableversion = null;
@@ -200,6 +229,18 @@ class staging_manager {
             }
         }
 
+        $canoverridecompatibility = empty($batcherrors);
+        $hascompatibilityerror = false;
+        foreach ($packages as $package) {
+            if (!empty($package['compatibilityerrors'])) {
+                $hascompatibilityerror = true;
+            }
+            if (!empty(array_diff($package['errors'], $package['compatibilityerrors']))) {
+                $canoverridecompatibility = false;
+            }
+        }
+        $canoverridecompatibility = $canoverridecompatibility && $hascompatibilityerror;
+
         $caninstall = empty($batcherrors);
         foreach ($packages as $package) {
             if (!empty($package['errors'])) {
@@ -215,6 +256,7 @@ class staging_manager {
             'batcherrors' => $batcherrors,
             'totaluncompressed' => $totaluncompressed,
             'caninstall' => $caninstall,
+            'canoverridecompatibility' => $canoverridecompatibility,
         ];
     }
 

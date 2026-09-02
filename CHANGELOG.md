@@ -1,5 +1,13 @@
 # Changelog
 
+## 1.2.16-beta - 2026-09-02
+
+- Accepted ordinary Marketplace and repository ZIP roots such as
+  `moodle-format_flexsections-5.0.4` while deriving the canonical install directory from the component declared in
+  `version.php`, matching Moodle's own plugin installation path.
+- Kept declared `$plugin->supported` conflicts distinct from structural and Moodle-Core validation errors so the
+  private service edition can explicitly waive only that compatibility declaration without bypassing other checks.
+
 ## 1.2.3-beta - 2026-08-27
 
 - Established the Frankenstyle-inspired `bundle_` prefix for multi-plugin bundle ZIPs.

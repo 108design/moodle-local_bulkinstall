@@ -15,6 +15,7 @@ $PAGE->requires->css(new moodle_url('/local/bulkinstall/styles.css', [
     'v' => (int) get_config('local_bulkinstall', 'version'),
 ]));
 $accountlinked = optional_param('accountlinked', 0, PARAM_BOOL);
+$confirmdeactivate = optional_param('confirmdeactivate', 0, PARAM_BOOL);
 $message = '';
 $type = \core\output\notification::NOTIFY_SUCCESS;
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
@@ -37,6 +38,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             license_state::refresh_if_due(true);
             $message = get_string('licenserefreshed', 'local_bulkinstall');
         } else if ($action === 'deactivate') {
+            if (!$confirmdeactivate) {
+                throw new invalid_parameter_exception('Explicit deactivation confirmation is required.');
+            }
             license_state::deactivate();
             $message = get_string('licensedeactivated', 'local_bulkinstall');
         }
@@ -46,44 +50,105 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 }
 $active = license_state::is_active();
+$hubstate = '\\local_lmh108\\local\\license_state';
+$hubinstalled = class_exists($hubstate) && method_exists($hubstate, 'record');
+$hubrecord = $hubinstalled ? $hubstate::record(\local_bulkinstall\local\license_config::FEATURE_CODE) : null;
+$hubmanaged = $hubrecord && (!method_exists($hubstate, 'delegation_available')
+    || $hubstate::delegation_available());
 $pendingcode = (string) get_config('local_bulkinstall', 'sitelinkcode');
 $pendingurl = (string) get_config('local_bulkinstall', 'sitelinkurl');
 $pendingexpires = (int) get_config('local_bulkinstall', 'sitelinkexpires');
 
 echo $OUTPUT->header();
+echo \local_bulkinstall\local\admin_navigation::render('licenses');
 echo $OUTPUT->heading(get_string('licenseactivation', 'local_bulkinstall'), 2);
 if ($message !== '') {
     echo $OUTPUT->notification(s($message), $type);
 } else if ($accountlinked && !$active) {
     echo $OUTPUT->notification(get_string('sitelinkaccountconnected', 'local_bulkinstall'), 'info');
 }
-echo html_writer::div(get_string($active ? 'licensestatusactive' : 'licensestatusinactive', 'local_bulkinstall'),
-    'alert ' . ($active ? 'alert-success' : 'alert-warning'));
-if ($active) {
-    $actions = $OUTPUT->single_button(new moodle_url($url, ['action' => 'refresh']),
-        get_string('refreshlicense', 'local_bulkinstall'), 'post')
-        . html_writer::link(new moodle_url('/local/bulkinstall/index.php'),
-            get_string('openbulkinstall', 'local_bulkinstall'), ['class' => 'btn btn-primary'])
-        . $OUTPUT->single_button(new moodle_url($url, ['action' => 'deactivate']),
-        get_string('deactivatelicense', 'local_bulkinstall'), 'post', [
-            'type' => \core\output\single_button::BUTTON_SECONDARY,
+if ($hubmanaged) {
+    $licenseintro = html_writer::tag('p', get_string('licensestatushub', 'local_bulkinstall'),
+        ['class' => 'mb-0']);
+    $licenseintro .= html_writer::link(new moodle_url('/local/lmh108/index.php'),
+        get_string('openlicensemanager', 'local_bulkinstall'),
+        ['class' => 'btn btn-outline-secondary btn-sm mt-3']);
+    echo html_writer::div($licenseintro, 'alert alert-info', ['role' => 'status']);
+}
+$claims = null;
+try {
+    $claims = $active ? license_state::claims(true) : null;
+} catch (Throwable) {
+    // The visible state remains fail-closed when the signed assertion cannot be read.
+}
+$productlabel = class_exists('\\local_lmh108\\local\\feature_names')
+    ? \local_lmh108\local\feature_names::licence_label(
+        \local_bulkinstall\local\license_config::FEATURE_CODE,
+        get_string('pluginname', 'local_bulkinstall'))
+    : get_string('pluginname', 'local_bulkinstall');
+$authority = $active
+    ? get_string($hubmanaged ? 'licenseauthorityhub' : 'licenseauthorityplugin', 'local_bulkinstall')
+    : '—';
+$actions = '';
+if ($hubmanaged) {
+    $actions = html_writer::link(new moodle_url('/local/lmh108/index.php'),
+        html_writer::tag('i', '', ['class' => 'fa fa-external-link icon', 'aria-hidden' => 'true'])
+            . html_writer::span(get_string('openlicensemanager', 'local_bulkinstall'), 'sr-only'), [
+            'class' => 'btn btn-link local-bulkinstall-license-action p-0',
+            'title' => get_string('openlicensemanager', 'local_bulkinstall'),
+            'aria-label' => get_string('openlicensemanager', 'local_bulkinstall'),
+            'data-toggle' => 'tooltip',
+            'data-placement' => 'top',
         ]);
-    echo html_writer::div($actions, 'local-bulkinstall-actions');
+} else if ($active) {
+    $actions = $OUTPUT->single_button(new moodle_url($url, ['action' => 'refresh']),
+        get_string('refreshlicense', 'local_bulkinstall'), 'post');
+    if ($hubinstalled) {
+        $actions .= html_writer::link(new moodle_url('/local/lmh108/adopt.php', [
+                'gate' => 'local_bulkinstall/install',
+                'feature' => \local_bulkinstall\local\license_config::FEATURE_CODE,
+            ]), get_string('managewithlicensemanager', 'local_bulkinstall'), ['class' => 'btn btn-sm btn-secondary']);
+    }
+    $actions .= html_writer::link(new moodle_url($url, ['confirmdeactivate' => 1]),
+        get_string('deactivatelicense', 'local_bulkinstall'), ['class' => 'btn btn-sm btn-outline-danger']);
+} else if ($hubrecord || $hubinstalled) {
+    $actions = html_writer::link(new moodle_url('/local/lmh108/index.php', [], 'free-activation'),
+        get_string($hubrecord ? 'completehandover' : 'activateinlicensemanager', 'local_bulkinstall'),
+        ['class' => 'btn btn-sm btn-primary']);
+} else if ($pendingcode !== '' && $pendingurl !== '' && $pendingexpires >= time()) {
+    $actions = html_writer::link($pendingurl, get_string('opensitelink', 'local_bulkinstall'),
+        ['class' => 'btn btn-sm btn-primary'])
+        . $OUTPUT->single_button(new moodle_url($url, ['action' => 'poll']),
+            get_string('checksitelink', 'local_bulkinstall'), 'post');
 } else {
+    $actions = $OUTPUT->single_button(new moodle_url($url, ['action' => 'start']),
+        get_string('connectaccount', 'local_bulkinstall'), 'post');
+}
+$table = new html_table();
+$table->attributes['class'] = 'generaltable table table-bordered w-auto local-bulkinstall-compact-table '
+    . 'local-bulkinstall-compact-action-table local-bulkinstall-license-table';
+$table->head = [get_string('licenseproduct', 'local_bulkinstall'), get_string('status'),
+    get_string('licenseauthority', 'local_bulkinstall'), get_string('actions')];
+$table->align = ['', '', '', 'center'];
+$table->data = [[format_string($productlabel),
+    html_writer::span(
+        html_writer::tag('i', '', ['class' => 'fa ' . ($active ? 'fa-circle-check' : 'fa-circle-xmark')
+            . ' icon', 'aria-hidden' => 'true'])
+            . html_writer::span(get_string($active ? 'licensestatusactivatedshort'
+                : 'licensestatusnotactivatedshort', 'local_bulkinstall')),
+        'badge rounded-pill badge-' . ($active ? 'success' : 'warning')),
+    $authority, $actions]];
+echo html_writer::div(html_writer::table($table), 'table-responsive local-bulkinstall-license-table-wrap');
+if ($active && $confirmdeactivate && !$hubmanaged) {
+    echo $OUTPUT->confirm(get_string('licensepolicydeactivation', 'local_bulkinstall'),
+        new moodle_url($url, ['action' => 'deactivate', 'confirmdeactivate' => 1, 'sesskey' => sesskey()]), $url);
+}
+if (!$active && !$hubrecord && !$hubinstalled) {
     echo html_writer::tag('p', get_string('sitelinkintro', 'local_bulkinstall'));
     if ($pendingcode !== '' && $pendingurl !== '' && $pendingexpires >= time()) {
         echo html_writer::tag('p', get_string('sitelinkcode', 'local_bulkinstall',
             html_writer::tag('code', s($pendingcode))));
         echo html_writer::tag('p', get_string('sitelinkstep2', 'local_bulkinstall'));
-        $actions = html_writer::link($pendingurl, get_string('opensitelink', 'local_bulkinstall'), [
-                'class' => 'btn btn-primary', 'target' => '_blank', 'rel' => 'noopener noreferrer',
-            ])
-            . $OUTPUT->single_button(new moodle_url($url, ['action' => 'poll']),
-                get_string('checksitelink', 'local_bulkinstall'), 'post');
-        echo html_writer::div($actions, 'local-bulkinstall-actions');
-    } else {
-        echo $OUTPUT->single_button(new moodle_url($url, ['action' => 'start']),
-            get_string('connectaccount', 'local_bulkinstall'), 'post');
     }
     $manual = html_writer::tag('summary', get_string('manualactivation', 'local_bulkinstall'))
         . html_writer::start_tag('form', ['method' => 'post', 'action' => $url->out(false), 'class' => 'mt-3'])

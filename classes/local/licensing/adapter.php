@@ -44,4 +44,11 @@ final class adapter {
         }
         license_state::retire_standalone_copy();
     }
+
+    public static function import_from_hub(string $entitlement, array $export): array {
+        if ($entitlement !== license_config::FEATURE_CODE) {
+            throw new \invalid_parameter_exception('Unknown Bulk installation entitlement.');
+        }
+        return license_state::accept_hub_return($export);
+    }
 }

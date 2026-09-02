@@ -10,3 +10,39 @@
 .local-bulkinstall-actions .singlebutton form {
     margin: 0;
 }
+
+/* Compact cell-bordered licence tables use the suite-wide natural-width presentation. */
+body[id^="page-local-bulkinstall-"] table.generaltable.local-bulkinstall-compact-table > :not(caption) > * > *,
+body[id^="page-admin-local-bulkinstall-"] table.generaltable.local-bulkinstall-compact-table > :not(caption) > * > * {
+    border-width: 1px;
+}
+
+body[id^="page-local-bulkinstall-"] table.generaltable.local-bulkinstall-compact-table > thead > tr > th,
+body[id^="page-admin-local-bulkinstall-"] table.generaltable.local-bulkinstall-compact-table > thead > tr > th {
+    background-color: var(--local-108design-surface-muted, #e9ecef);
+}
+
+.local-bulkinstall-compact-action-table > thead > tr > th:last-child,
+.local-bulkinstall-compact-action-table > tbody > tr > td:last-child {
+    text-align: center !important;
+}
+
+.local-bulkinstall-license-table-wrap {
+    margin-top: 1.5rem;
+}
+
+.local-bulkinstall-license-table {
+    margin-bottom: 0;
+}
+
+.local-bulkinstall-license-action {
+    align-items: center;
+    display: inline-flex;
+    justify-content: center;
+    min-height: 2rem;
+    min-width: 2rem;
+}
+
+.local-bulkinstall-license-action .icon {
+    margin: 0;
+}

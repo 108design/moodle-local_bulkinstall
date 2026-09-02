@@ -10,6 +10,7 @@
 namespace local_bulkinstall;
 
 use local_bulkinstall\local\bundle_manifest;
+use local_bulkinstall\local\bundle_signature;
 
 /**
  * Tests for compatibility manifests and signed publisher bundles.
@@ -94,6 +95,35 @@ final class bundle_manifest_test extends \advanced_testcase {
         $data['name'] = 'Tampered';
         $this->expectException(\moodle_exception::class);
         (new bundle_manifest())->parse(json_encode($data, JSON_THROW_ON_ERROR));
+    }
+
+    /** Version 3 signs the activation journey metadata together with the package list. */
+    public function test_version_three_canonical_payload_contains_activation_metadata(): void {
+        $manifest = [
+            'formatversion' => 3,
+            'id' => 'example-signed-tools',
+            'name' => 'Example Signed Tools',
+            'version' => '3.0.0',
+            'description' => 'Signed journey fixture',
+            'plugins' => [[
+                'file' => 'mod_example.zip',
+                'component' => 'mod_example',
+                'sha256' => str_repeat('a', 64),
+            ]],
+            'activation' => [
+                'storeproduct' => 'example-tools',
+                'licencemanager' => ['required' => true, 'minimumversion' => 2026083107],
+                'entitlements' => [[
+                    'code' => 'example.pro',
+                    'licencemodel' => 'commercial',
+                    'components' => ['mod_example'],
+                ]],
+            ],
+        ];
+        $canonical = json_decode(bundle_signature::canonical($manifest), true, 32, JSON_THROW_ON_ERROR);
+        $this->assertSame(3, $canonical['formatversion']);
+        $this->assertSame('example-tools', $canonical['activation']['storeproduct']);
+        $this->assertSame(['mod_example'], $canonical['activation']['entitlements'][0]['components']);
     }
 
     /** Return one valid fixture. */

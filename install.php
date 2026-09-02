@@ -39,6 +39,18 @@ if (!$analysis['caninstall']) {
 
 $installables = $manager->installables($analysis);
 $components = array_column($analysis['packages'], 'component');
+$activation = $analysis['bundle']['activation'] ?? null;
+if (is_array($activation)) {
+    // Persist only signed, validated coordination metadata. No ticket, key or account data is stored in a bundle.
+    set_config('pendingjourney', json_encode([
+        'bundleid' => (string) $analysis['bundle']['id'],
+        'bundlename' => (string) $analysis['bundle']['name'],
+        'bundleversion' => (string) $analysis['bundle']['version'],
+        'storeproduct' => (string) $activation['storeproduct'],
+        'entitlements' => array_values($activation['entitlements']),
+        'timecreated' => time(),
+    ], JSON_UNESCAPED_SLASHES | JSON_THROW_ON_ERROR), 'local_lmh108');
+}
 \local_bulkinstall\event\bundle_installation_started::create([
     'context' => context_system::instance(),
     'other' => [

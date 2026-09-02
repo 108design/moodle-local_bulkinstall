@@ -57,8 +57,7 @@ final class license_state {
 
     public static function is_active(): bool {
         try {
-            self::claims(false);
-            return true;
+            return (self::claims(false)['status'] ?? '') === 'active';
         } catch (\Throwable) {
             return false;
         }
@@ -74,8 +73,7 @@ final class license_state {
 
     public static function standalone_is_active(): bool {
         try {
-            self::standalone_claims(false);
-            return true;
+            return (self::standalone_claims(false)['status'] ?? '') === 'active';
         } catch (\Throwable) {
             return false;
         }
@@ -370,6 +368,33 @@ final class license_state {
         ];
     }
 
+    /** Restore a Hub-owned activation without changing it at LAS. */
+    public static function accept_hub_return(array $export): array {
+        $installationid = (string) ($export['installation_id'] ?? '');
+        if (!hash_equals(self::installation_id(), $installationid)) {
+            throw new license_client_exception('installation_id_conflict',
+                'The Hub activation targets another installation identity.');
+        }
+        $activationid = (string) ($export['activation_id'] ?? '');
+        $token = (string) ($export['refresh_token'] ?? '');
+        $assertion = (string) ($export['assertion'] ?? '');
+        $environment = (string) ($export['environment'] ?? '');
+        if (!str_starts_with($token, 'LASR1-')) {
+            throw new license_client_exception('invalid_activation_response', 'The Hub return payload is incomplete.');
+        }
+        $claims = self::validate_assertion($assertion, false, $activationid, $environment);
+        set_config('activationid', $activationid, 'local_bulkinstall');
+        set_config('environment', (string) $claims['environment'], 'local_bulkinstall');
+        set_config('refreshtoken', self::encrypt($token), 'local_bulkinstall');
+        set_config('assertion', $assertion, 'local_bulkinstall');
+        set_config('lastcheck', time(), 'local_bulkinstall');
+        unset_config('lasterror', 'local_bulkinstall');
+        if (is_string($export['site_token'] ?? null) && $export['site_token'] !== '') {
+            set_config('sitetoken', self::encrypt($export['site_token']), 'local_bulkinstall');
+        }
+        return $claims;
+    }
+
     public static function retire_standalone_copy(): void {
         foreach (['activationid', 'environment', 'refreshtoken', 'assertion', 'lastcheck', 'lasterror',
                 'emergencyresetavailable'] as $name) {
@@ -538,7 +563,11 @@ final class license_state {
     }
 
     private static function hub_available(): bool {
-        return (bool) get_config('local_lmh108', 'version') && class_exists(self::HUB_STATE);
+        if (!(bool) get_config('local_lmh108', 'version') || !class_exists(self::HUB_STATE)) {
+            return false;
+        }
+        $hub = self::HUB_STATE;
+        return !method_exists($hub, 'delegation_available') || $hub::delegation_available();
     }
 
 }

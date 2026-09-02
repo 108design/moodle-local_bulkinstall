@@ -1,13 +1,13 @@
-# Moodle plugin bundle formats 1 and 2
+# Moodle plugin bundle formats 1, 2 and 3
 
 This document is the normative human-readable specification implemented by
-`local_bulkinstall` 1.2.0. Version 1 remains accepted for administrator-created compatibility bundles. Prepared 108design downloads use signed version 2. The accompanying schemas are `schemas/bundle-v1.schema.json` and `schemas/bundle-v2.schema.json`.
+`local_bulkinstall`. Version 1 remains accepted for administrator-created compatibility bundles. Signed version 2 contains publisher identity and package integrity. New prepared 108design downloads use signed version 3 when the post-install activation journey is required. The accompanying schemas are `schemas/bundle-v1.schema.json`, `schemas/bundle-v2.schema.json` and `schemas/bundle-v3.schema.json`.
 
-## Signed prepared bundles (version 2)
+## Signed prepared bundles (versions 2 and 3)
 
 Version 2 adds `publisher`, `keyid`, and `signature`. `publisher` is `108design`; `keyid` identifies the public Ed25519 key pinned in the plugin. The signature covers canonical UTF-8 JSON reconstructed from all manifest fields except `signature`, including the ordered plugin list and lower-case SHA-256 values. A missing or invalid signature blocks the complete batch before staging or installation.
 
-The private publisher key is never included in a plugin, bundle, repository, or deployment artifact. The offline `tools/sign_plugin_bundle.php` helper signs a final manifest only after every nested plugin ZIP and SHA-256 value is final.
+The private publisher key is never included in a plugin, bundle, repository, or deployment artifact. The offline `tools/sign_plugin_bundle.php` helper signs a final version 2 or 3 manifest only after every nested plugin ZIP and SHA-256 value is final. Version 3 additionally signs the `activation` object described below.
 
 ### Outer archive filename
 
@@ -18,7 +18,7 @@ bundle_<name>-<version>.zip
 ```
 
 The exact lower-case `bundle_` prefix distinguishes a multi-plugin bundle from ordinary Moodle plugin packages such
-as `local_example.zip` or `block_example.zip`. For format 2 the complete filename must match
+as `local_example.zip` or `block_example.zip`. For signed formats 2 and 3 the complete filename must match
 `^bundle_[a-z0-9][a-z0-9._-]*\.zip$`; for example
 `bundle_108design-free-starter-2026.08.24.1.zip`. The manifest `id` remains independent metadata and does not include
 the prefix automatically.
@@ -66,7 +66,7 @@ listed below.
 ```json
 {
   "format": "moodle-plugin-bundle",
-  "formatversion": 2,
+  "formatversion": 3,
   "id": "example-course-tools",
   "name": "Example Course Tools",
   "version": "1.1.0",
@@ -80,6 +80,13 @@ listed below.
       "sha256": "0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef"
     }
   ],
+  "activation": {
+    "storeproduct": "example-course-tools",
+    "licencemanager": {"required": true, "minimumversion": 2026083107},
+    "entitlements": [
+      {"code": "example.pro", "licencemodel": "commercial", "components": ["mod_example"]}
+    ]
+  },
   "signature": "an-86-character-base64url-ed25519-signature"
 }
 ```
@@ -89,14 +96,26 @@ listed below.
 | Field | Required | JSON type | Rule |
 |---|---:|---|---|
 | `format` | yes | string | Exactly `moodle-plugin-bundle`. |
-| `formatversion` | yes | integer | `1` for compatibility bundles or `2` for signed prepared downloads. |
+| `formatversion` | yes | integer | `1` for compatibility bundles, `2` for signed packages, or `3` for signed packages with activation metadata. |
 | `id` | yes | string | Matches `^[a-z][a-z0-9_-]{1,99}$` (2–100 ASCII characters). |
 | `name` | yes | string | Non-empty; at most 200 Unicode characters. |
 | `version` | yes | string | Non-empty; at most 100 Unicode characters. This is bundle metadata, not a Moodle build number. |
 | `description` | no | string | At most 2,000 Unicode characters; an empty string is allowed. |
 | `plugins` | yes | array | 1–50 plugin objects. |
 
-Version 2 additionally requires `publisher`, `keyid`, and `signature` as described above. These fields are forbidden in version 1.
+Versions 2 and 3 additionally require `publisher`, `keyid`, and `signature`. Version 3 also requires `activation`; that field is forbidden in versions 1 and 2.
+
+## Activation fields (version 3)
+
+`activation` coordinates the resumable License Manager wizard. It never proves purchase or grants a licence; the connected Storefront account and LAS remain authoritative.
+
+| Field | Rule |
+|---|---|
+| `storeproduct` | Stable Storefront product identifier used to select matching purchases in the connected account. |
+| `licencemanager` | `required` plus the minimum Moodle build number `minimumversion`. |
+| `entitlements` | Expected licence identities. Each item has a stable `code`, `licencemodel` (`commercial` or `permanent_free`) and one or more `components`. Every component must occur in `plugins`; multiple components may share one entitlement. |
+
+Keys, activation tickets, Site Link tokens, account identifiers and proof of ownership have no manifest field. Automatic post-install actions are accepted only from a valid publisher-signed version 3 manifest.
 
 ## Plugin fields
 

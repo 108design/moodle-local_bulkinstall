@@ -177,7 +177,8 @@ class bundle_reader {
                     'name' => $manifest['name'],
                     'version' => $manifest['version'],
                     'description' => $manifest['description'],
-                    'publisherfilenamevalid' => $manifest['formatversion'] !== 2
+                    'activation' => $manifest['activation'],
+                    'publisherfilenamevalid' => $manifest['formatversion'] < 2
                         || self::valid_publisher_filename($originalfilename),
                 ],
                 'files' => $files,

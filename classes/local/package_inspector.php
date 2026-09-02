@@ -51,6 +51,7 @@ class package_inspector {
             'action' => 'unknown',
             'uncompressedbytes' => 0,
             'errors' => [],
+            'compatibilityerrors' => [],
             'warnings' => [],
             'messages' => [],
         ];
@@ -114,7 +115,10 @@ class package_inspector {
             }
         }
 
-        if ($root === null || $root !== clean_param($root, PARAM_PLUGIN)) {
+        // Moodle Marketplace archives commonly use a safe, versioned repository directory such as
+        // moodle-format_flexsections-5.0.4. The component declared in version.php, not that transport-level
+        // directory name, determines Moodle's canonical installation directory.
+        if ($root === null || !preg_match('/^[A-Za-z0-9][A-Za-z0-9._-]{0,254}$/', $root)) {
             $this->error($result, get_string('errorinvalidroot', 'local_bulkinstall', (string)$root));
             return $result;
         }
@@ -165,13 +169,6 @@ class package_inspector {
             $this->error($result, get_string('errorinvalidcomponent', 'local_bulkinstall', $metadata['component']));
             return $result;
         }
-        if ($name !== $root) {
-            $this->error($result, get_string('errorcomponentrootmismatch', 'local_bulkinstall', (object)[
-                'component' => $metadata['component'],
-                'root' => $root,
-            ]));
-            return $result;
-        }
         if ($metadata['version'] === null) {
             $this->error($result, get_string('errormissingversion', 'local_bulkinstall'));
             return $result;
@@ -182,7 +179,7 @@ class package_inspector {
         if ($metadata['supported'] !== null) {
             $branch = (int)$CFG->branch;
             if ($branch < $metadata['supported'][0] || $branch > $metadata['supported'][1]) {
-                $this->error($result, get_string('errorunsupportedbranch', 'local_bulkinstall', (object)[
+                $this->compatibility_error($result, get_string('errorunsupportedbranch', 'local_bulkinstall', (object)[
                     'branch' => $branch,
                     'minimum' => $metadata['supported'][0],
                     'maximum' => $metadata['supported'][1],
@@ -210,8 +207,11 @@ class package_inspector {
             $result['action'] = 'install';
         }
 
-        if (empty($result['errors'])) {
-            $this->run_core_validation($result, $path, $root, $type, $pluginmanager);
+        // A declared support-range mismatch is the one error the private service edition may explicitly waive.
+        // Still run Moodle's full archive validation now so that such a waiver can never hide an unrelated error.
+        $harderrors = array_diff($result['errors'], $result['compatibilityerrors']);
+        if (empty($harderrors)) {
+            $this->run_core_validation($result, $path, $name, $type, $pluginmanager);
         }
         return $result;
     }
@@ -222,7 +222,7 @@ class package_inspector {
     private function run_core_validation(
         array &$result,
         string $path,
-        string $root,
+        string $canonicalroot,
         string $type,
         plugin_manager $pluginmanager
     ): void {
@@ -230,7 +230,9 @@ class package_inspector {
 
         $workdir = make_unique_writable_directory(make_request_directory());
         try {
-            $zipcontents = $pluginmanager->unzip_plugin_file($path, $workdir, $root);
+            // Mirror Moodle's own install_plugins() path: the transport-level archive root may be a versioned
+            // Marketplace/repository name, but validation and deployment use the canonical name from component.
+            $zipcontents = $pluginmanager->unzip_plugin_file($path, $workdir, $canonicalroot);
             if (empty($zipcontents)) {
                 $this->error($result, get_string('errorinvalidzip', 'local_bulkinstall'));
                 return;
@@ -287,6 +289,14 @@ class package_inspector {
     private function error(array &$result, string $message): void {
         if (!in_array($message, $result['errors'], true)) {
             $result['errors'][] = $message;
+        }
+    }
+
+    /** Add a declared support-range error that the private service edition may explicitly override. */
+    private function compatibility_error(array &$result, string $message): void {
+        $this->error($result, $message);
+        if (!in_array($message, $result['compatibilityerrors'], true)) {
+            $result['compatibilityerrors'][] = $message;
         }
     }
 

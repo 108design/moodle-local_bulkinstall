@@ -24,7 +24,7 @@ final class bundle_signature {
     public static function canonical(array $manifest): string {
         $document = [
             'format' => bundle_manifest::FORMAT,
-            'formatversion' => 2,
+            'formatversion' => (int) $manifest['formatversion'],
             'id' => (string) $manifest['id'],
             'name' => (string) $manifest['name'],
             'version' => (string) $manifest['version'],
@@ -37,6 +37,9 @@ final class bundle_signature {
                 'sha256' => strtolower((string) $plugin['sha256']),
             ], $manifest['plugins'])),
         ];
+        if ((int) $manifest['formatversion'] === 3) {
+            $document['activation'] = $manifest['activation'];
+        }
         return json_encode($document, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE | JSON_THROW_ON_ERROR);
     }
 

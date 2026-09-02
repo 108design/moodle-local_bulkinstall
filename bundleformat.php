@@ -20,18 +20,28 @@ $PAGE->set_heading(get_string('pagetitle', 'local_bulkinstall'));
 $example = <<<'JSON'
 {
   "format": "moodle-plugin-bundle",
-  "formatversion": 1,
+  "formatversion": 3,
   "id": "example-course-tools",
   "name": "Example Course Tools",
   "version": "1.1.0",
   "description": "Optional description for administrators.",
+  "publisher": "108design",
+  "keyid": "bundle-2026-01",
   "plugins": [
     {
       "file": "mod_example.zip",
       "component": "mod_example",
       "sha256": "0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef"
     }
-  ]
+  ],
+  "activation": {
+    "storeproduct": "example-course-tools",
+    "licencemanager": {"required": true, "minimumversion": 2026083107},
+    "entitlements": [
+      {"code": "example.pro", "licencemodel": "commercial", "components": ["mod_example"]}
+    ]
+  },
+  "signature": "an-86-character-base64url-ed25519-signature"
 }
 JSON;
 
@@ -42,6 +52,7 @@ local_examplehelper.zip
 TEXT;
 
 echo $OUTPUT->header();
+echo \local_bulkinstall\local\admin_navigation::render('format');
 echo $OUTPUT->heading(get_string('bundleformattitle', 'local_bulkinstall'), 2);
 echo html_writer::tag('p', get_string('bundleformatintro', 'local_bulkinstall'));
 echo html_writer::tag('p', get_string('bundleformatfilename', 'local_bulkinstall'));
@@ -72,6 +83,9 @@ $table->data = [
     ['plugins[].file', 'string', $yes, get_string('bundleformatrulefile', 'local_bulkinstall')],
     ['plugins[].component', 'string', $yes, get_string('bundleformatrulecomponent', 'local_bulkinstall')],
     ['plugins[].sha256', 'string', $yes, get_string('bundleformatrulesha256', 'local_bulkinstall')],
+    ['activation', 'object', $yes, get_string('bundleformatruleactivation', 'local_bulkinstall')],
+    ['activation.storeproduct', 'string', $yes, get_string('bundleformatrulestoreproduct', 'local_bulkinstall')],
+    ['activation.entitlements[]', 'array', $yes, get_string('bundleformatruleentitlements', 'local_bulkinstall')],
 ];
 echo html_writer::table($table);
 echo html_writer::tag('p', get_string('bundleformatstrict', 'local_bulkinstall'));

@@ -78,6 +78,13 @@ if ($data = $form->get_data()) {
 }
 
 echo $OUTPUT->header();
+echo \local_bulkinstall\local\admin_navigation::render('install');
+$pendingjourney = (string) get_config('local_lmh108', 'pendingjourney');
+if ($pendingjourney !== '' && core_component::get_plugin_directory('local', 'lmh108') !== null) {
+    echo $OUTPUT->notification(html_writer::link(new moodle_url('/local/lmh108/activate_account.php'),
+        get_string('continuebundleactivation', 'local_bulkinstall'), ['class' => 'btn btn-primary']),
+        \core\output\notification::NOTIFY_INFO);
+}
 echo $OUTPUT->heading(get_string('uploadheading', 'local_bulkinstall'), 2);
 echo html_writer::tag('p', get_string('uploadintro', 'local_bulkinstall'));
 echo html_writer::tag('p', html_writer::link(
