@@ -9,10 +9,6 @@ final class refresh_license extends \core\task\scheduled_task {
     }
 
     public function execute(): void {
-        try {
-            \local_bulkinstall\local\license_state::refresh_if_due();
-        } catch (\Throwable $exception) {
-            mtrace('Bulk installation licence refresh: ' . $exception->getMessage());
-        }
+        // Compatibility for a queued task during upgrades. No activation is required anymore.
     }
 }

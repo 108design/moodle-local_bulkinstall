@@ -17,7 +17,6 @@ use local_bulkinstall\local\bundle_reader;
  * @package    local_bulkinstall
  * @copyright  2026 Andreas Giesen <andreas@108design.com>
  * @license    See LICENSE.md for the full terms.
- * @covers     \local_bulkinstall\local\bundle_reader
  */
 final class bundle_reader_test extends \advanced_testcase {
     /** A valid bundle expands only its declared nested ZIP. */

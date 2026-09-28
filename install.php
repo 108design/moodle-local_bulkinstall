@@ -14,7 +14,6 @@ $storageid = required_param('storage', PARAM_ALPHANUM);
 $cancel = optional_param('cancel', false, PARAM_BOOL);
 admin_externalpage_setup('local_bulkinstall');
 require_capability('moodle/site:config', context_system::instance());
-\local_bulkinstall\local\license_state::require_active();
 require_sesskey();
 
 $manager = new \local_bulkinstall\local\staging_manager();

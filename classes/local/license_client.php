@@ -47,7 +47,7 @@ final class license_client {
     /** @return array<string, mixed> */
     public function refresh(string $activationid, string $refreshtoken): array {
         return $this->request('POST', '/activations/' . rawurlencode($activationid) . '/refresh',
-            (object) [], $refreshtoken, self::uuid());
+            (object) [], $refreshtoken, \local_bulkinstall\local\licensing_runtime::refresh_key($activationid, $refreshtoken));
     }
 
     /** @return array<string, mixed> */

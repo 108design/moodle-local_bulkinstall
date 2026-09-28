@@ -10,15 +10,6 @@
 defined('MOODLE_INTERNAL') || die();
 
 if ($hassiteconfig) {
-    $activationpage = new admin_externalpage(
-        'local_bulkinstall_activation',
-        get_string('licenseactivation', 'local_bulkinstall'),
-        new moodle_url('/local/bulkinstall/activation.php'),
-        'moodle/site:config',
-        true
-    );
-    $ADMIN->add('modules', $activationpage);
-
     $page = new admin_externalpage(
         'local_bulkinstall',
         get_string('menulabel', 'local_bulkinstall'),

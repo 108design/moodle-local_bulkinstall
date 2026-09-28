@@ -15,11 +15,14 @@ final class license_config {
     public const PUBLIC_KEY_BASE64 = 'YvqrCEmbfxzmPDsOnrEN4NQNo0JqMOqc4Y/pYaoLr6s=';
     public const CLOCK_SKEW = 300;
 
+    /** Ship old and new authorised pins together before rotating the signing key. */
+    public const TRUSTED_PUBLIC_KEYS = [self::KEY_ID => self::PUBLIC_KEY_BASE64];
+
     public static function public_key(string $keyid): ?string {
-        if ($keyid !== self::KEY_ID) {
+        if (!isset(self::TRUSTED_PUBLIC_KEYS[$keyid])) {
             return null;
         }
-        $key = base64_decode(self::PUBLIC_KEY_BASE64, true);
+        $key = base64_decode(self::TRUSTED_PUBLIC_KEYS[$keyid], true);
         return is_string($key) && strlen($key) === SODIUM_CRYPTO_SIGN_PUBLICKEYBYTES ? $key : null;
     }
 }

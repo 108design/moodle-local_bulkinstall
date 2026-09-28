@@ -19,13 +19,4 @@ $tasks = [
         'month' => '*',
         'dayofweek' => '*',
     ],
-    [
-        'classname' => '\\local_bulkinstall\\task\\refresh_license',
-        'blocking' => 0,
-        'minute' => 'R',
-        'hour' => '*',
-        'day' => '*',
-        'month' => '*',
-        'dayofweek' => '*',
-    ],
 ];

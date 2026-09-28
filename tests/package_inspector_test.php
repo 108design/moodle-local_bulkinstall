@@ -17,7 +17,6 @@ use local_bulkinstall\local\package_inspector;
  * @package    local_bulkinstall
  * @copyright  2026 Andreas Giesen <andreas@108design.com>
  * @license    See LICENSE.md for the full terms.
- * @covers     \local_bulkinstall\local\package_inspector
  */
 final class package_inspector_test extends \advanced_testcase {
     /** Marketplace archives may wrap plugins in safe, versioned repository directories. */

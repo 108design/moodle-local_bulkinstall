@@ -17,9 +17,8 @@ use local_bulkinstall\local\version_parser;
  * @package    local_bulkinstall
  * @copyright  2026 Andreas Giesen <andreas@108design.com>
  * @license    See LICENSE.md for the full terms.
- * @covers     \local_bulkinstall\local\version_parser
  */
-final class version_parser_test extends \advanced_testcase {
+final class version_parser_test extends \basic_testcase {
     /** Parse the normal literal declarations used by Moodle plugins. */
     public function test_parse_literal_metadata(): void {
         $source = <<<'PHP'

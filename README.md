@@ -8,6 +8,11 @@ normal code deployment and database upgrade flow.
 
 ## Requirements
 
+Bulk Installer is free of charge and requires no account, licence key or activation.
+All its installation features may be used on any number of your own Moodle sites
+under the unchanged source-available Software License in `LICENSE.md`.
+This does not make the software open source or grant redistribution rights.
+
 - Moodle 4.5 or newer, declared through Moodle 5.2.
 - Web-based plugin deployment must be enabled. The page is hidden when
   `$CFG->disableupdateautodeploy` is enabled.
@@ -42,13 +47,17 @@ normal `$CFG->dirroot`; no special path configuration is required.
 The plugin accepts one outer ZIP containing `bundle.json` and the listed ordinary Moodle plugin ZIPs directly at the
 ZIP root. A bundle must be uploaded alone. The manifest declares bundle metadata plus the exact filename, expected
 Moodle component, and SHA-256 digest for each nested ZIP. Unsigned format 1 remains available for administrator-created
-compatibility bundles. Signed 108design downloads use format 2 and the mandatory lower-case filename convention
-`bundle_<name>-<version>.zip`; format 1 may use the same convention but is not required to do so.
+compatibility bundles. Signed 108design downloads use format 2 for package integrity or format 3 when a resumable
+post-install activation journey is declared. Signed formats use the lower-case filename convention
+`bundle_<name>-<version>.zip`; format 1 may use the same convention but is not required to do so. Format 3 contains
+only non-secret product, minimum-version and entitlement/component metadata; it never contains a licence key, token,
+ticket or proof of ownership.
 
 The exact specification is available to administrators from the upload page
 and is included in [`docs/bundle-format.md`](docs/bundle-format.md). The
-machine-readable schemas are [`schemas/bundle-v1.schema.json`](schemas/bundle-v1.schema.json) and
-[`schemas/bundle-v2.schema.json`](schemas/bundle-v2.schema.json).
+machine-readable schemas are [`schemas/bundle-v1.schema.json`](schemas/bundle-v1.schema.json),
+[`schemas/bundle-v2.schema.json`](schemas/bundle-v2.schema.json) and
+[`schemas/bundle-v3.schema.json`](schemas/bundle-v3.schema.json).
 
 ## Preflight checks
 
@@ -75,7 +84,7 @@ included or executed during preflight. Dynamic dependency expressions cannot be
 fully resolved safely and produce a warning; Moodle performs its normal final
 dependency check after deployment.
 
-## Fixed safety limits in 1.1
+## Fixed safety limits
 
 - 50 ZIP packages per batch.
 - One bundle manifest of at most 256 KiB.

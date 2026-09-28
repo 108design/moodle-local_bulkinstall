@@ -38,26 +38,24 @@ final class license_state {
     }
 
     public static function default_environment(): string {
-        global $CFG;
-
-        $host = (string) parse_url(self::canonical_url(), PHP_URL_HOST);
-        if ($host === 'localhost' || str_ends_with($host, '.localhost') || str_ends_with($host, '.test')
-                || str_ends_with($host, '.invalid')) {
-            return 'development';
+        $hub = self::HUB_STATE;
+        if (self::hub_available() && method_exists($hub, 'site_environment')) {
+            $environment = (string) $hub::site_environment();
+            if (in_array($environment, ['production', 'development'], true)) {
+                return $environment;
+            }
         }
-        if (filter_var($host, FILTER_VALIDATE_IP)
-                && filter_var($host, FILTER_VALIDATE_IP, FILTER_FLAG_NO_PRIV_RANGE | FILTER_FLAG_NO_RES_RANGE) === false) {
-            return 'development';
+        try {
+            $environment = (string) self::standalone_claims(true)['environment'];
+            return in_array($environment, ['production', 'development'], true) ? $environment : '';
+        } catch (\Throwable) {
+            return '';
         }
-        if (isset($CFG->debug) && (int) $CFG->debug >= DEBUG_DEVELOPER) {
-            return 'development';
-        }
-        return 'production';
     }
 
     public static function is_active(): bool {
         try {
-            return (self::claims(false)['status'] ?? '') === 'active';
+            return licensing_runtime::gate_allows(self::claims(false), 'permanent_free', false);
         } catch (\Throwable) {
             return false;
         }
@@ -73,16 +71,17 @@ final class license_state {
 
     public static function standalone_is_active(): bool {
         try {
-            return (self::standalone_claims(false)['status'] ?? '') === 'active';
+            return licensing_runtime::gate_allows(self::standalone_claims(false), 'permanent_free', false);
         } catch (\Throwable) {
             return false;
         }
     }
 
     public static function standalone_is_configured(): bool {
-        return (string) get_config('local_bulkinstall', 'activationid') !== ''
-            && (string) get_config('local_bulkinstall', 'assertion') !== ''
-            && (string) get_config('local_bulkinstall', 'refreshtoken') !== '';
+        $state = \local_bulkinstall\local\licensing_runtime::activation_state(license_config::COMPONENT);
+        return (string) ($state['activationid'] ?? '') !== ''
+            && (string) ($state['assertion'] ?? '') !== ''
+            && (string) ($state['refreshtoken'] ?? '') !== '';
     }
 
     /** @return array<string, mixed> */
@@ -103,29 +102,33 @@ final class license_state {
 
     /** Claims from the plugin-owned activation only; used by the optional Hub's observe adapter. */
     public static function standalone_claims(bool $allowexpired = false): array {
-        $assertion = (string) get_config('local_bulkinstall', 'assertion');
+        $state = \local_bulkinstall\local\licensing_runtime::activation_state(license_config::COMPONENT);
+        $assertion = (string) ($state['assertion'] ?? '');
         if ($assertion === '') {
             throw new license_client_exception('assertion_missing', 'No site licence assertion is stored.');
         }
         return self::validate_assertion(
             $assertion,
             $allowexpired,
-            (string) get_config('local_bulkinstall', 'activationid'),
-            (string) get_config('local_bulkinstall', 'environment')
+            (string) ($state['activationid'] ?? ''),
+            (string) ($state['environment'] ?? '')
         );
     }
 
     /** @return array<string, mixed> */
     public static function activate(string $licensekey, string $environment): array {
+        return \local_bulkinstall\local\licensing_runtime::with_lock(license_config::FEATURE_CODE, static function() use ($licensekey, $environment) {
+            return self::activate_locked($licensekey, $environment);
+        });
+    }
+
+    private static function activate_locked(string $licensekey, string $environment): array {
         $licensekey = trim($licensekey);
         if (preg_match('/^LAS1-[A-Za-z0-9_-]{20,}$/D', $licensekey) !== 1) {
             throw new license_client_exception('invalid_licence_key', 'Enter a complete LAS1 licence key.');
         }
         if (!in_array($environment, ['production', 'development'], true)) {
             throw new license_client_exception('invalid_environment', 'Select production or development.');
-        }
-        if (self::default_environment() === 'development') {
-            $environment = 'development';
         }
         $hub = self::HUB_STATE;
         if (self::hub_available() && $hub::encryption_key_available()) {
@@ -149,18 +152,25 @@ final class license_state {
                 'LAS returned an incomplete activation response.');
         }
         $claims = self::validate_assertion($assertion, false, $activationid, $environment);
-        set_config('activationid', $activationid, 'local_bulkinstall');
-        set_config('environment', (string) $claims['environment'], 'local_bulkinstall');
-        set_config('refreshtoken', self::encrypt($refreshtoken), 'local_bulkinstall');
-        set_config('assertion', $assertion, 'local_bulkinstall');
-        set_config('lastcheck', time(), 'local_bulkinstall');
-        unset_config('emergencyresetavailable', 'local_bulkinstall');
-        unset_config('lasterror', 'local_bulkinstall');
+        \local_bulkinstall\local\licensing_runtime::update_activation_state(license_config::COMPONENT, [
+            'activationid' => $activationid,
+            'environment' => (string) $claims['environment'],
+            'refreshtoken' => self::encrypt($refreshtoken),
+            'assertion' => $assertion,
+            'lastcheck' => time(),
+            'emergencyresetavailable' => null,
+            'lasterror' => null,
+        ]);
         return $claims;
     }
 
     /** Redeem the signed one-time ticket returned after account-link approval. */
     public static function activate_ticket(string $ticket, string $environment): array {
+        return \local_bulkinstall\local\licensing_runtime::with_lock(license_config::FEATURE_CODE,
+            static fn() => self::activate_ticket_locked($ticket, $environment));
+    }
+
+    private static function activate_ticket_locked(string $ticket, string $environment): array {
         $ticket = trim($ticket);
         if (preg_match('/^LASA1-[A-Za-z0-9_-]{43}$/D', $ticket) !== 1) {
             throw new license_client_exception('invalid_activation_ticket',
@@ -168,9 +178,6 @@ final class license_state {
         }
         if (!in_array($environment, ['production', 'development'], true)) {
             throw new license_client_exception('invalid_environment', 'Select production or development.');
-        }
-        if (self::default_environment() === 'development') {
-            $environment = 'development';
         }
         $hub = self::HUB_STATE;
         if (self::hub_available() && $hub::encryption_key_available()) {
@@ -199,20 +206,30 @@ final class license_state {
                 'LAS returned an incomplete activation response.');
         }
         $claims = self::validate_assertion($assertion, false, $activationid, $environment);
-        set_config('activationid', $activationid, 'local_bulkinstall');
-        set_config('environment', (string) $claims['environment'], 'local_bulkinstall');
-        set_config('refreshtoken', self::encrypt($refreshtoken), 'local_bulkinstall');
-        set_config('assertion', $assertion, 'local_bulkinstall');
-        set_config('lastcheck', time(), 'local_bulkinstall');
-        unset_config('lasterror', 'local_bulkinstall');
+        \local_bulkinstall\local\licensing_runtime::update_activation_state(license_config::COMPONENT, [
+            'activationid' => $activationid,
+            'environment' => (string) $claims['environment'],
+            'refreshtoken' => self::encrypt($refreshtoken),
+            'assertion' => $assertion,
+            'lastcheck' => time(),
+            'lasterror' => null,
+        ]);
         return [license_config::FEATURE_CODE => $claims];
     }
 
     /** Start the optional passwordless account link while retaining manual LAS1 activation. */
-    public static function start_site_link(): array {
+    public static function start_site_link(string $environment): array {
+        return \local_bulkinstall\local\licensing_runtime::with_lock(license_config::FEATURE_CODE,
+            static fn() => self::start_site_link_locked($environment));
+    }
+
+    private static function start_site_link_locked(string $environment): array {
+        if (!in_array($environment, ['production', 'development'], true)) {
+            throw new license_client_exception('invalid_environment', 'Select production or development.');
+        }
         $returnurl = new \moodle_url('/local/bulkinstall/activation.php', ['accountlinked' => 1]);
         $response = (new site_link_client())->start(self::installation_id(), self::canonical_url(),
-            self::default_environment(), (string) get_config('local_bulkinstall', 'version'),
+            $environment, (string) get_config('local_bulkinstall', 'version'),
             $returnurl->out(false));
         foreach (['link_id', 'device_secret', 'user_code', 'verification_uri_complete'] as $field) {
             if (!is_string($response[$field] ?? null) || $response[$field] === '') {
@@ -225,11 +242,17 @@ final class license_state {
         set_config('sitelinkcode', $response['user_code'], 'local_bulkinstall');
         set_config('sitelinkurl', $response['verification_uri_complete'], 'local_bulkinstall');
         set_config('sitelinkexpires', time() + (int) ($response['expires_in'] ?? 900), 'local_bulkinstall');
+        set_config('sitelinkenvironment', $environment, 'local_bulkinstall');
         return $response;
     }
 
     /** Poll once; administrators remain in control and no browser request blocks. */
     public static function poll_site_link(): array {
+        return \local_bulkinstall\local\licensing_runtime::with_lock(license_config::FEATURE_CODE,
+            static fn() => self::poll_site_link_locked());
+    }
+
+    private static function poll_site_link_locked(): array {
         $linkid = (string) get_config('local_bulkinstall', 'sitelinkid');
         $secret = (string) get_config('local_bulkinstall', 'sitelinksecret');
         if ($linkid === '' || $secret === '') {
@@ -245,12 +268,21 @@ final class license_state {
             throw new license_client_exception('invalid_site_link_response',
                 'Storefront returned an incomplete approved site link.');
         }
-        self::activate_ticket($ticket, (string) ($response['environment'] ?? self::default_environment()));
+        $environment = (string) get_config('local_bulkinstall', 'sitelinkenvironment');
+        if (!in_array($environment, ['production', 'development'], true)
+                || (isset($response['environment']) && $response['environment'] !== $environment)) {
+            self::clear_pending_site_link();
+            throw new license_client_exception('site_environment_mismatch',
+                'The approved account link belongs to another environment.');
+        }
+        self::activate_ticket($ticket, $environment);
         $hub = self::HUB_STATE;
         if (self::hub_available() && method_exists($hub, 'adopt_site_token')) {
             $hub::adopt_site_token($token, self::installation_id());
         } else {
-            set_config('sitetoken', self::encrypt($token), 'local_bulkinstall');
+            \local_bulkinstall\local\licensing_runtime::update_activation_state(license_config::COMPONENT, [
+                'sitetoken' => self::encrypt($token),
+            ]);
         }
         self::clear_pending_site_link();
         return $response;
@@ -258,17 +290,25 @@ final class license_state {
 
     /** Site token is server-only and may be exported to the optional Hub during verified adoption. */
     public static function site_token(): string {
-        $stored = (string) get_config('local_bulkinstall', 'sitetoken');
+        $state = \local_bulkinstall\local\licensing_runtime::activation_state(license_config::COMPONENT);
+        $stored = (string) ($state['sitetoken'] ?? '');
         return $stored === '' ? '' : self::decrypt($stored);
     }
 
     public static function clear_pending_site_link(): void {
-        foreach (['sitelinkid', 'sitelinksecret', 'sitelinkcode', 'sitelinkurl', 'sitelinkexpires'] as $name) {
+        foreach (['sitelinkid', 'sitelinksecret', 'sitelinkcode', 'sitelinkurl', 'sitelinkexpires',
+                'sitelinkenvironment'] as $name) {
             unset_config($name, 'local_bulkinstall');
         }
     }
 
     public static function refresh_if_due(bool $force = false): bool {
+        return \local_bulkinstall\local\licensing_runtime::with_lock(license_config::FEATURE_CODE, static function() use ($force) {
+            return self::refresh_if_due_locked($force);
+        });
+    }
+
+    private static function refresh_if_due_locked(bool $force = false): bool {
         $hub = self::HUB_STATE;
         if (self::hub_available() && $hub::record(license_config::FEATURE_CODE)) {
             try {
@@ -294,10 +334,11 @@ final class license_state {
             return false;
         }
         try {
-            $activationid = (string) get_config('local_bulkinstall', 'activationid');
-            $environment = (string) get_config('local_bulkinstall', 'environment');
+            $state = \local_bulkinstall\local\licensing_runtime::activation_state(license_config::COMPONENT);
+            $activationid = (string) ($state['activationid'] ?? '');
+            $environment = (string) ($state['environment'] ?? '');
             $response = (new license_client())->refresh($activationid,
-                self::decrypt((string) get_config('local_bulkinstall', 'refreshtoken')));
+                self::decrypt((string) ($state['refreshtoken'] ?? '')));
             $newtoken = is_string($response['refresh_token'] ?? null) ? $response['refresh_token'] : '';
             $assertion = is_string($response['assertion'] ?? null) ? $response['assertion'] : '';
             if (!str_starts_with($newtoken, 'LASR1-') || $assertion === '') {
@@ -305,15 +346,16 @@ final class license_state {
                     'LAS returned an incomplete refresh response.');
             }
             self::validate_assertion($assertion, false, $activationid, $environment);
-            set_config('refreshtoken', self::encrypt($newtoken), 'local_bulkinstall');
-            set_config('assertion', $assertion, 'local_bulkinstall');
-            set_config('lastcheck', time(), 'local_bulkinstall');
-            unset_config('lasterror', 'local_bulkinstall');
+            \local_bulkinstall\local\licensing_runtime::update_activation_state(license_config::COMPONENT, [
+                'refreshtoken' => self::encrypt($newtoken),
+                'assertion' => $assertion,
+                'lastcheck' => time(),
+                'lasterror' => null,
+            ]);
             return true;
         } catch (\Throwable $exception) {
             if ($exception instanceof license_client_exception
                     && in_array($exception->lascode, [
-                        'invalid_refresh_token',
                         'licence_inactive',
                         'licence_expired',
                         'licence_not_started',
@@ -321,22 +363,32 @@ final class license_state {
                 // A signed, authoritative rejection must lock this installation immediately.
                 // Transport/protocol failures retain the current assertion until its normal expiry.
                 self::forget();
+            } else {
+                \local_bulkinstall\local\licensing_runtime::update_activation_state(license_config::COMPONENT, [
+                    'lastcheck' => time(),
+                    'lasterror' => clean_param($exception->getMessage(), PARAM_TEXT),
+                ]);
             }
-            set_config('lastcheck', time(), 'local_bulkinstall');
-            set_config('lasterror', clean_param($exception->getMessage(), PARAM_TEXT), 'local_bulkinstall');
             throw $exception;
         }
     }
 
     public static function deactivate(): void {
+        \local_bulkinstall\local\licensing_runtime::with_lock(license_config::FEATURE_CODE, static function() {
+            self::deactivate_locked();
+        });
+    }
+
+    private static function deactivate_locked(): void {
         $hub = self::HUB_STATE;
         if (self::hub_available() && $hub::record(license_config::FEATURE_CODE)) {
             $hub::deactivate(license_config::FEATURE_CODE);
             return;
         }
         if (self::is_configured()) {
-            $activationid = (string) get_config('local_bulkinstall', 'activationid');
-            $token = self::decrypt((string) get_config('local_bulkinstall', 'refreshtoken'));
+            $state = \local_bulkinstall\local\licensing_runtime::activation_state(license_config::COMPONENT);
+            $activationid = (string) ($state['activationid'] ?? '');
+            $token = self::decrypt((string) ($state['refreshtoken'] ?? ''));
             (new license_client())->deactivate($activationid, $token);
         }
         self::forget();
@@ -348,19 +400,22 @@ final class license_state {
             $hub::forget_feature(license_config::FEATURE_CODE);
             return;
         }
-        foreach (['activationid', 'environment', 'refreshtoken', 'assertion', 'lastcheck', 'lasterror',
-                'emergencyresetavailable'] as $name) {
-            unset_config($name, 'local_bulkinstall');
-        }
+        \local_bulkinstall\local\licensing_runtime::clear_activation_state(license_config::COMPONENT);
     }
 
     /** @return array<string, string> Server-only export for optional Hub adoption. */
     public static function standalone_hub_export(): array {
+        return \local_bulkinstall\local\licensing_runtime::with_lock(license_config::FEATURE_CODE,
+            static fn() => self::standalone_hub_export_locked());
+    }
+
+    private static function standalone_hub_export_locked(): array {
         $claims = self::standalone_claims(false);
+        $state = \local_bulkinstall\local\licensing_runtime::activation_state(license_config::COMPONENT);
         return [
-            'activation_id' => (string) get_config('local_bulkinstall', 'activationid'),
-            'refresh_token' => self::decrypt((string) get_config('local_bulkinstall', 'refreshtoken')),
-            'assertion' => (string) get_config('local_bulkinstall', 'assertion'),
+            'activation_id' => (string) ($state['activationid'] ?? ''),
+            'refresh_token' => self::decrypt((string) ($state['refreshtoken'] ?? '')),
+            'assertion' => (string) ($state['assertion'] ?? ''),
             'environment' => (string) $claims['environment'],
             'installation_id' => self::installation_id(),
             'component' => license_config::COMPONENT,
@@ -370,6 +425,11 @@ final class license_state {
 
     /** Restore a Hub-owned activation without changing it at LAS. */
     public static function accept_hub_return(array $export): array {
+        return \local_bulkinstall\local\licensing_runtime::with_lock(license_config::FEATURE_CODE,
+            static fn() => self::accept_hub_return_locked($export));
+    }
+
+    private static function accept_hub_return_locked(array $export): array {
         $installationid = (string) ($export['installation_id'] ?? '');
         if (!hash_equals(self::installation_id(), $installationid)) {
             throw new license_client_exception('installation_id_conflict',
@@ -383,24 +443,28 @@ final class license_state {
             throw new license_client_exception('invalid_activation_response', 'The Hub return payload is incomplete.');
         }
         $claims = self::validate_assertion($assertion, false, $activationid, $environment);
-        set_config('activationid', $activationid, 'local_bulkinstall');
-        set_config('environment', (string) $claims['environment'], 'local_bulkinstall');
-        set_config('refreshtoken', self::encrypt($token), 'local_bulkinstall');
-        set_config('assertion', $assertion, 'local_bulkinstall');
-        set_config('lastcheck', time(), 'local_bulkinstall');
-        unset_config('lasterror', 'local_bulkinstall');
+        $updates = [
+            'activationid' => $activationid,
+            'environment' => (string) $claims['environment'],
+            'refreshtoken' => self::encrypt($token),
+            'assertion' => $assertion,
+            'lastcheck' => time(),
+            'lasterror' => null,
+        ];
         if (is_string($export['site_token'] ?? null) && $export['site_token'] !== '') {
-            set_config('sitetoken', self::encrypt($export['site_token']), 'local_bulkinstall');
+            $updates['sitetoken'] = self::encrypt($export['site_token']);
         }
+        \local_bulkinstall\local\licensing_runtime::update_activation_state(license_config::COMPONENT, $updates);
         return $claims;
     }
 
     public static function retire_standalone_copy(): void {
-        foreach (['activationid', 'environment', 'refreshtoken', 'assertion', 'lastcheck', 'lasterror',
-                'emergencyresetavailable'] as $name) {
-            unset_config($name, 'local_bulkinstall');
-        }
-        unset_config('sitetoken', 'local_bulkinstall');
+        \local_bulkinstall\local\licensing_runtime::with_lock(license_config::FEATURE_CODE,
+            static fn() => self::retire_standalone_copy_locked());
+    }
+
+    private static function retire_standalone_copy_locked(): void {
+        \local_bulkinstall\local\licensing_runtime::clear_activation_state(license_config::COMPONENT);
     }
 
     public static function require_active(): void {
@@ -468,8 +532,12 @@ final class license_state {
         $now = time();
         if ($claims['iat'] > $now + license_config::CLOCK_SKEW
                 || $claims['nbf'] > $now + license_config::CLOCK_SKEW
-                || (!$allowexpired && $claims['exp'] < $now - license_config::CLOCK_SKEW)) {
+                || (!$allowexpired && !\local_bulkinstall\local\licensing_runtime::is_permanent_free($claims) && $claims['exp'] < $now - license_config::CLOCK_SKEW)) {
             throw new license_client_exception('assertion_not_current', 'The licence assertion is not currently valid.');
+        }
+        $claims = \local_bulkinstall\local\licensing_runtime::effective_claims($claims);
+        if (!$allowexpired && $claims['status'] === 'expired') {
+            throw new license_client_exception('assertion_not_current', 'The signed licence term and grace period have ended.');
         }
         return $claims;
     }

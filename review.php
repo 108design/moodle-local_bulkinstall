@@ -13,7 +13,6 @@ require_once($CFG->libdir . '/adminlib.php');
 $storageid = required_param('storage', PARAM_ALPHANUM);
 admin_externalpage_setup('local_bulkinstall');
 require_capability('moodle/site:config', context_system::instance());
-\local_bulkinstall\local\license_state::require_active();
 
 if (!empty($CFG->disableupdateautodeploy)) {
     throw new moodle_exception('featuredisabled', 'tool_installaddon');

@@ -18,9 +18,8 @@ use local_bulkinstall\local\bundle_signature;
  * @package    local_bulkinstall
  * @copyright  2026 Andreas Giesen <andreas@108design.com>
  * @license    See LICENSE.md for the full terms.
- * @covers     \local_bulkinstall\local\bundle_manifest
  */
-final class bundle_manifest_test extends \advanced_testcase {
+final class bundle_manifest_test extends \basic_testcase {
     /** A complete valid manifest is normalised and returned. */
     public function test_parse_valid_manifest(): void {
         $manifest = (new bundle_manifest())->parse($this->manifest_json());

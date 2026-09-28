@@ -14,12 +14,6 @@ require_once($CFG->libdir . '/filelib.php');
 admin_externalpage_setup('local_bulkinstall');
 require_capability('moodle/site:config', context_system::instance());
 
-if (!\local_bulkinstall\local\license_state::is_active()) {
-    redirect(new moodle_url('/local/bulkinstall/activation.php'),
-        get_string('licenserequired', 'local_bulkinstall'), null,
-        \core\output\notification::NOTIFY_WARNING);
-}
-
 if (!empty($CFG->disableupdateautodeploy)) {
     throw new moodle_exception('featuredisabled', 'tool_installaddon');
 }
