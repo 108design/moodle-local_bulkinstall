@@ -10,7 +10,7 @@ normal code deployment and database upgrade flow.
 
 Bulk Installer is free of charge and requires no account, licence key or activation.
 All its installation features may be used on any number of your own Moodle sites
-under the unchanged source-available Software License in `LICENSE.md`.
+under the source-available Software License in `LICENSE.md`.
 This does not make the software open source or grant redistribution rights.
 
 - Moodle 4.5 or newer, declared through Moodle 5.2.
@@ -72,7 +72,7 @@ The plugin checks the following before the install button becomes available:
 - duplicate components within the batch;
 - statically declared plugin dependencies, including dependencies satisfied by
   another ZIP in the same batch;
-- Moodle core's complete `core\update\validator` result;
+- Moodle's standard plugin validation;
 - SHA-256 integrity between upload, review, and final confirmation;
 - for bundle uploads: strict manifest fields, root-only layout, exact file list,
   nested ZIP hashes, manifest-to-package component matching, signature verification and the mandatory `bundle_`
@@ -117,12 +117,6 @@ database tables, and the plugin performs no external network requests.
 
 Audit events record the administrator, time, component list, package count, and
 whether validation passed. They do not contain ZIP data.
-
-## Testing
-
-The source includes PHPUnit coverage for safe `version.php` parsing and a Behat
-navigation scenario. The separate Moodle 4.5/5.0/5.1/5.2 runtime test campaign
-is intentionally deferred from the 1.0.0 build.
 
 ## License
 
