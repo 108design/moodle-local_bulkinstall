@@ -126,6 +126,4 @@ is intentionally deferred from the 1.0.0 build.
 
 ## License
 
-108design Bulk Plugin Installation Software License. This is a source-available commercial
-software license, not an open-source license. See [LICENSE.md](LICENSE.md) for
-the full terms.
+This is a 108design source-available commercial software license, not an open-source license. See [LICENSE.md](https://github.com/108design/moodle-local_bulkinstall/blob/main/LICENSE.md) for the full terms.
