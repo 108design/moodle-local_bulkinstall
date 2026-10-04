@@ -6,6 +6,48 @@ Moodle plugin ZIP packages or one manifest-based bundle ZIP, validates all
 contained packages as one batch, and hands successful batches to Moodle's
 normal code deployment and database upgrade flow.
 
+## Screenshots
+
+<details>
+<summary>View screenshots (6)</summary>
+
+Click a preview to open the full-size screenshot.
+
+<table>
+<tr>
+<td align="center" width="50%" valign="middle">
+<a href="https://raw.githubusercontent.com/108design/moodle-local_bulkinstall/main/docs/screenshots/bulk-installer-placement.jpg"><img src="https://raw.githubusercontent.com/108design/moodle-local_bulkinstall/main/docs/screenshots/bulk-installer-placement.jpg" width="300" height="113" alt="Open Bulk installation in site administration"></a><br>
+<sub>Open Bulk installation in site administration</sub>
+</td>
+<td align="center" width="50%" valign="middle">
+<a href="https://raw.githubusercontent.com/108design/moodle-local_bulkinstall/main/docs/screenshots/bulk-installer-multiple-files.jpg"><img src="https://raw.githubusercontent.com/108design/moodle-local_bulkinstall/main/docs/screenshots/bulk-installer-multiple-files.jpg" width="293" height="160" alt="Upload multiple plugin packages"></a><br>
+<sub>Upload multiple plugin packages</sub>
+</td>
+</tr>
+<tr>
+<td align="center" width="50%" valign="middle">
+<a href="https://raw.githubusercontent.com/108design/moodle-local_bulkinstall/main/docs/screenshots/bulk-installer-bundle-info.jpg"><img src="https://raw.githubusercontent.com/108design/moodle-local_bulkinstall/main/docs/screenshots/bulk-installer-bundle-info.jpg" width="276" height="160" alt="Read the bundle ZIP specification"></a><br>
+<sub>Read the bundle ZIP specification</sub>
+</td>
+<td align="center" width="50%" valign="middle">
+<a href="https://raw.githubusercontent.com/108design/moodle-local_bulkinstall/main/docs/screenshots/bulk-installer-validated.jpg"><img src="https://raw.githubusercontent.com/108design/moodle-local_bulkinstall/main/docs/screenshots/bulk-installer-validated.jpg" width="266" height="160" alt="Review validated packages before installation"></a><br>
+<sub>Review validated packages before installation</sub>
+</td>
+</tr>
+<tr>
+<td align="center" width="50%" valign="middle">
+<a href="https://raw.githubusercontent.com/108design/moodle-local_bulkinstall/main/docs/screenshots/bulk-installer-batch-errors.jpg"><img src="https://raw.githubusercontent.com/108design/moodle-local_bulkinstall/main/docs/screenshots/bulk-installer-batch-errors.jpg" width="260" height="160" alt="See errors that block the batch"></a><br>
+<sub>See errors that block the batch</sub>
+</td>
+<td align="center" width="50%" valign="middle">
+<a href="https://raw.githubusercontent.com/108design/moodle-local_bulkinstall/main/docs/screenshots/bulk-installer-installation.jpg"><img src="https://raw.githubusercontent.com/108design/moodle-local_bulkinstall/main/docs/screenshots/bulk-installer-installation.jpg" width="242" height="160" alt="Start a new batch with the upload form"></a><br>
+<sub>Start a new batch with the upload form</sub>
+</td>
+</tr>
+</table>
+
+</details>
+
 ## Requirements
 
 Bulk Installer is free of charge and requires no account, licence key or activation.

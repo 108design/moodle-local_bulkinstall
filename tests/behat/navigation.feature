@@ -1,4 +1,4 @@
-@local_bulkinstall
+@local @local_bulkinstall
 Feature: Access the bulk plugin installation page
   In order to deploy multiple plugin packages
   As a site administrator
