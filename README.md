@@ -75,8 +75,8 @@ The plugin checks the following before the install button becomes available:
 - Moodle's standard plugin validation;
 - SHA-256 integrity between upload, review, and final confirmation;
 - for bundle uploads: strict manifest fields, root-only layout, exact file list,
-  nested ZIP hashes, manifest-to-package component matching, signature verification and the mandatory `bundle_`
-  filename convention for signed 108design bundles;
+  nested ZIP hashes, manifest-to-package component matching, signature verification and a warning when the recommended `bundle_`
+  filename convention for signed 108design bundles is not followed;
 - package count, archive-entry count, and uncompressed size limits.
 
 Uploaded `version.php` files are tokenised and read as text. They are not

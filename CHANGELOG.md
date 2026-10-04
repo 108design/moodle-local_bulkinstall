@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.2.20 - 2026-10-04
+
+- Stable release of the free installer, without an account, licence key or activation.
+- Verified signed-bundle installation on Moodle 4.5 and 5.2, including dependencies and integrity checks.
+- Clarified that renaming a signed bundle produces a filename warning without invalidating its signature.
+
 ## 1.2.16-beta - 2026-09-02
 
 - Accepted ordinary Marketplace and repository ZIP roots such as

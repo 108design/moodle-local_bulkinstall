@@ -10,8 +10,8 @@
 defined('MOODLE_INTERNAL') || die();
 
 $plugin->component = 'local_bulkinstall';
-$plugin->version = 2026092800;
+$plugin->version = 2026100400;
 $plugin->requires = 2024100700;
 $plugin->supported = [405, 502];
-$plugin->maturity = MATURITY_BETA;
-$plugin->release = '1.2.20-beta';
+$plugin->maturity = MATURITY_STABLE;
+$plugin->release = '1.2.20';
