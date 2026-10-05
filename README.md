@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="https://raw.githubusercontent.com/108design/moodle-local_bulkinstall/main/docs/branding/logo.svg" alt="Bulk Installer logo" width="443" height="443">
+  <img src="https://raw.githubusercontent.com/108design/moodle-local_bulkinstall/main/docs/branding/logo.svg" alt="Bulk Installer logo" width="125" height="125">
 </p>
 
 # Bulk plugin installation
