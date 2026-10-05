@@ -1,3 +1,7 @@
+<p align="center">
+  <img src="https://raw.githubusercontent.com/108design/moodle-local_bulkinstall/main/docs/branding/logo.svg" alt="Bulk Installer logo" width="443" height="443">
+</p>
+
 # Bulk plugin installation
 
 `local_bulkinstall` adds **Site administration → Plugins → Bulk installation**
