@@ -54,11 +54,6 @@ Click a preview to open the full-size screenshot.
 
 ## Requirements
 
-Bulk Installer is free of charge and requires no account, licence key or activation.
-All its installation features may be used on any number of your own Moodle sites
-under the source-available Software License in `LICENSE.md`.
-This does not make the software open source or grant redistribution rights.
-
 - Moodle 4.5 or newer, declared through Moodle 5.2.
 - Web-based plugin deployment must be enabled. The page is hidden when
   `$CFG->disableupdateautodeploy` is enabled.
@@ -166,4 +161,6 @@ whether validation passed. They do not contain ZIP data.
 
 ## License
 
-This is a 108design source-available commercial software license, not an open-source license. See [LICENSE.md](https://github.com/108design/moodle-local_bulkinstall/blob/main/LICENSE.md) for the full terms.
+**This release is available free of charge under the 108design Software License.**
+
+See [LICENSE.md](https://github.com/108design/moodle-local_bulkinstall/blob/main/LICENSE.md) for the full terms.
