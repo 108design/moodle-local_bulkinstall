@@ -71,6 +71,9 @@ final class signed_staging_test extends \advanced_testcase {
     public function test_signed_journey_requires_manager_for_other_products(): void {
         $this->resetAfterTest();
         $this->setAdminUser();
+        // Explicitly model an uninstalled manager, including in a shared plugin test environment.
+        unset_config('version', 'local_lmh108');
+        \core_plugin_manager::reset_caches(true);
         $manager = new staging_manager();
         $id = $manager->stage([$this->upload(3)]);
         try {

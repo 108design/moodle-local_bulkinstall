@@ -21,6 +21,7 @@ use local_bulkinstall\local\package_inspector;
 final class package_inspector_test extends \advanced_testcase {
     /** Marketplace archives may wrap plugins in safe, versioned repository directories. */
     public function test_versioned_marketplace_roots_are_canonicalised_for_core_validation(): void {
+        global $CFG;
         $directory = make_unique_writable_directory(make_request_directory());
         try {
             $cases = [
@@ -29,7 +30,7 @@ final class package_inspector_test extends \advanced_testcase {
                 ['moodle-tiny_widgethub-1.5.3', 'tiny_widgethub'],
             ];
             foreach ($cases as [$root, $component]) {
-                $path = $this->create_package($directory, $root, [405, 502], $component);
+                $path = $this->create_package($directory, $root, [405, (int)$CFG->branch], $component);
                 $result = (new package_inspector())->inspect($path, $component . '.zip');
 
                 $this->assertSame($component, $result['component']);
@@ -72,11 +73,13 @@ final class package_inspector_test extends \advanced_testcase {
         array $supported,
         string $component = 'local_example'
     ): string {
+        $installed = \core_plugin_manager::instance()->get_plugin_info($component);
+        $build = max(2026090200, (int)($installed->versiondisk ?? 0) + 1, (int)($installed->versiondb ?? 0) + 1);
         [$type, $name] = \core_component::normalize_component($component);
         $path = $directory . '/' . clean_param($component, PARAM_FILE) . '.zip';
         $version = "<?php\n"
             . "\$plugin->component = '{$component}';\n"
-            . "\$plugin->version = 2026090200;\n"
+            . "\$plugin->version = {$build};\n"
             . "\$plugin->requires = 2024100700;\n"
             . "\$plugin->supported = [{$supported[0]}, {$supported[1]}];\n"
             . "\$plugin->maturity = MATURITY_STABLE;\n"

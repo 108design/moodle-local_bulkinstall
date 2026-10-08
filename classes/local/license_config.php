@@ -3,16 +3,18 @@ namespace local_bulkinstall\local;
 
 defined('MOODLE_INTERNAL') || die();
 
+require_once __DIR__ . '/las_deployment.php';
+
 /** Pinned LAS trust anchor and immutable product identity. */
 final class license_config {
-    public const BASE_URL = 'https://l-a-s.108design.com/v1';
-    public const STOREFRONT_LINK_URL = 'https://cms.108design.com/local/storefront/site_link_api.php';
+    public const BASE_URL = \DESIGN108_LAS_BASE_URL;
+    public const STOREFRONT_LINK_URL = \DESIGN108_STOREFRONT_LINK_URL;
     public const FEATURE_CODE = 'bulkinstall.free';
     public const COMPONENT = 'local_bulkinstall';
-    public const ISSUER = 'https://l-a-s.108design.com';
+    public const ISSUER = \DESIGN108_LAS_ISSUER;
     public const AUDIENCE = '108design-moodle-plugin';
-    public const KEY_ID = 'las-development-2026-01';
-    public const PUBLIC_KEY_BASE64 = 'YvqrCEmbfxzmPDsOnrEN4NQNo0JqMOqc4Y/pYaoLr6s=';
+    public const KEY_ID = \DESIGN108_LAS_KEY_ID;
+    public const PUBLIC_KEY_BASE64 = \DESIGN108_LAS_PUBLIC_KEY_BASE64;
     public const CLOCK_SKEW = 300;
 
     /** Ship old and new authorised pins together before rotating the signing key. */

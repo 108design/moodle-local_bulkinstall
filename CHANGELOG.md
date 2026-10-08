@@ -1,5 +1,13 @@
 # Changelog
 
+## 1.3.0 - 2026-10-08
+
+- Declare Moodle 5.3 support after native compatibility checks.
+- Clarify current free availability without promises about future pricing.
+- Preserve server-side deployment boundaries for historical trust configuration; the public installer remains activation-free.
+- Keep synthetic archive-validation fixtures valid on newer Moodle hosts without relaxing installation checks.
+
+
 ## 1.2.21 — 2026-10-05
 
 - Add the product logo above the README title at 125 by 125 pixels.

@@ -54,7 +54,7 @@ Click a preview to open the full-size screenshot.
 
 ## Requirements
 
-- Moodle 4.5 or newer, declared through Moodle 5.2.
+- Moodle 4.5 or newer, declared through Moodle 5.3.
 - Web-based plugin deployment must be enabled. The page is hidden when
   `$CFG->disableupdateautodeploy` is enabled.
 - The web server must be able to write the affected plugin-type directories.
