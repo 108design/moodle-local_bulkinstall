@@ -28,6 +28,10 @@ $analysis = $manager->analyse($storageid);
 echo $OUTPUT->header();
 echo $OUTPUT->heading(get_string('reviewtitle', 'local_bulkinstall'), 2);
 echo html_writer::tag('p', get_string('reviewintro', 'local_bulkinstall'));
+if ($analysis['updates']) {
+    echo $OUTPUT->notification(get_string('signedupdatesnotice', 'local_bulkinstall'),
+        \core\output\notification::NOTIFY_INFO);
+}
 
 if ($analysis['bundle'] !== null) {
     $bundle = $analysis['bundle'];

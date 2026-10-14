@@ -107,7 +107,7 @@ Versions 2 and 3 additionally require `publisher`, `keyid`, and `signature`. Ver
 
 ## Activation fields (version 3)
 
-`activation` coordinates the resumable License Manager wizard. It never proves purchase or grants a licence; the connected Storefront account and LAS remain authoritative.
+`activation` coordinates the resumable Plugin Manager wizard. It never proves purchase or grants a licence; the connected Storefront account and LAS remain authoritative.
 
 | Field | Rule |
 |---|---|

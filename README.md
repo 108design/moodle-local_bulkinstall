@@ -83,6 +83,17 @@ normal `$CFG->dirroot`; no special path configuration is required.
 5. Moodle deploys the code and opens its standard plugin check and database
    upgrade pages.
 
+## Updates from Plugin Manager
+
+A compatible 108design Plugin Manager can download selected signed updates and
+hand them directly to the same package review, without a manual ZIP upload.
+Bulk Installer preserves and rechecks the signed catalogue, package hashes,
+components, builds and installation state before handing the entire batch to
+Moodle. Finish Moodle's subsequent plugin check and database upgrade pages.
+A changed installation or invalid/expired catalogue blocks the prepared batch;
+return to Plugin Manager and prepare a new selection. Ordinary uploads and
+bundle installations do not require Plugin Manager.
+
 ## Bundle ZIP format
 
 The plugin accepts one outer ZIP containing `bundle.json` and the listed ordinary Moodle plugin ZIPs directly at the

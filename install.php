@@ -15,6 +15,9 @@ $cancel = optional_param('cancel', false, PARAM_BOOL);
 admin_externalpage_setup('local_bulkinstall');
 require_capability('moodle/site:config', context_system::instance());
 require_sesskey();
+if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+    throw new invalid_parameter_exception('Installation requires POST');
+}
 
 $manager = new \local_bulkinstall\local\staging_manager();
 if ($cancel) {
@@ -24,6 +27,15 @@ if ($cancel) {
 if (!empty($CFG->disableupdateautodeploy)) {
     throw new moodle_exception('featuredisabled', 'tool_installaddon');
 }
+
+// Serialise BI code deployment across sessions. Moodle owns the subsequent database upgrade lock.
+$installlock = \core\lock\lock_config::get_lock_factory('local_bulkinstall')->get_lock('install_batch', 0);
+if (!$installlock) {
+    throw new moodle_exception('errorinstallbusy', 'local_bulkinstall');
+}
+register_shutdown_function(static function() use ($installlock): void {
+    $installlock->release();
+});
 
 \core_php_time_limit::raise(0);
 $analysis = $manager->analyse($storageid);
@@ -55,6 +67,10 @@ if (is_array($activation)) {
     'other' => [
         'filecount' => count($installables),
         'components' => implode(', ', $components),
+        'source' => $analysis['mode'],
+        'packages' => array_map(static fn(array $package): array => [
+            'component' => $package['component'], 'version' => $package['version'], 'sha256' => $package['sha256'],
+        ], $analysis['packages']),
     ],
 ])->trigger();
 

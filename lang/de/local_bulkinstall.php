@@ -1,4 +1,9 @@
 <?php
+$string['errorupdateproof'] = 'Der signierte Update-Nachweis ist ungültig, abgelaufen, unvollständig oder wird nicht mehr unterstützt. Kehre zum Plugin Manager zurück und bereite eine neue Auswahl vor.';
+$string['errorupdateversion'] = 'Der Paket-Build stimmt nicht mit dem ausgewählten signierten Release überein.';
+$string['errorupdatechanged'] = 'Die Installation wurde seit der Vorbereitung dieser Updates verändert. Bereite eine neue Update-Auswahl vor.';
+$string['errorinstallbusy'] = 'Eine andere Installation im Bulk Installer läuft bereits. Warte, bis sie abgeschlossen ist, und versuche es erneut.';
+$string['signedupdatesnotice'] = 'Diese Pakete wurden aus dem signierten Update-Katalog heruntergeladen. Hashes, Komponenten, Builds und Installationsstand werden vor der Installation erneut geprüft. Bestätige einmal, um den gesamten Paketsatz an Moodle zu übergeben, und schließe danach das Moodle-Upgrade ab.';
 // This file is part of a 108design source-available software product.
 //
 // Copyright (C) 2026 Andreas Giesen <andreas@108design.com>
@@ -29,7 +34,7 @@ $string['bundleformatrequired'] = 'Erforderlich';
 $string['bundleformatrules'] = 'Regeln';
 $string['bundleformatruleformat'] = 'Muss moodle-plugin-bundle entsprechen.';
 $string['bundleformatruleformatversion'] = '1 ist ein unsigniertes Kompatibilitäts-Bundle; 2 und 3 sind signierte 108design-Bundles. Version 3 ergänzt Aktivierungsmetadaten.';
-$string['bundleformatruleactivation'] = 'Nur in der signierten Version 3 erforderlich. Steuert den License-Manager-Wizard und verleiht niemals eine Lizenz.';
+$string['bundleformatruleactivation'] = 'Nur in der signierten Version 3 erforderlich. Steuert den Plugin-Manager-Wizard und verleiht niemals eine Lizenz.';
 $string['bundleformatrulestoreproduct'] = 'Stabile Storefront-Produktkennung zum Finden passender Käufe im verbundenen Konto.';
 $string['bundleformatruleentitlements'] = 'Erwartete kommerzielle oder kostenlose Entitlements und die dadurch abgedeckten Bundle-Komponenten.';
 $string['bundleformatruleid'] = '2–100 ASCII-Kleinzeichen; beginnt mit einem Buchstaben, danach Buchstaben, Ziffern, Unterstrich oder Bindestrich.';
@@ -107,8 +112,8 @@ $string['errorbundleformat'] = 'format muss {$a} entsprechen.';
 $string['errorbundleformatversion'] = 'Unterstützt werden formatversion 1 sowie die signierten formatversionen 2 und 3.';
 $string['errorbundleactivation'] = 'Der signierte Aktivierungsabschnitt ist ungültig.';
 $string['errorbundleactivationcomponent'] = 'Die Aktivierungsmetadaten verweisen auf eine Komponente, die nicht eindeutig im Bundle enthalten ist: {$a}';
-$string['errorbundlelmhmissing'] = 'Dieses Bundle benötigt den 108design License Manager, er ist aber weder installiert noch enthalten.';
-$string['errorbundlelmhversion'] = 'Dieses Bundle benötigt License-Manager-Version {$a->required}; verfügbar ist {$a->available}.';
+$string['errorbundlelmhmissing'] = 'Dieses Bundle benötigt den 108design Plugin Manager, er ist aber weder installiert noch enthalten.';
+$string['errorbundlelmhversion'] = 'Dieses Bundle benötigt Plugin-Manager-Version {$a->required}; verfügbar ist {$a->available}.';
 $string['continuebundleactivation'] = 'Bundle-Aktivierung fortsetzen';
 $string['errorbundleid'] = 'id muss ^[a-z][a-z0-9_-]{1,99}$ entsprechen.';
 $string['errorbundletextproperty'] = 'Das Textfeld {$a} ist ungültig oder zu lang.';
@@ -153,7 +158,7 @@ $string['privacy:metadata'] = 'Das Plugin Bulk-Installation speichert keine pers
 $string['licenseactivation'] = 'Lizenzen';
 $string['licenseproductname'] = '108design Bulk-Installation';
 $string['licensestatusactive'] = 'Die kostenlose Lizenz ist für diese Moodle-Installation aktiviert.';
-$string['licensestatushub'] = 'Die kostenlose Lizenz ist aktiviert und wird vom 108design License Manager verwaltet.';
+$string['licensestatushub'] = 'Die kostenlose Lizenz ist aktiviert und wird vom 108design Plugin Manager verwaltet.';
 $string['licensestatusactivatedshort'] = 'Aktiviert';
 $string['licensestatusnotactivatedshort'] = 'Nicht aktiviert';
 $string['licenseproduct'] = 'Produkt';
@@ -161,13 +166,13 @@ $string['licensedetails'] = 'Aktivierungsdetails';
 $string['licensesite'] = 'Lizenzierte Moodle-URL';
 $string['licenseenvironment'] = 'Umgebung';
 $string['licenseauthority'] = 'Verwaltet durch';
-$string['licenseauthorityhub'] = '108design License Manager';
+$string['licenseauthorityhub'] = '108design Plugin Manager';
 $string['licenseauthorityplugin'] = 'Dieses Plugin';
-$string['licensehandoverpending'] = 'Die Lizenz wurde bereits in den 108design License Manager übertragen. Aktiviere jetzt dessen kostenlose Lizenz, damit die zentrale Verwaltung wirksam wird.';
-$string['openlicensemanager'] = 'License Manager öffnen';
-$string['managewithlicensemanager'] = 'Im License Manager verwalten';
+$string['licensehandoverpending'] = 'Die Lizenz wurde bereits in den 108design Plugin Manager übertragen. Aktiviere jetzt dessen kostenlose Lizenz, damit die zentrale Verwaltung wirksam wird.';
+$string['openlicensemanager'] = 'Plugin Manager öffnen';
+$string['managewithlicensemanager'] = 'Im Plugin Manager verwalten';
 $string['completehandover'] = 'Zentrale Lizenzverwaltung abschließen';
-$string['activateinlicensemanager'] = 'Kostenlose Lizenz im License Manager aktivieren';
+$string['activateinlicensemanager'] = 'Kostenlose Lizenz im Plugin Manager aktivieren';
 $string['managelicense'] = 'Lizenz verwalten';
 $string['licensestatusinactive'] = 'Die kostenlose Lizenz muss vor der Verwendung aktiviert werden.';
 $string['licenserequired'] = 'Bitte aktivieren Sie zuerst die kostenlose Lizenz.';

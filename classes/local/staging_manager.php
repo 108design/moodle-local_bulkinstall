@@ -19,6 +19,8 @@ use core\plugin_manager;
  * @license    See LICENSE.md for the full terms.
  */
 class staging_manager {
+    /** Optional Plugin Manager handover contract; ordinary uploads have no Manager dependency. */
+    public const UPDATE_API_VERSION = 1;
     /** Maximum packages per batch. */
     public const MAX_PACKAGES = 50;
 
@@ -116,6 +118,14 @@ class staging_manager {
         $inspector = new package_inspector();
         $packages = [];
         $totaluncompressed = 0;
+        $prooferrors = [];
+        if (isset($record['updateproof'])) {
+            try {
+                $this->verify_update_proof($record['updateproof'], $record['files']);
+            } catch (\Throwable $exception) {
+                $prooferrors[] = get_string('errorupdateproof', 'local_bulkinstall');
+            }
+        }
 
         foreach ($record['files'] as $file) {
             $path = $directory . DIRECTORY_SEPARATOR . $file['storedname'];
@@ -134,6 +144,12 @@ class staging_manager {
                     'actual' => $package['component'],
                 ]));
             }
+            if (isset($file['expectedversion']) && $package['version'] !== $file['expectedversion']) {
+                $this->add_error($package, get_string('errorupdateversion', 'local_bulkinstall'));
+            }
+            if (isset($record['updateproof']) && $package['action'] !== 'update') {
+                $this->add_error($package, get_string('errorupdatechanged', 'local_bulkinstall'));
+            }
             if ($overridecompatibility && !empty($package['compatibilityerrors'])) {
                 $package['errors'] = array_values(array_diff(
                     $package['errors'],
@@ -144,7 +160,7 @@ class staging_manager {
             $packages[] = $package;
         }
 
-        $batcherrors = [];
+        $batcherrors = $prooferrors;
         if ($totaluncompressed > self::MAX_BATCH_UNCOMPRESSED_BYTES) {
             $batcherrors[] = get_string(
                 'errorbatchuncompressedlimit',
@@ -252,6 +268,7 @@ class staging_manager {
         return [
             'mode' => $record['mode'] ?? 'packages',
             'bundle' => $record['bundle'] ?? null,
+            'updates' => isset($record['updateproof']),
             'packages' => $packages,
             'batcherrors' => $batcherrors,
             'totaluncompressed' => $totaluncompressed,
@@ -297,7 +314,96 @@ class staging_manager {
         if (!is_array($record) || empty($record['files']) || !is_dir($this->directory($storageid))) {
             throw new \moodle_exception('errorstorageexpired', 'local_bulkinstall');
         }
+        if (time() - (int)$record['created'] >= self::MAX_AGE) {
+            $this->cleanup($storageid);
+            throw new \moodle_exception('errorstorageexpired', 'local_bulkinstall');
+        }
         return $record;
+    }
+
+    /**
+     * Receive downloaded ordinary ZIPs and retain their signed catalogue provenance.
+     * This does not create a bundle, activate products, deploy code or write application tables.
+     */
+    public function stage_verified_updates(array $files, string $cataloguejson, string $fingerprint): string {
+        global $SESSION;
+        require_capability('moodle/site:config', \context_system::instance());
+        if (!$files || count($files) > self::MAX_PACKAGES) {
+            throw new \moodle_exception('errorupdateproof', 'local_bulkinstall');
+        }
+        $entries = [];
+        foreach ($files as $index => $file) {
+            if (!is_string($file['component'] ?? null) || !is_int($file['version'] ?? null)
+                    || !is_string($file['path'] ?? null) || !is_file($file['path']) || is_link($file['path'])) {
+                throw new \moodle_exception('errorupdateproof', 'local_bulkinstall');
+            }
+            $entries[] = ['storedname' => sprintf('update-%03d.zip', $index + 1),
+                'filename' => $file['component'] . '-' . $file['version'] . '.zip',
+                'expectedcomponent' => $file['component'], 'expectedversion' => $file['version'],
+                'sourcepath' => $file['path']];
+        }
+        $proof = ['catalogue' => $cataloguejson, 'fingerprint' => $fingerprint];
+        $releases = $this->verify_update_proof($proof, $entries);
+        $storageid = bin2hex(random_bytes(16));
+        $directory = $this->directory($storageid);
+        if (!make_writable_directory($directory, false)) {
+            throw new \moodle_exception('errorcreatestaging', 'local_bulkinstall');
+        }
+        try {
+            foreach ($entries as &$entry) {
+                $path = $directory . '/' . $entry['storedname'];
+                if (!copy($entry['sourcepath'], $path)) {
+                    throw new \moodle_exception('errorcopystagedfile', 'local_bulkinstall', '', $entry['filename']);
+                }
+                unset($entry['sourcepath']);
+                $entry['sha256'] = $releases[$entry['expectedcomponent']]['sha256'];
+                if (!hash_equals($entry['sha256'], (string)hash_file('sha256', $path))) {
+                    throw new \moodle_exception('errorupdateproof', 'local_bulkinstall');
+                }
+                $entry['bytes'] = (int)filesize($path);
+            }
+            unset($entry);
+            $SESSION->{self::SESSION_KEY}[$storageid] = ['created' => time(), 'mode' => 'updates',
+                'bundle' => null, 'updateproof' => $proof, 'files' => $entries];
+            return $storageid;
+        } catch (\Throwable $exception) {
+            remove_dir($directory);
+            throw $exception;
+        }
+    }
+
+    /** The optional Manager is required only for catalogue-based staging, never for uploads/bundles. */
+    private function verify_update_proof(array $proof, array $files): array {
+        global $CFG;
+        if (!class_exists('\\local_lmh108\\local\\update_catalogue')
+                || !class_exists('\\local_lmh108\\local\\update_plan')) {
+            throw new \moodle_exception('errorupdateproof', 'local_bulkinstall');
+        }
+        $catalogue = \local_lmh108\local\update_catalogue::verify($proof['catalogue'], time(),
+            (int)get_config('local_lmh108', 'updatepublished'));
+        $snapshot = \local_lmh108\local\update_plan::snapshot();
+        if (!hash_equals($proof['fingerprint'], \local_lmh108\local\update_plan::fingerprint($snapshot))) {
+            throw new \moodle_exception('errorupdatechanged', 'local_bulkinstall');
+        }
+        $selection = [];
+        foreach ($files as $file) {
+            if (isset($selection[$file['expectedcomponent']])) {
+                throw new \moodle_exception('errorupdateproof', 'local_bulkinstall');
+            }
+            $selection[$file['expectedcomponent']] = $file['expectedversion'];
+        }
+        $plan = \local_lmh108\local\update_plan::resolve($catalogue['releases'],
+            \local_lmh108\local\update_plan::installed($snapshot), $selection, (int)$CFG->version,
+            (int)$CFG->branch, PHP_VERSION, (bool)get_config('local_lmh108', 'updatebeta'));
+        if (count($plan) !== count($files)) {
+            throw new \moodle_exception('errorupdateproof', 'local_bulkinstall');
+        }
+        foreach ($files as $file) {
+            if (isset($file['sha256']) && !hash_equals($plan[$file['expectedcomponent']]['sha256'], $file['sha256'])) {
+                throw new \moodle_exception('errorupdateproof', 'local_bulkinstall');
+            }
+        }
+        return $plan;
     }
 
     /**
@@ -306,6 +412,10 @@ class staging_manager {
      * @param string $storageid
      */
     public function cleanup(string $storageid): void {
+        global $SESSION;
+        if (!isset($SESSION->{self::SESSION_KEY}[$storageid])) {
+            throw new \moodle_exception('errorstorageexpired', 'local_bulkinstall');
+        }
         $this->cleanup_directory($storageid);
         $this->forget($storageid);
     }
