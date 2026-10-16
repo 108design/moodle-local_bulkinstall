@@ -203,3 +203,12 @@ $string['errorbundlesignature'] = 'The prepared bundle signature is invalid. The
 $string['warningbundlepublisherfilename'] = 'The signed 108design bundle “{$a}” is valid, but its filename does not follow the bundle_ convention. This does not block installation; keep an original name such as bundle_course_tools-1.0.0.zip where possible.';
 $string['licensepolicydegradation'] = 'New package checks and installations are blocked. Previously staged data is preserved until normal expiry; the activation interface remains accessible.';
 $string['licensepolicydeactivation'] = 'Bulk installation stops completely. Saved settings and staged data remain stored; activation and recovery remain accessible.';
+
+// Contextual administration help.
+$string['adminhelp'] = 'Administration help';
+$string['adminhelpmore'] = 'More in the help panel';
+$string['adminhelptopics'] = 'Help Topics';
+$string['adminhelp_overview'] = 'Preparing plugin packages';
+$string['adminhelp_overview_article'] = '<p>Upload the plugin package or supported bundle, then review its components, versions and prerequisites.</p><p>Reviewing does not install anything. Before confirming installation, create a suitable backup of Moodle and its database. Check existing plugin versions and local customisations.</p>';
+$string['adminhelp_bundles'] = 'Bundles and licenses';
+$string['adminhelp_bundles_article'] = '<p>A bundle can contain several related plugins. Review the complete selection and required dependencies before continuing.</p><p>Successful installation does not automatically activate paid features. Manage applicable activations afterwards in <strong>108design Plugin Manager</strong> or on the product\'s license page.</p>';

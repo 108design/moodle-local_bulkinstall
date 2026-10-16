@@ -203,3 +203,12 @@ $string['errorbundlesignature'] = 'Die Signatur des vorbereiteten Bundles ist un
 $string['warningbundlepublisherfilename'] = 'Das signierte 108design-Bundle „{$a}“ ist gültig, sein Dateiname entspricht aber nicht der bundle_-Konvention. Die Installation wird dadurch nicht blockiert; behalten Sie möglichst einen ursprünglichen Namen wie bundle_kurswerkzeuge-1.0.0.zip bei.';
 $string['licensepolicydegradation'] = 'Neue Paketprüfungen und Installationen sind gesperrt. Bereits bereitgestellte Daten bleiben bis zum normalen Ablauf erhalten; die Aktivierungsoberfläche bleibt erreichbar.';
 $string['licensepolicydeactivation'] = 'Bulk Installation funktioniert vollständig nicht mehr. Gespeicherte Einstellungen und bereitgestellte Daten bleiben erhalten; Aktivierung und Wiederherstellung bleiben erreichbar.';
+
+// Contextual administration help.
+$string['adminhelp'] = 'Hilfe zur Verwaltung';
+$string['adminhelpmore'] = 'Mehr dazu im Hilfepanel';
+$string['adminhelptopics'] = 'Hilfethemen';
+$string['adminhelp_overview'] = 'Plugin-Pakete vorbereiten';
+$string['adminhelp_overview_article'] = '<p>Lade das gewünschte Plugin-Paket oder ein unterstütztes Bundle hoch und prüfe danach die enthaltenen Komponenten, Versionen und Voraussetzungen.</p><p>Die Prüfung allein installiert noch nichts. Erstelle vor dem Bestätigen eine geeignete Sicherung der Moodle-Installation und ihrer Datenbank. Behalte eigene Anpassungen und vorhandene Plugin-Versionen im Blick.</p>';
+$string['adminhelp_bundles'] = 'Bundles und Lizenzen';
+$string['adminhelp_bundles_article'] = '<p>Ein Bundle kann mehrere zusammengehörige Plugins enthalten. Prüfe die gesamte Auswahl und benötigte Abhängigkeiten, bevor Du fortfährst.</p><p>Eine erfolgreiche Installation aktiviert kostenpflichtige Funktionen nicht automatisch. Verwalte passende Aktivierungen anschließend im <strong>108design Plugin Manager</strong> oder auf der Lizenzseite des jeweiligen Produkts.</p>';
