@@ -39,7 +39,8 @@ register_shutdown_function(static function() use ($installlock): void {
 
 \core_php_time_limit::raise(0);
 $analysis = $manager->analyse($storageid);
-if (!$analysis['caninstall']) {
+if (!$analysis['caninstall'] || !hash_equals($manager->review_token($analysis),
+        optional_param('reviewtoken', '', PARAM_ALPHANUM))) {
     redirect(
         new moodle_url('/local/bulkinstall/review.php', ['storage' => $storageid]),
         get_string('batchchanged', 'local_bulkinstall'),
@@ -50,7 +51,7 @@ if (!$analysis['caninstall']) {
 
 $installables = $manager->installables($analysis);
 $components = array_column($analysis['packages'], 'component');
-$activation = $analysis['bundle']['activation'] ?? null;
+$activation = $analysis['activation'];
 if (is_array($activation)) {
     // Persist only signed, validated coordination metadata. No ticket, key or account data is stored in a bundle.
     set_config('pendingjourney', json_encode([
@@ -68,6 +69,7 @@ if (is_array($activation)) {
         'filecount' => count($installables),
         'components' => implode(', ', $components),
         'source' => $analysis['mode'],
+        'excluded' => array_column($analysis['excluded'], 'filename'),
         'packages' => array_map(static fn(array $package): array => [
             'component' => $package['component'], 'version' => $package['version'], 'sha256' => $package['sha256'],
         ], $analysis['packages']),

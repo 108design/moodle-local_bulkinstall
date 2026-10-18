@@ -48,12 +48,16 @@ class package_inspector {
             'supported' => null,
             'dependencies' => [],
             'installedversion' => null,
+            'installedrelease' => '',
+            'displayname' => '',
+            'targetpath' => '',
             'action' => 'unknown',
             'uncompressedbytes' => 0,
             'errors' => [],
             'compatibilityerrors' => [],
             'warnings' => [],
             'messages' => [],
+            'diagnostics' => [],
         ];
 
         if (!is_file($path) || !is_readable($path)) {
@@ -174,7 +178,8 @@ class package_inspector {
             return $result;
         }
         if ($metadata['requires'] !== null && $metadata['requires'] > (int)$CFG->version) {
-            $this->error($result, get_string('errorrequiresmoodle', 'local_bulkinstall', $metadata['requires']));
+            $this->error($result, get_string('errorrequiresmoodle', 'local_bulkinstall', $metadata['requires']),
+                'requires', ['build' => $metadata['requires']]);
         }
         if ($metadata['supported'] !== null) {
             $branch = (int)$CFG->branch;
@@ -192,14 +197,17 @@ class package_inspector {
 
         $pluginmanager = plugin_manager::instance();
         $plugininfo = $pluginmanager->get_plugin_info($metadata['component']);
+        $result['targetpath'] = $types[$type] . '/' . $name;
+        $result['installedrelease'] = review_presentation::installed_release($plugininfo);
+        $result['displayname'] = $plugininfo === null ? '' : $plugininfo->displayname;
         if ($plugininfo !== null && $plugininfo->versiondb !== null) {
             $result['installedversion'] = (int)$plugininfo->versiondb;
             if ($metadata['version'] < $result['installedversion']) {
                 $result['action'] = 'downgrade';
-                $this->error($result, get_string('errordowngrade', 'local_bulkinstall', $result['installedversion']));
+                $this->error($result, get_string('errordowngrade', 'local_bulkinstall', $result['installedversion']), 'downgrade');
             } else if ($metadata['version'] === $result['installedversion']) {
                 $result['action'] = 'reinstall';
-                $this->warning($result, get_string('warningsameversion', 'local_bulkinstall'));
+                $this->warning($result, get_string('warningsameversion', 'local_bulkinstall'), 'sameversion');
             } else {
                 $result['action'] = 'update';
             }
@@ -249,7 +257,7 @@ class package_inspector {
                 } else if (is_string($message->addinfo) && $message->addinfo !== '') {
                     $text .= ': ' . $message->addinfo;
                 }
-                $result['messages'][] = ['level' => $message->level, 'text' => $text];
+                $result['messages'][] = ['level' => $message->level, 'code' => $message->msgcode, 'text' => $text];
                 if ($message->level === validator::WARNING) {
                     $this->warning($result, $text);
                 }
@@ -286,24 +294,30 @@ class package_inspector {
     }
 
     /** Add a unique error. */
-    private function error(array &$result, string $message): void {
+    private function error(array &$result, string $message, string $code = '', array $data = []): void {
         if (!in_array($message, $result['errors'], true)) {
             $result['errors'][] = $message;
+        }
+        if ($code !== '') {
+            $result['diagnostics'][] = ['message' => $message, 'code' => $code, 'data' => $data];
         }
     }
 
     /** Add a declared support-range error that the private service edition may explicitly override. */
     private function compatibility_error(array &$result, string $message): void {
-        $this->error($result, $message);
+        $this->error($result, $message, 'supported', ['minimum' => $result['supported'][0], 'maximum' => $result['supported'][1]]);
         if (!in_array($message, $result['compatibilityerrors'], true)) {
             $result['compatibilityerrors'][] = $message;
         }
     }
 
     /** Add a unique warning. */
-    private function warning(array &$result, string $message): void {
+    private function warning(array &$result, string $message, string $code = ''): void {
         if (!in_array($message, $result['warnings'], true)) {
             $result['warnings'][] = $message;
+        }
+        if ($code !== '') {
+            $result['diagnostics'][] = ['message' => $message, 'code' => $code];
         }
     }
 }

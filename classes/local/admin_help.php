@@ -6,7 +6,7 @@ defined('MOODLE_INTERNAL') || die();
 
 /** Contextual settings help, following the standalone Frontpage panel contract. */
 final class admin_help {
-    private const TOPICS = ['overview', 'bundles'];
+    private const TOPICS = ['overview', 'bundles', 'review'];
     private static bool $prepared = false;
 
     /** Register only the permitted settings page before its header is rendered. */

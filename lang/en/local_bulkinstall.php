@@ -55,7 +55,7 @@ $string['bundlename'] = 'Bundle name';
 $string['bundleversion'] = 'Bundle version';
 $string['bundledescription'] = 'Description';
 $string['reviewtitle'] = 'Review plugin batch';
-$string['reviewintro'] = 'Review every detected component and validation result. Any error blocks the entire batch.';
+$string['reviewintro'] = 'Review the planned changes and results before handing the batch to Moodle.';
 $string['filename'] = 'File';
 $string['component'] = 'Component';
 $string['installedversion'] = 'Installed version';
@@ -74,7 +74,7 @@ $string['actionunknown'] = 'Unknown';
 $string['reviewsummary'] = '{$a->count} package(s), {$a->size} uncompressed in total.';
 $string['sequentialwarning'] = 'Moodle validates all packages first, but deploys their code directories sequentially. Filesystem deployment and subsequent database upgrades are not one atomic transaction.';
 $string['confirmationtext'] = 'I have reviewed the listed components and want Moodle to deploy all packages in this batch.';
-$string['installbatch'] = 'Install or update all packages';
+$string['installbatch'] = 'Hand Packages to Moodle';
 $string['discardbatch'] = 'Discard batch';
 $string['batchblocked'] = 'This batch cannot be installed. Correct the errors and upload the packages again.';
 $string['batchchanged'] = 'The staged batch no longer passes validation. Review it again.';
@@ -212,3 +212,152 @@ $string['adminhelp_overview'] = 'Preparing plugin packages';
 $string['adminhelp_overview_article'] = '<p>Upload the plugin package or supported bundle, then review its components, versions and prerequisites.</p><p>Reviewing does not install anything. Before confirming installation, create a suitable backup of Moodle and its database. Check existing plugin versions and local customisations.</p>';
 $string['adminhelp_bundles'] = 'Bundles and licenses';
 $string['adminhelp_bundles_article'] = '<p>A bundle can contain several related plugins. Review the complete selection and required dependencies before continuing.</p><p>Successful installation does not automatically activate paid features. Manage applicable activations afterwards in <strong>108design Plugin Manager</strong> or on the product\'s license page.</p>';
+
+$string['reviewnotinstalled'] = 'Not installed';
+
+$string['reviewbuild'] = 'Moodle build';
+
+$string['reviewreasonrequires'] = 'This package requires Moodle build {$a->build} or newer.';
+
+$string['reviewreasondowngrade'] = 'The package is older than the installed build. Select a newer package.';
+
+$string['reviewreasonsameversion'] = 'The same build is installed. Its plugin code will be replaced.';
+
+$string['reviewreasonsupported'] = 'This package declares support for Moodle branches {$a->minimum}–{$a->maximum}. Select a package for this Moodle version.';
+
+$string['reviewreasontargetexists'] = 'The destination directory already exists.';
+
+$string['reviewreasonmaturity'] = 'The package is marked as a development release. Review its maturity in the details.';
+
+$string['reviewnomessages'] = 'No errors or warnings in this package check.';
+
+$string['reviewanyversion'] = 'Any version';
+
+$string['reviewerror'] = 'Error';
+
+$string['reviewwarning'] = 'Warning';
+
+$string['reviewinfo'] = 'Information';
+
+$string['reviewstateerror'] = 'Blocked';
+
+$string['reviewstatewarning'] = 'Review warnings';
+
+$string['reviewstateready'] = 'Checked · ready';
+
+$string['reviewmessagecounts'] = '{$a->errors} errors · {$a->warnings} warnings';
+
+$string['reviewfilterall'] = 'All';
+
+$string['reviewfiltererror'] = 'Blocked';
+
+$string['reviewfilterwarning'] = 'Warnings Only';
+
+$string['reviewfilterready'] = 'Ready';
+
+$string['reviewgroupready'] = 'The batch is ready for handover';
+
+$string['reviewgroupblocked'] = 'This batch is blocked';
+
+$string['reviewgroupreadybody'] = 'There are no blocking errors. Confirm once to hand over the entire batch.';
+
+$string['reviewgroupblockedbody'] = '{$a} packages have errors. Correct the errors or select suitable packages before handing over the batch.';
+
+$string['reviewwarningpackages'] = 'Packages with warnings and no errors: {$a}.';
+
+$string['reviewsource'] = 'Source';
+
+$string['reviewsourceupdates'] = '108design Plugin Manager';
+
+$string['reviewsourcesbundle'] = 'Bundle ZIP';
+
+$string['reviewsourceupload'] = 'ZIP upload';
+
+$string['reviewstepmanager'] = 'Selected in Plugin Manager';
+
+$string['reviewstepselected'] = 'Packages selected';
+
+$string['reviewstepcheck'] = 'Review batch';
+
+$string['reviewstepmoodle'] = 'Moodle installation';
+
+$string['reviewsteps'] = 'Installation progress';
+
+$string['reviewbatchmeta'] = '{$a->count} packages · {$a->size} uncompressed · Moodle {$a->moodle}';
+
+$string['reviewfilters'] = 'Filter validation results';
+
+$string['reviewidentity'] = 'Plugin · planned action';
+
+$string['reviewinstalled'] = 'Installed';
+
+$string['reviewtarget'] = 'In package';
+
+$string['reviewresult'] = 'Validation result';
+
+$string['reviewpackages'] = 'Detected plugins';
+
+$string['reviewdetails'] = 'Details';
+
+$string['reviewto'] = 'to';
+
+$string['reviewfilecomponent'] = 'File and component';
+
+$string['reviewcompatibility'] = 'Compatibility and destination';
+
+$string['reviewrequires'] = 'Minimum Moodle build';
+
+$string['reviewsupported'] = 'Supported Moodle branches';
+
+$string['reviewtargetpath'] = 'Destination directory';
+
+$string['reviewdependency'] = 'Required dependency';
+
+$string['revieworiginals'] = 'Validation details and original messages';
+
+$string['reviewcorechecked'] = 'Handover to Moodle.';
+
+$string['reviewhandoff'] = 'After confirmation, Moodle validates the packages, deploys the plugin files sequentially and leads you through the normal upgrade process.';
+
+$string['reviewbackup'] = 'Back up the site files and database before installation. If installation is interrupted after “Hand Packages to Moodle”, some plugins may already have been updated. “Cancel” only discards the prepared batch here.';
+
+$string['review'] = 'Reviewing the batch';
+
+$string['review_help'] = 'Compare the installed release with the package. Red results block the entire batch; open Details for complete messages and prerequisites.';
+
+$string['adminhelp_review'] = 'Reviewing versions and results';
+
+$string['adminhelp_review_article'] = '<p><strong>Installed</strong> and <strong>In package</strong> show the readable release above its numeric Moodle build. If a reliable release is unavailable, the build is shown by itself. Moodle compares builds to determine an update, replacement or downgrade.</p><p>Filters change only the visible rows. Red errors block the entire batch. Warnings remain visible and need review; replacing the same build overwrites its code. <strong>Details</strong> contains the original messages, dependencies, destination and SHA-256.</p><p>Packages received from <strong>108design Plugin Manager</strong> retain the selected signed release. Catalogue validity, package hashes, components, builds and the installed state are checked again before deployment.</p><p><strong>Hand Packages to Moodle</strong> confirms the entire group. Moodle performs package validation, deploys directories sequentially and continues to its normal dependency and database upgrade checks. Back up site files and the database first: this is not one atomic transaction.</p>';
+
+$string['reviewgroupbatchblockedbody'] = 'The batch failed its combined check. Resolve the following issues before continuing.';
+
+$string['reviewerrorcount'] = 'Errors: {$a}';
+
+$string['reviewwarningcount'] = 'Warnings: {$a}';
+
+$string['selectionempty'] = 'No packages remain in this selection.';
+
+$string['selectionchanged'] = 'The selection or its check results have changed. Review the batch again.';
+
+$string['selectionpreview'] = 'Review Reduced Selection';
+
+$string['selectionpreviewintro'] = 'These packages will be excluded. This also includes packages whose required dependencies would no longer be available. Review the remaining selection below.';
+
+$string['selectionpartial'] = 'Reduced selection: {$a} package(s) excluded.';
+
+$string['selectionexcluded'] = 'Excluded Packages';
+
+$string['selectionbundlemanual'] = 'This installs only part of the bundle. Set up licences separately in the installed plugins or the Plugin Manager.';
+
+$string['selectionbundleactivation'] = 'This installs only part of the bundle. The subsequent setup includes only products whose components are all in this selection.';
+
+$string['selectionconfirm'] = 'Use Reduced Selection';
+
+$string['selectionunavailable'] = 'No installable selection remains. Return to the batch and review its errors.';
+
+$string['selectionexclude'] = 'Exclude Blocking Packages';
+
+$string['selectionpreviewready'] = 'The remaining selection has been checked';
+$string['selectionpreviewreadybody'] = 'Use the reduced selection. You can then hand the packages to Moodle.';
+
+$string['adminhelp_review_article'] .= '<p><strong>Exclude Blocking Packages</strong> previews a reduced selection, including any additional packages that would lose a required dependency. <strong>Use Reduced Selection</strong> confirms this change; review the remaining packages before handing them to Moodle. Excluded files remain listed until the batch is discarded or installed. For a partial bundle, setup includes only complete products and requires a suitable Plugin Manager. Otherwise, set up licences separately.</p>';

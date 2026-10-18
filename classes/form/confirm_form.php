@@ -26,7 +26,8 @@ class confirm_form extends \moodleform {
         $mform = $this->_form;
         $mform->addElement('hidden', 'storage', $this->_customdata['storage']);
         $mform->setType('storage', PARAM_ALPHANUM);
-        $mform->addElement('static', 'confirmation', '', get_string('confirmationtext', 'local_bulkinstall'));
+        $mform->addElement('hidden', 'reviewtoken', $this->_customdata['reviewtoken']);
+        $mform->setType('reviewtoken', PARAM_ALPHANUM);
         $this->add_action_buttons(true, get_string('installbatch', 'local_bulkinstall'));
     }
 }

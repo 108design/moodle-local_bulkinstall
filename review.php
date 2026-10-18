@@ -23,20 +23,82 @@ $PAGE->set_title(get_string('reviewtitle', 'local_bulkinstall'));
 $PAGE->set_heading(get_string('pagetitle', 'local_bulkinstall'));
 
 $manager = new \local_bulkinstall\local\staging_manager();
+$selectionaction = optional_param('selectionaction', '', PARAM_ALPHA);
+$plan = null;
+if ($selectionaction !== '') {
+    require_sesskey();
+    if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+        throw new invalid_parameter_exception('Selection changes require POST');
+    }
+    if ($selectionaction === 'apply') {
+        try {
+            $manager->exclude_blocked($storageid, required_param('selectiontoken', PARAM_ALPHANUM));
+            redirect($PAGE->url);
+        } catch (moodle_exception $exception) {
+            if ($exception->errorcode !== 'selectionchanged') {
+                throw $exception;
+            }
+            redirect($PAGE->url, get_string('selectionchanged', 'local_bulkinstall'), null,
+                \core\output\notification::NOTIFY_ERROR);
+        }
+    } else if ($selectionaction === 'preview') {
+        $plan = $manager->exclusion_plan($storageid);
+    } else {
+        throw new invalid_parameter_exception('Unknown selection action');
+    }
+}
 $analysis = $manager->analyse($storageid);
+if ($plan !== null) {
+    $analysis = $plan['analysis'];
+}
+$PAGE->requires->css(new moodle_url('/local/bulkinstall/styles/review.css', [
+    'rev' => get_config('local_bulkinstall', 'version'),
+]));
+$PAGE->requires->js_call_amd('local_bulkinstall/review', 'init');
 
 echo $OUTPUT->header();
+echo html_writer::start_div('local-bulkinstall-review');
 echo $OUTPUT->heading(get_string('reviewtitle', 'local_bulkinstall'), 2);
-echo html_writer::tag('p', get_string('reviewintro', 'local_bulkinstall'));
-if ($analysis['updates']) {
-    echo $OUTPUT->notification(get_string('signedupdatesnotice', 'local_bulkinstall'),
-        \core\output\notification::NOTIFY_INFO);
+echo html_writer::tag('p', get_string('reviewintro', 'local_bulkinstall')
+    . ' ' . \local_bulkinstall\local\admin_help::icon('review'), ['class' => 'text-muted mb-4']);
+
+if ($plan !== null) {
+    echo html_writer::start_tag('section', [
+        'class' => 'bi-selection-preview', 'aria-labelledby' => 'bi-selection-preview-heading',
+    ]);
+    echo html_writer::tag('h3', get_string('selectionpreview', 'local_bulkinstall'),
+        ['id' => 'bi-selection-preview-heading']);
+    echo html_writer::tag('p', get_string('selectionpreviewintro', 'local_bulkinstall'));
+    echo html_writer::start_tag('ul', ['class' => 'mb-4']);
+    foreach ($plan['removed'] as $package) {
+        echo html_writer::tag('li', html_writer::tag('strong', s($package['filename']))
+            . html_writer::alist(array_map('s', $package['errors'])));
+    }
+    echo html_writer::end_tag('ul');
+}
+if ($analysis['partial']) {
+    echo html_writer::tag('p', get_string('selectionpartial', 'local_bulkinstall', count($analysis['excluded'])),
+        ['class' => 'font-weight-bold']);
+    if ($plan === null) {
+        echo html_writer::start_tag('details', ['class' => 'mb-4']);
+        echo html_writer::tag('summary', get_string('selectionexcluded', 'local_bulkinstall'));
+        echo html_writer::alist(array_map(static fn(array $file): string => s($file['filename']), $analysis['excluded']));
+        echo html_writer::end_tag('details');
+    }
+    if (is_array($analysis['bundle']['activation'] ?? null)) {
+        echo html_writer::tag('p', get_string($analysis['activation'] === null ? 'selectionbundlemanual'
+            : 'selectionbundleactivation', 'local_bulkinstall'), ['class' => 'text-muted mb-4']);
+    }
+}
+
+if ($plan !== null) {
+    echo html_writer::end_tag('section');
 }
 
 if ($analysis['bundle'] !== null) {
     $bundle = $analysis['bundle'];
     $bundletable = new html_table();
-    $bundletable->attributes['class'] = 'generaltable local-bulkinstall-bundle';
+    $bundletable->attributes['class'] = 'generaltable local-bulkinstall-bundle mb-4';
     $bundletable->data = [
         [get_string('bundlearchive', 'local_bulkinstall'), s($bundle['archivefilename'])],
         [get_string('bundleid', 'local_bulkinstall'), s($bundle['id'])],
@@ -59,68 +121,51 @@ if ($analysis['bundle'] !== null) {
     }
 }
 
-foreach ($analysis['batcherrors'] as $batcherror) {
-    echo $OUTPUT->notification($batcherror, \core\output\notification::NOTIFY_ERROR);
+$presentation = \local_bulkinstall\local\review_presentation::export($analysis);
+if ($plan !== null && $plan['canapply']) {
+    $presentation['headline'] = get_string('selectionpreviewready', 'local_bulkinstall');
+    $presentation['groupmessage'] = get_string('selectionpreviewreadybody', 'local_bulkinstall');
 }
+echo $OUTPUT->render_from_template('local_bulkinstall/review', $presentation);
 
-$table = new html_table();
-$table->attributes['class'] = 'generaltable local-bulkinstall-review';
-$table->head = [
-    get_string('filename', 'local_bulkinstall'),
-    get_string('component', 'local_bulkinstall'),
-    get_string('installedversion', 'local_bulkinstall'),
-    get_string('packageversion', 'local_bulkinstall'),
-    get_string('release', 'local_bulkinstall'),
-    get_string('action', 'local_bulkinstall'),
-    get_string('validation', 'local_bulkinstall'),
-];
-
-foreach ($analysis['packages'] as $package) {
-    $details = [];
-    foreach ($package['errors'] as $message) {
-        $details[] = html_writer::span(get_string('errorprefix', 'local_bulkinstall', s($message)), 'text-danger');
+if ($plan !== null) {
+    echo html_writer::start_div('bi-blocked-actions mb-4');
+    if ($plan['canapply']) {
+        echo $OUTPUT->single_button(new moodle_url('/local/bulkinstall/review.php', [
+            'storage' => $storageid, 'selectionaction' => 'apply', 'selectiontoken' => $plan['token'],
+            'sesskey' => sesskey(),
+        ]), get_string('selectionconfirm', 'local_bulkinstall'), 'post');
+    } else {
+        echo html_writer::tag('p', get_string('selectionunavailable', 'local_bulkinstall'));
     }
-    foreach ($package['warnings'] as $message) {
-        $details[] = html_writer::span(get_string('warningprefix', 'local_bulkinstall', s($message)), 'text-warning');
-    }
-    if (empty($details)) {
-        $details[] = html_writer::span(get_string('validationok', 'local_bulkinstall'), 'text-success');
-    }
-    $table->data[] = [
-        s($package['filename']),
-        $package['component'] ? s($package['component']) : '—',
-        $package['installedversion'] !== null ? (string)$package['installedversion'] : '—',
-        $package['version'] !== null ? (string)$package['version'] : '—',
-        $package['release'] !== null ? s($package['release']) : '—',
-        get_string('action' . $package['action'], 'local_bulkinstall'),
-        html_writer::alist($details),
-    ];
-}
-echo html_writer::table($table);
-
-$summary = (object)[
-    'count' => count($analysis['packages']),
-    'size' => display_size($analysis['totaluncompressed']),
-];
-echo html_writer::tag('p', get_string('reviewsummary', 'local_bulkinstall', $summary));
-
-if ($analysis['caninstall']) {
-    echo $OUTPUT->notification(get_string('sequentialwarning', 'local_bulkinstall'),
-        \core\output\notification::NOTIFY_WARNING);
+    echo $OUTPUT->single_button(new moodle_url('/local/bulkinstall/install.php', [
+        'storage' => $storageid, 'cancel' => 1, 'sesskey' => sesskey(),
+    ]), get_string('cancel'), 'post');
+    echo html_writer::end_div();
+} else if ($analysis['caninstall']) {
     $confirmform = new \local_bulkinstall\form\confirm_form(
         new moodle_url('/local/bulkinstall/install.php'),
-        ['storage' => $storageid]
+        ['storage' => $storageid, 'reviewtoken' => $manager->review_token($analysis)]
     );
     $confirmform->display();
 } else {
-    echo $OUTPUT->notification(get_string('batchblocked', 'local_bulkinstall'),
-        \core\output\notification::NOTIFY_ERROR);
+    echo html_writer::start_div('bi-blocked-actions');
+    echo html_writer::tag('button', get_string('installbatch', 'local_bulkinstall'),
+        ['type' => 'button', 'class' => 'btn btn-primary', 'disabled' => 'disabled']);
+    if (empty($analysis['batcherrors']) && array_filter($analysis['packages'],
+            static fn(array $package): bool => !empty($package['errors']))) {
+        echo $OUTPUT->single_button(new moodle_url('/local/bulkinstall/review.php', [
+            'storage' => $storageid, 'selectionaction' => 'preview', 'sesskey' => sesskey(),
+        ]), get_string('selectionexclude', 'local_bulkinstall'), 'post');
+    }
     $discardurl = new moodle_url('/local/bulkinstall/install.php', [
         'storage' => $storageid,
         'cancel' => 1,
         'sesskey' => sesskey(),
     ]);
-    echo $OUTPUT->single_button($discardurl, get_string('discardbatch', 'local_bulkinstall'), 'post');
+    echo $OUTPUT->single_button($discardurl, get_string('cancel'), 'post');
+    echo html_writer::end_div();
 }
 
+echo html_writer::end_div();
 echo $OUTPUT->footer();

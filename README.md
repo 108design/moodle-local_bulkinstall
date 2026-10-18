@@ -79,17 +79,24 @@ normal `$CFG->dirroot`; no special path configuration is required.
 2. Select **Check packages**.
 3. Review component, installed version, package version, intended action,
    warnings, and errors for every package.
-4. If the whole batch passes, confirm **Install or update all packages** once.
-5. Moodle deploys the code and opens its standard plugin check and database
+4. If packages are blocked, select **Exclude Blocking Packages** to review a
+   reduced selection. Packages that would lose a required dependency are also
+   excluded. Confirm **Use Reduced Selection**, then review the remaining batch.
+5. When the batch passes, confirm **Hand Packages to Moodle** once.
+6. Moodle deploys the code and opens its standard plugin check and database
    upgrade pages.
+
+**Cancel** discards the prepared batch. Once packages have been handed to Moodle,
+interrupting installation can leave some plugins updated and others unchanged.
 
 ## Updates from Plugin Manager
 
 A compatible 108design Plugin Manager can download selected signed updates and
 hand them directly to the same package review, without a manual ZIP upload.
 Bulk Installer preserves and rechecks the signed catalogue, package hashes,
-components, builds and installation state before handing the entire batch to
-Moodle. Finish Moodle's subsequent plugin check and database upgrade pages.
+components, builds and installation state before handing the confirmed selection
+to Moodle. Excluding blocked packages rechecks the remaining dependencies and
+signed update selection. Finish Moodle's subsequent plugin check and database upgrade pages.
 A changed installation or invalid/expired catalogue blocks the prepared batch;
 return to Plugin Manager and prepare a new selection. Ordinary uploads and
 bundle installations do not require Plugin Manager.
@@ -104,6 +111,10 @@ post-install activation journey is declared. Signed formats use the lower-case f
 `bundle_<name>-<version>.zip`; format 1 may use the same convention but is not required to do so. Format 3 contains
 only non-secret product, minimum-version and entitlement/component metadata; it never contains a licence key, token,
 ticket or proof of ownership.
+
+For a reduced bundle selection, subsequent setup covers only products whose
+required components remain complete. If a suitable Plugin Manager is unavailable,
+set up licenses separately in the installed plugins or Plugin Manager.
 
 The exact specification is available to administrators from the upload page
 and is included in [`docs/bundle-format.md`](docs/bundle-format.md). The

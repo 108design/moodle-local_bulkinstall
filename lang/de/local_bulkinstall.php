@@ -55,7 +55,7 @@ $string['bundlename'] = 'Bundle-Name';
 $string['bundleversion'] = 'Bundle-Version';
 $string['bundledescription'] = 'Beschreibung';
 $string['reviewtitle'] = 'Plugin-Gruppe prüfen';
-$string['reviewintro'] = 'Prüfen Sie alle erkannten Komponenten und Ergebnisse. Jeder Fehler blockiert die gesamte Gruppe.';
+$string['reviewintro'] = 'Prüfe die geplanten Änderungen und Ergebnisse, bevor Du die Gruppe an Moodle übergibst.';
 $string['filename'] = 'Datei';
 $string['component'] = 'Komponente';
 $string['installedversion'] = 'Installierte Version';
@@ -74,7 +74,7 @@ $string['actionunknown'] = 'Unbekannt';
 $string['reviewsummary'] = '{$a->count} Paket(e), insgesamt {$a->size} entpackt.';
 $string['sequentialwarning'] = 'Moodle prüft zunächst alle Pakete, verteilt ihre Code-Verzeichnisse anschließend jedoch nacheinander. Dateiverteilung und folgende Datenbank-Upgrades bilden keine gemeinsame atomare Transaktion.';
 $string['confirmationtext'] = 'Ich habe die aufgeführten Komponenten geprüft und möchte alle Pakete dieser Gruppe durch Moodle verteilen lassen.';
-$string['installbatch'] = 'Alle Pakete installieren oder aktualisieren';
+$string['installbatch'] = 'Pakete an Moodle übergeben';
 $string['discardbatch'] = 'Gruppe verwerfen';
 $string['batchblocked'] = 'Diese Gruppe kann nicht installiert werden. Korrigieren Sie die Fehler und laden Sie die Pakete erneut hoch.';
 $string['batchchanged'] = 'Die zwischengespeicherte Gruppe besteht die Prüfung nicht mehr. Bitte prüfen Sie sie erneut.';
@@ -212,3 +212,152 @@ $string['adminhelp_overview'] = 'Plugin-Pakete vorbereiten';
 $string['adminhelp_overview_article'] = '<p>Lade das gewünschte Plugin-Paket oder ein unterstütztes Bundle hoch und prüfe danach die enthaltenen Komponenten, Versionen und Voraussetzungen.</p><p>Die Prüfung allein installiert noch nichts. Erstelle vor dem Bestätigen eine geeignete Sicherung der Moodle-Installation und ihrer Datenbank. Behalte eigene Anpassungen und vorhandene Plugin-Versionen im Blick.</p>';
 $string['adminhelp_bundles'] = 'Bundles und Lizenzen';
 $string['adminhelp_bundles_article'] = '<p>Ein Bundle kann mehrere zusammengehörige Plugins enthalten. Prüfe die gesamte Auswahl und benötigte Abhängigkeiten, bevor Du fortfährst.</p><p>Eine erfolgreiche Installation aktiviert kostenpflichtige Funktionen nicht automatisch. Verwalte passende Aktivierungen anschließend im <strong>108design Plugin Manager</strong> oder auf der Lizenzseite des jeweiligen Produkts.</p>';
+
+$string['reviewnotinstalled'] = 'Nicht installiert';
+
+$string['reviewbuild'] = 'Moodle-Build';
+
+$string['reviewreasonrequires'] = 'Dieses Paket benötigt Moodle-Build {$a->build} oder neuer.';
+
+$string['reviewreasondowngrade'] = 'Das Paket ist älter als der installierte Build. Wähle ein neueres Paket.';
+
+$string['reviewreasonsameversion'] = 'Der gleiche Build ist installiert. Der vorhandene Plugin-Code wird ersetzt.';
+
+$string['reviewreasonsupported'] = 'Dieses Paket unterstützt laut Metadaten die Moodle-Zweige {$a->minimum}–{$a->maximum}. Wähle ein Paket für diese Moodle-Version.';
+
+$string['reviewreasontargetexists'] = 'Das Zielverzeichnis ist bereits vorhanden.';
+
+$string['reviewreasonmaturity'] = 'Das Paket ist als Entwicklungsstand gekennzeichnet. Prüfe die Reifeangabe in den Details.';
+
+$string['reviewnomessages'] = 'Keine Fehler oder Hinweise in dieser Paketprüfung.';
+
+$string['reviewanyversion'] = 'Beliebige Version';
+
+$string['reviewerror'] = 'Fehler';
+
+$string['reviewwarning'] = 'Hinweis';
+
+$string['reviewinfo'] = 'Information';
+
+$string['reviewstateerror'] = 'Blockiert';
+
+$string['reviewstatewarning'] = 'Hinweise prüfen';
+
+$string['reviewstateready'] = 'Geprüft · bereit';
+
+$string['reviewmessagecounts'] = '{$a->errors} Fehler · {$a->warnings} Hinweise';
+
+$string['reviewfilterall'] = 'Alle';
+
+$string['reviewfiltererror'] = 'Blockiert';
+
+$string['reviewfilterwarning'] = 'Nur Hinweise';
+
+$string['reviewfilterready'] = 'Bereit';
+
+$string['reviewgroupready'] = 'Die Gruppe ist zur Übergabe bereit';
+
+$string['reviewgroupblocked'] = 'Diese Gruppe ist blockiert';
+
+$string['reviewgroupreadybody'] = 'Es gibt keine blockierenden Fehler. Bestätige einmal für die gesamte Gruppe.';
+
+$string['reviewgroupblockedbody'] = '{$a} Pakete haben Fehler. Behebe die Fehler oder wähle passende Pakete aus, bevor Du die Gruppe übergibst.';
+
+$string['reviewwarningpackages'] = 'Pakete mit Hinweisen ohne Fehler: {$a}.';
+
+$string['reviewsource'] = 'Quelle';
+
+$string['reviewsourceupdates'] = '108design Plugin Manager';
+
+$string['reviewsourcesbundle'] = 'Bundle-ZIP';
+
+$string['reviewsourceupload'] = 'ZIP-Upload';
+
+$string['reviewstepmanager'] = 'Im Plugin Manager ausgewählt';
+
+$string['reviewstepselected'] = 'Pakete ausgewählt';
+
+$string['reviewstepcheck'] = 'Gruppe prüfen';
+
+$string['reviewstepmoodle'] = 'Moodle-Installation';
+
+$string['reviewsteps'] = 'Installationsfortschritt';
+
+$string['reviewbatchmeta'] = '{$a->count} Pakete · {$a->size} entpackt · Moodle {$a->moodle}';
+
+$string['reviewfilters'] = 'Prüfergebnisse filtern';
+
+$string['reviewidentity'] = 'Plugin · geplante Aktion';
+
+$string['reviewinstalled'] = 'Installiert';
+
+$string['reviewtarget'] = 'Im Paket';
+
+$string['reviewresult'] = 'Prüfergebnis';
+
+$string['reviewpackages'] = 'Erkannte Plugins';
+
+$string['reviewdetails'] = 'Details';
+
+$string['reviewto'] = 'zu';
+
+$string['reviewfilecomponent'] = 'Datei und Komponente';
+
+$string['reviewcompatibility'] = 'Kompatibilität und Ziel';
+
+$string['reviewrequires'] = 'Moodle-Mindestbuild';
+
+$string['reviewsupported'] = 'Unterstützte Moodle-Zweige';
+
+$string['reviewtargetpath'] = 'Zielverzeichnis';
+
+$string['reviewdependency'] = 'Benötigte Abhängigkeit';
+
+$string['revieworiginals'] = 'Prüfdetails und Originalmeldungen';
+
+$string['reviewcorechecked'] = 'Übergabe an Moodle.';
+
+$string['reviewhandoff'] = 'Nach Deiner Bestätigung prüft Moodle die Pakete, spielt die Plugin-Dateien nacheinander ein und führt Dich durch den normalen Upgrade-Ablauf.';
+
+$string['reviewbackup'] = 'Sichere Dateien und Datenbank vor dem Einspielen. Wird die Installation nach „Pakete an Moodle übergeben“ unterbrochen, können einzelne Plugins bereits aktualisiert sein. „Abbrechen“ verwirft hier nur die vorbereitete Gruppe.';
+
+$string['review'] = 'Gruppe prüfen';
+
+$string['review_help'] = 'Vergleiche die installierte Version mit dem Paket. Rote Ergebnisse blockieren die gesamte Gruppe; unter Details findest Du vollständige Meldungen und Voraussetzungen.';
+
+$string['adminhelp_review'] = 'Versionen und Ergebnisse prüfen';
+
+$string['adminhelp_review_article'] = '<p><strong>Installiert</strong> und <strong>Im Paket</strong> zeigen die lesbare Version über ihrem numerischen Moodle-Build. Fehlt eine verlässliche Versionsangabe, erscheint allein der Build. Moodle entscheidet anhand der Builds über Update, Ersetzen oder Downgrade.</p><p>Die Filter ändern nur die sichtbaren Zeilen. Rote Fehler sperren die gesamte Gruppe. Hinweise müssen geprüft werden; das Ersetzen desselben Builds überschreibt dessen Code. <strong>Details</strong> enthält Originalmeldungen, Abhängigkeiten, Ziel und SHA-256.</p><p>Pakete aus dem <strong>108design Plugin Manager</strong> behalten die ausgewählte signierte Zielversion. Kataloggültigkeit, Paket-Hashes, Komponenten, Builds und Installationsstand werden vor dem Einspielen erneut geprüft.</p><p><strong>Pakete an Moodle übergeben</strong> bestätigt die gesamte Gruppe. Moodle prüft die Pakete, spielt Verzeichnisse nacheinander ein und setzt mit seinen normalen Abhängigkeits- und Datenbankprüfungen fort. Sichere vorher Dateien und Datenbank: Dies ist keine gemeinsame atomare Transaktion.</p>';
+
+$string['reviewgroupbatchblockedbody'] = 'Die gemeinsame Prüfung der Gruppe ist fehlgeschlagen. Behebe die folgenden Probleme, bevor Du fortfährst.';
+
+$string['reviewerrorcount'] = 'Fehler: {$a}';
+
+$string['reviewwarningcount'] = 'Hinweise: {$a}';
+
+$string['selectionempty'] = 'In dieser Auswahl bleiben keine Pakete übrig.';
+
+$string['selectionchanged'] = 'Die Auswahl oder ihre Prüfergebnisse haben sich geändert. Prüfe die Gruppe erneut.';
+
+$string['selectionpreview'] = 'Reduzierte Auswahl prüfen';
+
+$string['selectionpreviewintro'] = 'Diese Pakete werden ausgeschlossen. Dazu gehören auch Pakete, deren benötigte Abhängigkeiten danach fehlen würden. Prüfe darunter die verbleibende Auswahl.';
+
+$string['selectionpartial'] = 'Reduzierte Auswahl: {$a} Paket(e) ausgeschlossen.';
+
+$string['selectionexcluded'] = 'Ausgeschlossene Pakete';
+
+$string['selectionbundlemanual'] = 'Damit installierst Du einen Teil des Bundles. Richte Lizenzen anschließend in den installierten Plugins oder im Plugin Manager ein.';
+
+$string['selectionbundleactivation'] = 'Damit installierst Du einen Teil des Bundles. Die anschließende Einrichtung enthält nur Produkte, deren Komponenten vollständig in dieser Auswahl sind.';
+
+$string['selectionconfirm'] = 'Reduzierte Auswahl übernehmen';
+
+$string['selectionunavailable'] = 'Es bleibt keine installierbare Auswahl übrig. Kehre zur Gruppe zurück und prüfe die Fehler.';
+
+$string['selectionexclude'] = 'Blockierende Pakete ausschließen';
+
+$string['selectionpreviewready'] = 'Die verbleibende Auswahl ist geprüft';
+$string['selectionpreviewreadybody'] = 'Übernimm die reduzierte Auswahl. Anschließend kannst Du die Pakete an Moodle übergeben.';
+
+$string['adminhelp_review_article'] .= '<p><strong>Blockierende Pakete ausschließen</strong> zeigt eine reduzierte Auswahl als Vorschau, einschließlich weiterer Pakete mit dann fehlenden Abhängigkeiten. <strong>Reduzierte Auswahl übernehmen</strong> bestätigt die Änderung; prüfe die verbleibenden Pakete vor der Übergabe an Moodle. Ausgeschlossene Dateien bleiben bis zum Verwerfen oder Einspielen aufgelistet. Bei einem Teil-Bundle enthält die Einrichtung nur vollständige Produkte und benötigt einen passenden Plugin Manager. Andernfalls richtest Du Lizenzen separat ein.</p>';

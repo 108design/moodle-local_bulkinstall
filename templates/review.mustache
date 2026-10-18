@@ -1,0 +1,61 @@
+{{!
+    @template local_bulkinstall/review
+    Copyright (C) 2026 Andreas Giesen. See LICENSE.md.
+    Package review data from review_presentation::export; no installation action in this template.
+}}
+<div class="bi-source">{{#str}}reviewsource, local_bulkinstall{{/str}}: <strong>{{source}}</strong></div>
+<ol class="bi-steps" aria-label="{{#str}}reviewsteps, local_bulkinstall{{/str}}">
+    <li class="bi-done"><span class="bi-marker" aria-hidden="true">✓</span>{{firststep}}</li>
+    <li aria-current="step"><span class="bi-marker" aria-hidden="true">2</span>{{#str}}reviewstepcheck, local_bulkinstall{{/str}}</li>
+    <li><span class="bi-marker" aria-hidden="true">3</span>{{#str}}reviewstepmoodle, local_bulkinstall{{/str}}</li>
+</ol>
+<div class="bi-group {{#blocked}}bi-group-blocked{{/blocked}}" role="status">
+    <span class="bi-status-icon" aria-hidden="true">{{#blocked}}×{{/blocked}}{{#caninstall}}✓{{/caninstall}}</span>
+    <div><strong>{{headline}}</strong><p>{{groupmessage}}</p>
+        {{#haswarnings}}<p>{{warningcount}}</p>{{/haswarnings}}
+        {{#batcherrors}}<p class="bi-original">{{text}}</p>{{/batcherrors}}
+    </div>
+</div>
+<div class="bi-toolbar">
+    <div class="bi-filters btn-group" role="group" aria-label="{{#str}}reviewfilters, local_bulkinstall{{/str}}" hidden>
+        {{#filters}}<button type="button" class="btn btn-outline-secondary btn-sm{{#active}} active{{/active}}" data-bi-filter="{{state}}" aria-pressed="{{#active}}true{{/active}}{{^active}}false{{/active}}">{{label}} <span>{{count}}</span></button>{{/filters}}
+    </div>
+    <p class="bi-meta">{{meta}}</p>
+</div>
+<div class="bi-listhead" aria-hidden="true">
+    <span>{{#str}}reviewidentity, local_bulkinstall{{/str}}</span>
+    <div class="bi-version-labels"><span>{{#str}}reviewinstalled, local_bulkinstall{{/str}}</span><span></span><span>{{#str}}reviewtarget, local_bulkinstall{{/str}}</span></div>
+    <span>{{#str}}reviewresult, local_bulkinstall{{/str}}</span><span></span>
+</div>
+<section class="bi-packages" aria-label="{{#str}}reviewpackages, local_bulkinstall{{/str}}">
+{{#rows}}
+    <article class="bi-row bi-{{state}}" data-bi-state="{{state}}">
+        <div class="bi-rowhead">
+            <div class="bi-identity"><h3>{{name}}</h3><div class="bi-action"><span aria-hidden="true">{{actionicon}}</span> {{action}}</div></div>
+            <div class="bi-versions">
+                {{#installed}}<div class="bi-version"><span class="bi-mobile-label">{{#str}}reviewinstalled, local_bulkinstall{{/str}}</span><strong class="{{#fallback}}bi-build-only{{/fallback}}">{{label}}</strong>{{#build}}<small>{{build}}</small>{{/build}}{{#note}}<small>{{note}}</small>{{/note}}</div>{{/installed}}
+                <span class="bi-arrow" aria-label="{{#str}}reviewto, local_bulkinstall{{/str}}">→</span>
+                {{#target}}<div class="bi-version"><span class="bi-mobile-label">{{#str}}reviewtarget, local_bulkinstall{{/str}}</span><strong class="{{#fallback}}bi-build-only{{/fallback}}">{{label}}</strong>{{#build}}<small>{{build}}</small>{{/build}}{{#note}}<small>{{note}}</small>{{/note}}</div>{{/target}}
+            </div>
+            <div class="bi-result"><strong><span class="bi-status-icon" aria-hidden="true">{{symbol}}</span>{{status}}</strong><p>{{summary}}</p>{{#counttext}}<small>{{counttext}}</small>{{/counttext}}</div>
+            <a class="bi-details-link" href="#{{id}}" data-bi-open="{{id}}" aria-label="{{#str}}reviewdetails, local_bulkinstall{{/str}}: {{component}}"><span class="bi-chevron" aria-hidden="true"></span></a>
+        </div>
+        <details id="{{id}}" class="bi-details">
+            <summary>{{#str}}reviewdetails, local_bulkinstall{{/str}}: {{component}}</summary>
+            <div class="bi-detail-grid">
+                <div><h4>{{#str}}reviewfilecomponent, local_bulkinstall{{/str}}</h4><p><code>{{filename}}</code><br><code>{{component}}</code></p>
+                    <h4>{{#str}}reviewcompatibility, local_bulkinstall{{/str}}</h4>
+                    <dl>{{#requires}}<dt>{{#str}}reviewrequires, local_bulkinstall{{/str}}</dt><dd>{{requires}}</dd>{{/requires}}
+                    {{#supported}}<dt>{{#str}}reviewsupported, local_bulkinstall{{/str}}</dt><dd>{{supported}}</dd>{{/supported}}
+                    <dt>{{#str}}release, local_bulkinstall{{/str}}</dt><dd>{{packagerelease}}</dd>
+                    {{#targetpath}}<dt>{{#str}}reviewtargetpath, local_bulkinstall{{/str}}</dt><dd><code>{{targetpath}}</code></dd>{{/targetpath}}</dl>
+                    {{#sha256}}<h4>SHA-256</h4><p><code>{{sha256}}</code></p>{{/sha256}}
+                    {{#dependencies}}<p><strong>{{#str}}reviewdependency, local_bulkinstall{{/str}}</strong>: <code>{{component}}</code> ≥ {{required}}</p>{{/dependencies}}
+                </div>
+                <div><h4>{{#str}}revieworiginals, local_bulkinstall{{/str}}</h4><ul>{{#messages}}<li class="bi-message-{{tone}}"><strong>{{prefix}}:</strong> {{text}}</li>{{/messages}}{{^messages}}<li>{{#str}}reviewnomessages, local_bulkinstall{{/str}}</li>{{/messages}}</ul></div>
+            </div>
+        </details>
+    </article>
+{{/rows}}
+</section>
+<div class="bi-footer"><p><strong>{{#str}}reviewcorechecked, local_bulkinstall{{/str}}</strong> {{#str}}reviewhandoff, local_bulkinstall{{/str}}</p><p class="bi-safety">{{#str}}reviewbackup, local_bulkinstall{{/str}}</p></div>

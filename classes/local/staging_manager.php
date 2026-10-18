@@ -33,6 +33,9 @@ class staging_manager {
     /** Session property used for ownership and integrity metadata. */
     private const SESSION_KEY = 'local_bulkinstall_staging';
 
+    /** Raw inspections reused only while computing one exclusion preview, never across confirmations. */
+    private ?array $previewinspections = null;
+
     /**
      * Copy draft files to a request-independent staging directory.
      *
@@ -110,32 +113,55 @@ class staging_manager {
      *
      * @param string $storageid
      * @param bool $overridecompatibility Ignore only declared supported-range errors; private service use only
+     * @param array|null $selection Internal preview subset of this session's original staged file identifiers
      * @return array
      */
-    public function analyse(string $storageid, bool $overridecompatibility = false): array {
+    public function analyse(string $storageid, bool $overridecompatibility = false, ?array $selection = null): array {
         $record = $this->get_record($storageid);
+        $selection = $selection ?? $record['selection'] ?? array_column($record['files'], 'storedname');
+        if (array_diff($selection, array_column($record['files'], 'storedname'))
+                || count(array_unique($selection)) !== count($selection)) {
+            throw new \invalid_parameter_exception('Unknown staged selection');
+        }
+        $selectedfiles = array_values(array_filter($record['files'],
+            static fn(array $file): bool => in_array($file['storedname'], $selection, true)));
         $directory = $this->directory($storageid);
         $inspector = new package_inspector();
         $packages = [];
         $totaluncompressed = 0;
         $prooferrors = [];
+        $verifiedreleases = [];
         if (isset($record['updateproof'])) {
             try {
-                $this->verify_update_proof($record['updateproof'], $record['files']);
+                $verifiedreleases = $this->verify_update_proof($record['updateproof'], $record['files']);
             } catch (\Throwable $exception) {
                 $prooferrors[] = get_string('errorupdateproof', 'local_bulkinstall');
             }
         }
 
-        foreach ($record['files'] as $file) {
+        foreach ($selectedfiles as $file) {
             $path = $directory . DIRECTORY_SEPARATOR . $file['storedname'];
-            $package = $inspector->inspect($path, $file['filename']);
+            if ($this->previewinspections !== null) {
+                $this->previewinspections[$path] ??= $inspector->inspect($path, $file['filename']);
+                $package = $this->previewinspections[$path];
+            } else {
+                $package = $inspector->inspect($path, $file['filename']);
+            }
             if (!is_file($path) || !hash_equals($file['sha256'], (string)hash_file('sha256', $path))) {
                 $package['errors'][] = get_string('errorintegritychanged', 'local_bulkinstall');
             }
             $package['storedname'] = $file['storedname'];
             $package['sha256'] = $file['sha256'];
             $package['expectedcomponent'] = $file['expectedcomponent'] ?? null;
+            // Only a freshly verified catalogue can supply the selected display label.
+            if (isset($verifiedreleases[$package['component'] ?? ''])
+                    && $verifiedreleases[$package['component']]['version'] === $package['version']) {
+                $package['selectedrelease'] = $verifiedreleases[$package['component']]['label'];
+                // A reduced handover must satisfy both the ZIP and the signed catalogue dependencies.
+                foreach ($verifiedreleases[$package['component']]['dependencies'] as $component => $minimum) {
+                    $package['dependencies'][$component] = max($minimum, $package['dependencies'][$component] ?? 0);
+                }
+            }
             if ($package['expectedcomponent'] !== null && $package['component'] !== null &&
                     $package['component'] !== $package['expectedcomponent']) {
                 $this->add_error($package, get_string('errorbundlecomponentmismatch', 'local_bulkinstall', (object)[
@@ -161,6 +187,9 @@ class staging_manager {
         }
 
         $batcherrors = $prooferrors;
+        if (!$selectedfiles) {
+            $batcherrors[] = get_string('selectionempty', 'local_bulkinstall');
+        }
         if ($totaluncompressed > self::MAX_BATCH_UNCOMPRESSED_BYTES) {
             $batcherrors[] = get_string(
                 'errorbatchuncompressedlimit',
@@ -178,6 +207,15 @@ class staging_manager {
 
         $pluginmanager = plugin_manager::instance();
         $activation = $record['bundle']['activation'] ?? null;
+        $partial = count($selectedfiles) !== count($record['files']);
+        if ($partial && is_array($activation)) {
+            // Keep the original signed manifest intact. Derive only the effective coordination hints.
+            $activation['entitlements'] = array_values(array_filter($activation['entitlements'],
+                static fn(array $entitlement): bool => !array_diff($entitlement['components'], array_keys($bycomponent))));
+            if (!$activation['entitlements']) {
+                $activation = null;
+            }
+        }
         if (is_array($activation) && !empty($activation['licencemanager']['required'])) {
             $required = (int) ($activation['licencemanager']['minimumversion'] ?? 0);
             $available = null;
@@ -189,7 +227,10 @@ class staging_manager {
                     $available = (int) $info->versiondb;
                 }
             }
-            if ($available === null) {
+            if ($partial && ($available === null || $available < $required)) {
+                // A partial code-only installation must not queue an unusable activation journey.
+                $activation = null;
+            } else if ($available === null) {
                 $batcherrors[] = get_string('errorbundlelmhmissing', 'local_bulkinstall');
             } else if ($available < $required) {
                 $batcherrors[] = get_string('errorbundlelmhversion', 'local_bulkinstall', (object) [
@@ -265,6 +306,16 @@ class staging_manager {
             }
         }
 
+        // Re-resolve the exact reduced signed selection: no implicit re-addition of excluded updates.
+        if ($caninstall && isset($record['updateproof']) && $partial) {
+            try {
+                $this->verify_update_proof($record['updateproof'], $selectedfiles);
+            } catch (\Throwable $exception) {
+                $batcherrors[] = get_string('errorupdateproof', 'local_bulkinstall');
+                $caninstall = false;
+            }
+        }
+
         return [
             'mode' => $record['mode'] ?? 'packages',
             'bundle' => $record['bundle'] ?? null,
@@ -274,7 +325,68 @@ class staging_manager {
             'totaluncompressed' => $totaluncompressed,
             'caninstall' => $caninstall,
             'canoverridecompatibility' => $canoverridecompatibility,
+            'activation' => $activation,
+            'partial' => $partial,
+            'excluded' => array_values(array_filter($record['files'],
+                static fn(array $file): bool => !in_array($file['storedname'], $selection, true))),
+            'selection' => array_column($selectedfiles, 'storedname'),
+            'revision' => (int)($record['revision'] ?? 0),
         ];
+    }
+
+    /** Bind a confirmation to the actual reviewed selection and its consequential check results. */
+    public function review_token(array $analysis): string {
+        $packages = array_map(static fn(array $package): array => array_intersect_key($package, array_flip([
+            'storedname', 'sha256', 'component', 'version', 'installedversion', 'action', 'dependencies', 'errors', 'warnings',
+        ])), $analysis['packages']);
+        return hash('sha256', json_encode([$analysis['revision'], $analysis['selection'], $packages,
+            $analysis['batcherrors'], $analysis['activation']], JSON_THROW_ON_ERROR));
+    }
+
+    /** Preview a fixed point: removing blockers can expose further missing/too-old dependencies. */
+    public function exclusion_plan(string $storageid): array {
+        $this->previewinspections = [];
+        try {
+            return $this->compute_exclusion_plan($storageid);
+        } finally {
+            $this->previewinspections = null;
+        }
+    }
+
+    /** Resolve dependencies repeatedly without extracting the same ZIP again in this preview. */
+    private function compute_exclusion_plan(string $storageid): array {
+        $before = $this->analyse($storageid);
+        $analysis = $before;
+        $removed = [];
+        while (empty($analysis['batcherrors'])) {
+            $blocked = array_values(array_filter($analysis['packages'], static fn(array $package): bool =>
+                !empty($package['errors'])));
+            if (!$blocked) {
+                break;
+            }
+            foreach ($blocked as $package) {
+                $removed[] = $package;
+            }
+            $selection = array_values(array_diff($analysis['selection'], array_column($blocked, 'storedname')));
+            $analysis = $this->analyse($storageid, false, $selection);
+        }
+        $token = hash('sha256', $this->review_token($before) . $this->review_token($analysis)
+            . json_encode(array_column($removed, 'errors'), JSON_THROW_ON_ERROR));
+        return ['analysis' => $analysis, 'removed' => $removed, 'token' => $token,
+            'canapply' => !empty($removed) && $analysis['caninstall']];
+    }
+
+    /** Apply only a freshly recomputed, explicitly confirmed plan owned by this session. */
+    public function exclude_blocked(string $storageid, string $token): void {
+        global $SESSION;
+        $plan = $this->exclusion_plan($storageid);
+        if (!$plan['canapply'] || !hash_equals($plan['token'], $token)) {
+            throw new \moodle_exception('selectionchanged', 'local_bulkinstall');
+        }
+        $record = $this->get_record($storageid);
+        $record['selection'] = $plan['analysis']['selection'];
+        $record['revision'] = (int)($record['revision'] ?? 0) + 1;
+        $SESSION->{self::SESSION_KEY}[$storageid] = $record;
     }
 
     /**
