@@ -2,70 +2,105 @@
   <img src="https://raw.githubusercontent.com/108design/moodle-local_bulkinstall/main/docs/branding/logo.svg" alt="Bulk Installer logo" width="125" height="125">
 </p>
 
-# Bulk plugin installation
+# Bulk Installer
 
+Install, update and uninstall multiple Moodle plugins in guided batches.
 `local_bulkinstall` adds **Site administration → Plugins → Bulk installation**
-directly below Moodle's standard plugin installer. It accepts multiple ordinary
-Moodle plugin ZIP packages or one manifest-based bundle ZIP, validates all
-contained packages as one batch, and hands successful batches to Moodle's
-normal code deployment and database upgrade flow.
+directly below Moodle's standard plugin installer.
+
+- **Bulk installation and updates:** upload ordinary plugin ZIPs or a manifest-based
+  bundle, review all packages together and hand the confirmed batch to Moodle's
+  normal deployment and database upgrade process.
+- **Bulk uninstallation:** filter additional plugins, review dependencies,
+  subplugins and usage, then explicitly confirm removal through Moodle's native
+  uninstall process. Core plugins and Bulk Installer are protected.
+
+Both workflows offer a checked preview for excluding blockers and continuing with
+a reduced selection. Review the full batch and keep a complete backup ready;
+uninstallation can permanently remove plugin data and has no automatic undo.
 
 ## Screenshots
 
 <details>
-<summary>View screenshots (10)</summary>
+<summary>View screenshots (15)</summary>
 
-Click a preview to open the full-size screenshot.
+Current English views with fictional demonstration plugins. Click a preview for the full-size screenshot.
 
 <table>
 <tr>
 <td align="center" width="50%" valign="middle">
-<a href="https://raw.githubusercontent.com/108design/moodle-local_bulkinstall/main/docs/screenshots/bulk-installer-placement.jpg"><img src="https://raw.githubusercontent.com/108design/moodle-local_bulkinstall/main/docs/screenshots/bulk-installer-placement.jpg" width="300" height="113" alt="Open Bulk installation in site administration"></a><br>
-<sub>Open Bulk installation in site administration</sub>
+<a href="https://raw.githubusercontent.com/108design/moodle-local_bulkinstall/main/docs/screenshots/bulk-installer-01-navigation.jpg"><img src="https://raw.githubusercontent.com/108design/moodle-local_bulkinstall/main/docs/screenshots/bulk-installer-01-navigation.jpg" width="300" height="73" alt="Find Bulk Installer in site administration"></a><br>
+<sub>Find Bulk Installer in site administration</sub>
 </td>
 <td align="center" width="50%" valign="middle">
-<a href="https://raw.githubusercontent.com/108design/moodle-local_bulkinstall/main/docs/screenshots/bulk-installer-multiple-files.jpg"><img src="https://raw.githubusercontent.com/108design/moodle-local_bulkinstall/main/docs/screenshots/bulk-installer-multiple-files.jpg" width="293" height="160" alt="Upload multiple plugin packages"></a><br>
-<sub>Upload multiple plugin packages</sub>
+<a href="https://raw.githubusercontent.com/108design/moodle-local_bulkinstall/main/docs/screenshots/bulk-installer-02-upload-packages.jpg"><img src="https://raw.githubusercontent.com/108design/moodle-local_bulkinstall/main/docs/screenshots/bulk-installer-02-upload-packages.jpg" width="242" height="160" alt="Upload several plugin ZIP packages"></a><br>
+<sub>Upload several plugin ZIP packages</sub>
 </td>
 </tr>
 <tr>
 <td align="center" width="50%" valign="middle">
-<a href="https://raw.githubusercontent.com/108design/moodle-local_bulkinstall/main/docs/screenshots/bulk-installer-bundle-info.jpg"><img src="https://raw.githubusercontent.com/108design/moodle-local_bulkinstall/main/docs/screenshots/bulk-installer-bundle-info.jpg" width="276" height="160" alt="Read the bundle ZIP specification"></a><br>
+<a href="https://raw.githubusercontent.com/108design/moodle-local_bulkinstall/main/docs/screenshots/bulk-installer-03-bundle-review.jpg"><img src="https://raw.githubusercontent.com/108design/moodle-local_bulkinstall/main/docs/screenshots/bulk-installer-03-bundle-review.jpg" width="162" height="160" alt="Review a bundle with new plugins and updates"></a><br>
+<sub>Review a bundle with new plugins and updates</sub>
+</td>
+<td align="center" width="50%" valign="middle">
+<a href="https://raw.githubusercontent.com/108design/moodle-local_bulkinstall/main/docs/screenshots/bulk-installer-04-blocked-package-filter.jpg"><img src="https://raw.githubusercontent.com/108design/moodle-local_bulkinstall/main/docs/screenshots/bulk-installer-04-blocked-package-filter.jpg" width="163" height="160" alt="Filter blocked packages and inspect original diagnostics"></a><br>
+<sub>Filter blocked packages and inspect original diagnostics</sub>
+</td>
+</tr>
+<tr>
+<td align="center" width="50%" valign="middle">
+<a href="https://raw.githubusercontent.com/108design/moodle-local_bulkinstall/main/docs/screenshots/bulk-installer-05-reduced-install-selection.jpg"><img src="https://raw.githubusercontent.com/108design/moodle-local_bulkinstall/main/docs/screenshots/bulk-installer-05-reduced-install-selection.jpg" width="160" height="160" alt="Preview exclusions and dependent packages"></a><br>
+<sub>Preview exclusions and dependent packages</sub>
+</td>
+<td align="center" width="50%" valign="middle">
+<a href="https://raw.githubusercontent.com/108design/moodle-local_bulkinstall/main/docs/screenshots/bulk-installer-06-install-handover.jpg"><img src="https://raw.githubusercontent.com/108design/moodle-local_bulkinstall/main/docs/screenshots/bulk-installer-06-install-handover.jpg" width="199" height="160" alt="Review the reduced batch before handing it to Moodle"></a><br>
+<sub>Review the reduced batch before handing it to Moodle</sub>
+</td>
+</tr>
+<tr>
+<td align="center" width="50%" valign="middle">
+<a href="https://raw.githubusercontent.com/108design/moodle-local_bulkinstall/main/docs/screenshots/bulk-installer-07-uninstaller-plugin-list.jpg"><img src="https://raw.githubusercontent.com/108design/moodle-local_bulkinstall/main/docs/screenshots/bulk-installer-07-uninstaller-plugin-list.jpg" width="161" height="160" alt="Browse additional plugins in the Uninstaller"></a><br>
+<sub>Browse additional plugins in the Uninstaller</sub>
+</td>
+<td align="center" width="50%" valign="middle">
+<a href="https://raw.githubusercontent.com/108design/moodle-local_bulkinstall/main/docs/screenshots/bulk-installer-08-uninstaller-filters-selection.jpg"><img src="https://raw.githubusercontent.com/108design/moodle-local_bulkinstall/main/docs/screenshots/bulk-installer-08-uninstaller-filters-selection.jpg" width="228" height="160" alt="Filter by name and type while retaining hidden selections"></a><br>
+<sub>Filter by name and type while retaining hidden selections</sub>
+</td>
+</tr>
+<tr>
+<td align="center" width="50%" valign="middle">
+<a href="https://raw.githubusercontent.com/108design/moodle-local_bulkinstall/main/docs/screenshots/bulk-installer-09-uninstaller-blocked-review.jpg"><img src="https://raw.githubusercontent.com/108design/moodle-local_bulkinstall/main/docs/screenshots/bulk-installer-09-uninstaller-blocked-review.jpg" width="176" height="160" alt="Review dependencies and included subplugins"></a><br>
+<sub>Review dependencies and included subplugins</sub>
+</td>
+<td align="center" width="50%" valign="middle">
+<a href="https://raw.githubusercontent.com/108design/moodle-local_bulkinstall/main/docs/screenshots/bulk-installer-10-reduced-uninstall-selection.jpg"><img src="https://raw.githubusercontent.com/108design/moodle-local_bulkinstall/main/docs/screenshots/bulk-installer-10-reduced-uninstall-selection.jpg" width="179" height="160" alt="Preview and confirm excluded uninstall blockers"></a><br>
+<sub>Preview and confirm excluded uninstall blockers</sub>
+</td>
+</tr>
+<tr>
+<td align="center" width="50%" valign="middle">
+<a href="https://raw.githubusercontent.com/108design/moodle-local_bulkinstall/main/docs/screenshots/bulk-installer-11-uninstall-confirmation.jpg"><img src="https://raw.githubusercontent.com/108design/moodle-local_bulkinstall/main/docs/screenshots/bulk-installer-11-uninstall-confirmation.jpg" width="188" height="160" alt="Confirm the full selection and possible permanent data loss"></a><br>
+<sub>Confirm the full selection and possible permanent data loss</sub>
+</td>
+<td align="center" width="50%" valign="middle">
+<a href="https://raw.githubusercontent.com/108design/moodle-local_bulkinstall/main/docs/screenshots/bulk-installer-12-uninstall-completion.jpg"><img src="https://raw.githubusercontent.com/108design/moodle-local_bulkinstall/main/docs/screenshots/bulk-installer-12-uninstall-completion.jpg" width="268" height="160" alt="Finish a successful uninstall with Moodle’s completion check"></a><br>
+<sub>Finish a successful uninstall with Moodle’s completion check</sub>
+</td>
+</tr>
+<tr>
+<td align="center" width="50%" valign="middle">
+<a href="https://raw.githubusercontent.com/108design/moodle-local_bulkinstall/main/docs/screenshots/bulk-installer-13-last-batch-results.jpg"><img src="https://raw.githubusercontent.com/108design/moodle-local_bulkinstall/main/docs/screenshots/bulk-installer-13-last-batch-results.jpg" width="300" height="125" alt="View the read-only result of the last batch"></a><br>
+<sub>View the read-only result of the last batch</sub>
+</td>
+<td align="center" width="50%" valign="middle">
+<a href="https://raw.githubusercontent.com/108design/moodle-local_bulkinstall/main/docs/screenshots/bulk-installer-14-remaining-plugin-files.jpg"><img src="https://raw.githubusercontent.com/108design/moodle-local_bulkinstall/main/docs/screenshots/bulk-installer-14-remaining-plugin-files.jpg" width="242" height="160" alt="Follow up explicitly listed remaining plugin files"></a><br>
+<sub>Follow up explicitly listed remaining plugin files</sub>
+</td>
+</tr>
+<tr>
+<td align="center" width="50%" valign="middle">
+<a href="https://raw.githubusercontent.com/108design/moodle-local_bulkinstall/main/docs/screenshots/bulk-installer-15-bundle-format.jpg"><img src="https://raw.githubusercontent.com/108design/moodle-local_bulkinstall/main/docs/screenshots/bulk-installer-15-bundle-format.jpg" width="204" height="160" alt="Read the bundle ZIP specification"></a><br>
 <sub>Read the bundle ZIP specification</sub>
-</td>
-<td align="center" width="50%" valign="middle">
-<a href="https://raw.githubusercontent.com/108design/moodle-local_bulkinstall/main/docs/screenshots/bulk-installer-validated.jpg"><img src="https://raw.githubusercontent.com/108design/moodle-local_bulkinstall/main/docs/screenshots/bulk-installer-validated.jpg" width="266" height="160" alt="Review validated packages before installation"></a><br>
-<sub>Review validated packages before installation</sub>
-</td>
-</tr>
-<tr>
-<td align="center" width="50%" valign="middle">
-<a href="https://raw.githubusercontent.com/108design/moodle-local_bulkinstall/main/docs/screenshots/bulk-installer-batch-errors.jpg"><img src="https://raw.githubusercontent.com/108design/moodle-local_bulkinstall/main/docs/screenshots/bulk-installer-batch-errors.jpg" width="260" height="160" alt="See errors that block the batch"></a><br>
-<sub>See errors that block the batch</sub>
-</td>
-<td align="center" width="50%" valign="middle">
-<a href="https://raw.githubusercontent.com/108design/moodle-local_bulkinstall/main/docs/screenshots/bulk-installer-installation.jpg"><img src="https://raw.githubusercontent.com/108design/moodle-local_bulkinstall/main/docs/screenshots/bulk-installer-installation.jpg" width="242" height="160" alt="Start a new batch with the upload form"></a><br>
-<sub>Start a new batch with the upload form</sub>
-</td>
-</tr>
-<tr>
-<td align="center" width="50%" valign="middle">
-<a href="https://raw.githubusercontent.com/108design/moodle-local_bulkinstall/main/docs/screenshots/bulk-installer-uninstaller-plugin-selection.jpg"><img src="https://raw.githubusercontent.com/108design/moodle-local_bulkinstall/main/docs/screenshots/bulk-installer-uninstaller-plugin-selection.jpg" width="202" height="160" alt="Select additional plugins for uninstallation"></a><br>
-<sub>Select additional plugins for uninstallation</sub>
-</td>
-<td align="center" width="50%" valign="middle">
-<a href="https://raw.githubusercontent.com/108design/moodle-local_bulkinstall/main/docs/screenshots/bulk-installer-uninstaller-plugin-type-filter.jpg"><img src="https://raw.githubusercontent.com/108design/moodle-local_bulkinstall/main/docs/screenshots/bulk-installer-uninstaller-plugin-type-filter.jpg" width="213" height="160" alt="Filter the uninstall list by plugin type"></a><br>
-<sub>Filter the uninstall list by plugin type</sub>
-</td>
-</tr>
-<tr>
-<td align="center" width="50%" valign="middle">
-<a href="https://raw.githubusercontent.com/108design/moodle-local_bulkinstall/main/docs/screenshots/bulk-installer-uninstaller-filtered-selection.jpg"><img src="https://raw.githubusercontent.com/108design/moodle-local_bulkinstall/main/docs/screenshots/bulk-installer-uninstaller-filtered-selection.jpg" width="217" height="160" alt="Review a filtered selection and file removal"></a><br>
-<sub>Review a filtered selection and file removal</sub>
-</td>
-<td align="center" width="50%" valign="middle">
-<a href="https://raw.githubusercontent.com/108design/moodle-local_bulkinstall/main/docs/screenshots/bulk-installer-uninstaller-uninstall-review.jpg"><img src="https://raw.githubusercontent.com/108design/moodle-local_bulkinstall/main/docs/screenshots/bulk-installer-uninstaller-uninstall-review.jpg" width="193" height="160" alt="Check consequences and confirm the complete uninstall selection"></a><br>
-<sub>Check consequences and confirm the complete uninstall selection</sub>
 </td>
 </tr>
 </table>
@@ -78,7 +113,8 @@ Click a preview to open the full-size screenshot.
 - Web-based plugin deployment must be enabled. The page is hidden when
   `$CFG->disableupdateautodeploy` is enabled.
 - The web server must be able to write the affected plugin-type directories.
-- The administrator needs `moodle/site:config`.
+- The administrator needs `moodle/site:config`; uninstallation additionally requires
+  `local/bulkinstall:uninstall` and respects CLI-only uninstall restrictions.
 
 ## Installation
 
