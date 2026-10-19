@@ -13,7 +13,7 @@ normal code deployment and database upgrade flow.
 ## Screenshots
 
 <details>
-<summary>View screenshots (6)</summary>
+<summary>View screenshots (10)</summary>
 
 Click a preview to open the full-size screenshot.
 
@@ -46,6 +46,26 @@ Click a preview to open the full-size screenshot.
 <td align="center" width="50%" valign="middle">
 <a href="https://raw.githubusercontent.com/108design/moodle-local_bulkinstall/main/docs/screenshots/bulk-installer-installation.jpg"><img src="https://raw.githubusercontent.com/108design/moodle-local_bulkinstall/main/docs/screenshots/bulk-installer-installation.jpg" width="242" height="160" alt="Start a new batch with the upload form"></a><br>
 <sub>Start a new batch with the upload form</sub>
+</td>
+</tr>
+<tr>
+<td align="center" width="50%" valign="middle">
+<a href="https://raw.githubusercontent.com/108design/moodle-local_bulkinstall/main/docs/screenshots/bulk-installer-uninstaller-plugin-selection.jpg"><img src="https://raw.githubusercontent.com/108design/moodle-local_bulkinstall/main/docs/screenshots/bulk-installer-uninstaller-plugin-selection.jpg" width="202" height="160" alt="Select additional plugins for uninstallation"></a><br>
+<sub>Select additional plugins for uninstallation</sub>
+</td>
+<td align="center" width="50%" valign="middle">
+<a href="https://raw.githubusercontent.com/108design/moodle-local_bulkinstall/main/docs/screenshots/bulk-installer-uninstaller-plugin-type-filter.jpg"><img src="https://raw.githubusercontent.com/108design/moodle-local_bulkinstall/main/docs/screenshots/bulk-installer-uninstaller-plugin-type-filter.jpg" width="213" height="160" alt="Filter the uninstall list by plugin type"></a><br>
+<sub>Filter the uninstall list by plugin type</sub>
+</td>
+</tr>
+<tr>
+<td align="center" width="50%" valign="middle">
+<a href="https://raw.githubusercontent.com/108design/moodle-local_bulkinstall/main/docs/screenshots/bulk-installer-uninstaller-filtered-selection.jpg"><img src="https://raw.githubusercontent.com/108design/moodle-local_bulkinstall/main/docs/screenshots/bulk-installer-uninstaller-filtered-selection.jpg" width="217" height="160" alt="Review a filtered selection and file removal"></a><br>
+<sub>Review a filtered selection and file removal</sub>
+</td>
+<td align="center" width="50%" valign="middle">
+<a href="https://raw.githubusercontent.com/108design/moodle-local_bulkinstall/main/docs/screenshots/bulk-installer-uninstaller-uninstall-review.jpg"><img src="https://raw.githubusercontent.com/108design/moodle-local_bulkinstall/main/docs/screenshots/bulk-installer-uninstaller-uninstall-review.jpg" width="193" height="160" alt="Check consequences and confirm the complete uninstall selection"></a><br>
+<sub>Check consequences and confirm the complete uninstall selection</sub>
 </td>
 </tr>
 </table>
