@@ -17,6 +17,15 @@ final class admin_navigation {
             new \tabobject('format', new \moodle_url('/local/bulkinstall/bundleformat.php'),
                 self::tab_label('fa-file-code', $formatlabel), $formatlabel),
         ];
+        if (has_capability('local/bulkinstall:uninstall', \context_system::instance())) {
+            $label = get_string('uninstalltab', 'local_bulkinstall');
+            $tabs[] = new \tabobject('uninstall', new \moodle_url('/local/bulkinstall/uninstall.php'),
+                self::tab_label('fa-trash', $label), $label);
+        }
+        // Keep the active parent linked on preview/results pages as well.
+        foreach ($tabs as $tab) {
+            $tab->linkedwhenselected = true;
+        }
         return \html_writer::div(print_tabs([$tabs], $active, null, null, true));
     }
 

@@ -6,7 +6,7 @@ defined('MOODLE_INTERNAL') || die();
 
 /** Contextual settings help, following the standalone Frontpage panel contract. */
 final class admin_help {
-    private const TOPICS = ['overview', 'bundles', 'review'];
+    private const TOPICS = ['overview', 'bundles', 'review', 'uninstall', 'uninstallfiles'];
     private static bool $prepared = false;
 
     /** Register only the permitted settings page before its header is rendered. */
@@ -73,6 +73,10 @@ final class admin_help {
         $options = '';
         $articles = '';
         foreach (self::TOPICS as $topic) {
+            if (strpos($topic, 'uninstall') === 0
+                    && !has_capability('local/bulkinstall:uninstall', \context_system::instance())) {
+                continue;
+            }
             $label = get_string('adminhelp_' . $topic, 'local_bulkinstall');
             $options .= \html_writer::tag('option', $label, ['value' => $topic]);
             $articles .= \html_writer::tag('article', \html_writer::tag('h3', $label, ['class' => 'h5', 'tabindex' => '-1'])

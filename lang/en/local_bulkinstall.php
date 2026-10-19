@@ -154,7 +154,7 @@ $string['eventbundlevalidated'] = 'Plugin batch validated';
 $string['eventbundleinstallationstarted'] = 'Plugin batch installation started';
 $string['taskcleanupstaging'] = 'Clean up bulk plugin installation staging';
 $string['taskcleanupresult'] = 'Removed {$a} expired bulk installation staging directories.';
-$string['privacy:metadata'] = 'The Bulk plugin installation plugin does not store personal data. Temporary packages and session metadata are removed after use or expiry.';
+$string['privacy:metadata'] = 'Bulk Installer stores no participant data. Upload metadata, confirmations and access references for temporary receipts are held only in the native administrator session. Temporary receipt files contain components and statuses without user identifiers or plugin content. Moodle manages sessions and administrative audit events.';
 $string['licenseactivation'] = 'Licenses';
 $string['licenseproductname'] = '108design Bulk installation';
 $string['licensestatusactive'] = 'The free license is activated for this Moodle installation.';
@@ -361,3 +361,104 @@ $string['selectionpreviewready'] = 'The remaining selection has been checked';
 $string['selectionpreviewreadybody'] = 'Use the reduced selection. You can then hand the packages to Moodle.';
 
 $string['adminhelp_review_article'] .= '<p><strong>Exclude Blocking Packages</strong> previews a reduced selection, including any additional packages that would lose a required dependency. <strong>Use Reduced Selection</strong> confirms this change; review the remaining packages before handing them to Moodle. Excluded files remain listed until the batch is discarded or installed. For a partial bundle, setup includes only complete products and requires a suitable Plugin Manager. Otherwise, set up licences separately.</p>';
+
+// Bulk Uninstaller.
+$string['uninstalltab'] = 'Uninstaller';
+$string['uninstallheading'] = 'Uninstall plugins together';
+$string['uninstallintro'] = 'Select additional plugins and review the complete selection and its consequences before uninstalling.';
+$string['uninstallsearch'] = 'Name or component';
+$string['uninstalltype'] = 'Plugin type';
+$string['uninstallstate'] = 'Status';
+$string['uninstallalltypes'] = 'All plugin types';
+$string['uninstallallstates'] = 'All statuses';
+$string['uninstallinstalled'] = 'Installed';
+$string['uninstallmissing'] = 'Missing from disk';
+$string['uninstallcandidate'] = 'Available for selection; dependencies are checked in the next step.';
+$string['uninstallselectvisible'] = 'Select Filtered Plugins';
+$string['uninstallclear'] = 'Clear Selection';
+$string['uninstallcount'] = '{selected} selected · {hidden} hidden by filters';
+$string['uninstallfilterhelp'] = 'Core plugins are excluded. Filters only change the display; hidden checked plugins remain selected and appear in the complete review.';
+$string['uninstallremovefiles'] = 'Also remove plugin files where this can be done safely';
+$string['uninstallempty'] = 'No additional installed plugins found.';
+$string['uninstallnomatches'] = 'No plugins match these filters.';
+$string['uninstallreview'] = 'Review Selection';
+$string['uninstallready'] = 'The selection can be uninstalled';
+$string['uninstallblocked'] = 'The selection contains blockers';
+$string['uninstallaffectedcount'] = 'Affected plugins, including associated subplugins: {$a}.';
+$string['uninstallchild'] = 'Removed together with {$a}.';
+$string['uninstallfilesabsent'] = 'Plugin files are already absent.';
+$string['uninstallfilesauto'] = 'Plugin files will also be removed.';
+$string['uninstallfilesmanual'] = 'Files require manual removal. The batch stops after this step.';
+$string['uninstallusageunknown'] = 'Usage cannot be fully determined';
+$string['uninstallactivities'] = '{$a} activity instances';
+$string['uninstallblocks'] = '{$a} block instances';
+$string['uninstallusagelimit'] = 'Usage counts show existing activity and block instances. Other data may be affected even when the count is 0. This review cannot determine every consequence of arbitrary third-party plugins.';
+$string['uninstallorder'] = 'Planned order';
+$string['uninstallconsequences'] = 'Uninstalling may permanently delete settings, content, files and other data belonging to the listed plugins. Subplugins are included. Have a complete backup ready. The batch processes plugins sequentially, stops on errors or manual follow-up, and provides no automatic undo.';
+$string['uninstallacknowledge'] = 'I confirm the complete displayed selection, including subplugins, and understand that data may be permanently lost.';
+$string['uninstallconfirm'] = 'Permanently Uninstall Selection ({$a})';
+$string['uninstallexclude'] = 'Exclude Blocking Plugins';
+$string['uninstallexclusionheading'] = 'Reduced selection preview';
+$string['uninstallexclusionintro'] = 'These plugins would be excluded. The reduced selection is applied only after confirmation. Nothing is uninstalled at this step.';
+$string['uninstallapplyexclusion'] = 'Use Reduced Selection';
+$string['uninstallexcluded'] = 'Excluded plugins and reasons';
+$string['uninstallerrorselection'] = 'Select between 1 and 50 plugins.';
+$string['uninstallerrorunknown'] = '{$a->component}: plugin could not be reliably identified.';
+$string['uninstallerrorself'] = '{$a->component}: Bulk Installer cannot uninstall itself here.';
+$string['uninstallerrorstandard'] = '{$a->component}: Core plugins and components of unknown origin are excluded.';
+$string['uninstallerrorpending'] = '{$a->component}: installation or upgrade is pending. Resolve this state in the plugin overview first.';
+$string['uninstallerrornative'] = '{$a->component}: This plugin type cannot be safely uninstalled in this batch. Review its individual uninstall in Moodle.';
+$string['uninstallerrorrequired'] = '{$a->component} is required by {$a->detail}. That dependent plugin is outside the selection.';
+$string['uninstallerrorcycle'] = '{$a->component}: dependencies prevent a safe uninstall order.';
+$string['uninstallerrorpath'] = '{$a->component}: the plugin path contains a link, is outside this installation or cannot be safely checked.';
+$string['uninstallpolicy'] = 'Server configuration blocks this web uninstaller or an upgrade is in progress. Resolve this state first.';
+$string['uninstallstale'] = 'Confirmation has expired, has already been used or the reviewed state has changed. Review the selection again.';
+$string['uninstallincomplete'] = 'Moodle did not fully complete the uninstall.';
+$string['uninstallackrequired'] = 'First acknowledge the displayed selection and possible data loss.';
+$string['uninstallreceiptfailed'] = 'The result receipt could not be safely saved. The batch will not continue.';
+$string['uninstallfailed'] = 'The step failed or was only partially completed. Check the actual state and server log before continuing.';
+$string['uninstallresultcomplete'] = 'The confirmed batch is complete.';
+$string['uninstallresultstopped'] = 'The batch stopped. Completed changes remain in effect; subsequent plugins were not processed.';
+$string['uninstallresultinterrupted'] = 'The batch was interrupted. Check the actual state of the last step. No automatic retry will occur.';
+$string['uninstallresultrunning'] = 'The batch started, but completion is not confirmed. Check the actual state before taking further action.';
+$string['uninstallstepdone'] = 'Uninstalled; existing plugin files removed.';
+$string['uninstallstepmanual'] = 'Uninstalled; plugin files remained for manual removal during this batch. The batch stopped.';
+$string['uninstallstepfailed'] = 'Failed or partially completed. Check the listed components before starting again.';
+$string['uninstallmanualcomponents'] = 'Plugin files not removed during this batch: {$a}';
+$string['uninstallnotrun'] = 'Not processed';
+$string['uninstalluncertain'] = 'Last started step with an uncertain outcome: {$a}';
+$string['uninstallfinishnotice'] = 'The uninstalled plugins and their files have been removed. Select “Open Moodle completion check” to open the final check. Moodle checks the changed plugin inventory and shows any further steps required. Finish this check to complete uninstallation.';
+$string['uninstallfinish'] = 'Open Moodle completion check';
+$string['uninstallback'] = 'Back to Plugin Selection';
+$string['uninstalllastresult'] = 'View Last Batch Result';
+$string['uninstallprogress'] = 'Uninstall progress';
+$string['bulkinstall:uninstall'] = 'Uninstall multiple additional plugins after explicit confirmation';
+$string['uninstall_help'] = 'Core and Bulk Installer itself are excluded. Review the complete selection, including subplugins and data loss, before confirming.';
+$string['uninstall'] = 'Uninstalling';
+$string['uninstallfiles'] = 'Removing plugin files';
+$string['uninstallfiles_help'] = 'Database uninstall and file removal are separate steps. Files that cannot be safely removed or are managed externally require manual follow-up.';
+$string['adminhelp_uninstall'] = 'Uninstalling plugins together';
+$string['adminhelp_uninstall_article'] = '<p>Select additional plugins and open <strong>Review Selection</strong>. Core plugins are excluded and Bulk Installer is protected. A separate uninstall permission is required in addition to site configuration.</p><p>Filters only change the display. Hidden checked plugins remain part of the complete review. Associated subplugins are explicitly listed. Dependents outside the selection block removal and are never added automatically.</p><p><strong>Exclude Blocking Plugins</strong> previews a reduced selection with every excluded plugin and reason. <strong>Use Reduced Selection</strong> applies it. A separate final uninstall confirmation is still required.</p><p>Review usage counts and additional Moodle warnings. Counts cover activity and block instances, not every kind of data or consequence. A disabled plugin or a count of 0 does not mean no data will be lost.</p><p>Confirmation expires after one hour and can only be used once. Changed files, versions, dependencies or counted usage require a fresh review. Errors stop the batch and completed steps are not rolled back. Cancel only discards preparation.</p>';
+$string['adminhelp_uninstallfiles'] = 'Files and completion';
+$string['adminhelp_uninstallfiles_article'] = '<p>Moodle first removes installed plugin data. With file removal enabled, the reviewed plugin directories are then removed where this is safe. Links and paths outside this Moodle installation are blocked.</p><p>Read-only or externally managed plugin files are not removed automatically. The batch stops and identifies affected components. Disabling file removal has the same effect.</p><p>The active completion stage lists directories that are actually still present. Remove these on the server and select “Check files again”. This button does not delete files or retry uninstallation. Only a successful check makes “Open Moodle completion check” available. Moodle then checks the changed plugin inventory and shows further steps required. Remaining code may otherwise trigger reinstallation. There is no cancel button after execution.</p><p>“View Last Batch Result” opens the historical receipt without completion actions. It records the state during the batch; later file checks do not change it.</p><p>Have a complete backup ready before execution. The uninstaller creates no automatic backup and provides no automatic undo. Temporary receipts contain components, reviewed plugin paths and statuses, remain available for up to 24 hours and are removed by the existing cleanup task.</p>';
+
+$string['eventuninstallbatchstarted'] = 'Plugin uninstall batch started';
+$string['eventuninstallbatchfinished'] = 'Plugin uninstall batch finished';
+
+$string['uninstallproposalready'] = 'The reduced selection is ready to apply';
+
+$string['uninstallhistoryheading'] = 'Last uninstall batch results';
+
+$string['uninstallcompletionheading'] = 'Complete uninstallation';
+
+$string['uninstallreceiptunavailable'] = 'No receipt is available for your session. Receipts are retained for up to 24 hours.';
+
+$string['uninstallremainingfiles'] = 'The following plugin directories are still present:';
+
+$string['uninstallmanualnotice'] = 'Remove these plugin directories on the server. Remaining code may otherwise trigger reinstallation. Then select “Check files again” to verify that all listed directories have been removed. This button checks files; it does not delete them.';
+
+$string['uninstallrecheck'] = 'Check files again';
+
+$string['uninstallcompletionuncertain'] = 'Completion cannot yet be confirmed safely. Check the errors reported above and the plugin status before continuing. The file check does not retry uninstallation or restore data.';
+
+$string['uninstallnextstep'] = 'Next step';

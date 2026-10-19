@@ -7,7 +7,7 @@ defined('MOODLE_INTERNAL') || die();
 /** Decorative product identity on explicitly selected administration surfaces only. */
 final class admin_branding {
     /** Native page paths and their existing system-level administration capabilities. */
-    private const PAGES = ['/local/bulkinstall/bundleformat.php' => 'moodle/site:config', '/local/bulkinstall/index.php' => 'moodle/site:config', '/local/bulkinstall/review.php' => 'moodle/site:config'];
+    private const PAGES = ['/local/bulkinstall/uninstall.php' => 'local/bulkinstall:uninstall', '/local/bulkinstall/bundleformat.php' => 'moodle/site:config', '/local/bulkinstall/index.php' => 'moodle/site:config', '/local/bulkinstall/review.php' => 'moodle/site:config'];
     /** Existing native settings sections; these are never customer routes. */
     private const SECTIONS = [];
     /** Existing administration links, without changing their labels or destinations. */

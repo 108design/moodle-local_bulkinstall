@@ -1,0 +1,13 @@
+/* Copyright (C) 2026 Andreas Giesen. See LICENSE.md. */
+.local-bulkinstall-uninstall .bi-rowhead { grid-template-columns: minmax(0, 1.2fr) minmax(0, .8fr) minmax(0, 1fr); }
+.local-bulkinstall-uninstall .bu-filters { display: grid; grid-template-columns: minmax(0, 2fr) minmax(0, 1fr) minmax(0, 1fr); gap: 1rem; margin-bottom: 1.5rem; }
+.local-bulkinstall-uninstall .bu-filters label { display: block; }
+.local-bulkinstall-uninstall .bu-choice { display: flex; align-items: baseline; gap: .6rem; }
+.local-bulkinstall-uninstall .bu-choice > input { flex-shrink: 0; }
+.local-bulkinstall-uninstall .bi-identity code { display: block; margin-top: .4rem; overflow-wrap: anywhere; }
+.local-bulkinstall-uninstall .bi-identity label { font-size: 1.1rem; font-weight: 650; overflow-wrap: anywhere; }
+.local-bulkinstall-uninstall .bu-choice label input { margin-inline-end: .4rem; }
+@media (max-width: 48rem) {
+    .local-bulkinstall-uninstall .bu-filters, .local-bulkinstall-uninstall .bi-rowhead { grid-template-columns: minmax(0, 1fr); }
+    .local-bulkinstall-uninstall .bi-result { grid-column: auto; }
+}

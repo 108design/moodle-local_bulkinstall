@@ -44,4 +44,10 @@ if ($hassiteconfig) {
         true
     );
     $ADMIN->add('modules', $formatpage);
+
+    $ADMIN->add('modules', new admin_externalpage(
+        'local_bulkinstall_uninstall', get_string('uninstalltab', 'local_bulkinstall'),
+        new moodle_url('/local/bulkinstall/uninstall.php'),
+        ['moodle/site:config', 'local/bulkinstall:uninstall'], true
+    ));
 }

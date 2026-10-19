@@ -25,6 +25,7 @@ class cleanup_staging extends \core\task\scheduled_task {
     /** Execute cleanup. */
     public function execute(): void {
         $removed = \local_bulkinstall\local\staging_manager::cleanup_expired();
+        \local_bulkinstall\local\uninstall_manager::cleanup_expired();
         mtrace(get_string('taskcleanupresult', 'local_bulkinstall', $removed));
     }
 }

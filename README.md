@@ -101,6 +101,44 @@ A changed installation or invalid/expired catalogue blocks the prepared batch;
 return to Plugin Manager and prepare a new selection. Ordinary uploads and
 bundle installations do not require Plugin Manager.
 
+## Bulk uninstallation
+
+The third **Uninstaller** tab lets administrators filter additional installed
+plugins, select several components and review their removal together. Core
+plugins are excluded and Bulk Installer cannot uninstall itself. Access requires
+both site configuration permission and the separate
+`local/bulkinstall:uninstall` capability; delegated roles do not receive it by default.
+
+1. Filter by name/component, plugin type or installation status, then select
+   plugins. Filters only change the display; hidden checked plugins remain selected.
+2. Select **Review Selection**. Review every affected component, including
+   associated subplugins, known activity/block usage, Moodle warnings and file removal.
+3. If the selection is blocked, **Exclude Blocking Plugins** previews the
+   exclusions and reasons. **Use Reduced Selection** keeps the remaining group;
+   nothing is uninstalled at this step and dependents are never silently added.
+4. Acknowledge the complete displayed selection and possible permanent data loss,
+   then confirm the final uninstall. Confirmation expires after one hour and
+   changes to the reviewed state require a new review.
+5. In the active completion stage, remove any explicitly listed remaining plugin
+   directories on the server and select **Check files again**. This check deletes
+   nothing. Once the files are gone, **Open Moodle completion check** opens Moodle’s
+   final inventory check and any required native steps. The historical
+   **View Last Batch Result** view is a read-only receipt without completion actions.
+
+Have a complete site backup ready. Uninstallation can permanently remove plugin
+data and content. Usage counts are partial information, not proof that a plugin is
+unused. Plugins are processed sequentially in dependency order; errors or manual
+file follow-up stop the batch. Completed steps remain in effect, with no automatic
+rollback or retry. Read-only or externally managed plugin directories require
+manual removal. Server restrictions on web deployment or CLI-only uninstallation
+are respected.
+
+Temporary uninstall receipts contain component names, reviewed plugin paths and results, without
+user identifiers or plugin content. Access is bound to the administrator and
+originating Moodle session. They remain available to the originating session for up
+to 24 hours and are removed by the existing scheduled cleanup task. Moodle audit
+events record the batch start and final status.
+
 ## Bundle ZIP format
 
 The plugin accepts one outer ZIP containing `bundle.json` and the listed ordinary Moodle plugin ZIPs directly at the
