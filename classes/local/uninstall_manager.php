@@ -242,11 +242,13 @@ final class uninstall_manager {
     public function execute(string $token, ?callable $progress = null): array {
         global $SESSION, $USER;
         self::require_access();
+        uninstall_diagnostics::phase('lock');
         $lock = \core\lock\lock_config::get_lock_factory('local_bulkinstall')->get_lock('install_batch', 0);
         if (!$lock) {
             throw new \moodle_exception('errorinstallbusy', 'local_bulkinstall');
         }
         try {
+            uninstall_diagnostics::phase('confirmation');
             $plan = $this->confirmed_plan($token);
             $receipt = [
                 'id' => substr(hash('sha256', $token), 0, 32), 'created' => time(),
@@ -260,12 +262,18 @@ final class uninstall_manager {
             $this->cancel();
             \core_php_time_limit::raise(0);
             $finished = false;
+            uninstall_diagnostics::executing(true);
             register_shutdown_function(function() use (&$receipt, &$finished): void {
                 if (!$finished) {
                     $receipt['state'] = 'interrupted';
-                    $this->save_receipt($receipt);
+                    try {
+                        $this->save_receipt($receipt);
+                    } catch (\Throwable $exception) {
+                        uninstall_diagnostics::exception($exception, true);
+                    }
                 }
             });
+            uninstall_diagnostics::phase('batch_event');
             \local_bulkinstall\event\uninstall_batch_started::create([
                 'context' => \context_system::instance(),
                 'other' => ['components' => $receipt['affected'], 'state' => 'running'],
@@ -275,7 +283,9 @@ final class uninstall_manager {
                 $this->save_receipt($receipt);
                 $buffers = ob_get_level();
                 $group = [];
+                $removedcode = false;
                 try {
+                    uninstall_diagnostics::phase('step_check', $component);
                     self::require_access();
                     $pm = \core_plugin_manager::instance();
                     \core_plugin_manager::reset_caches();
@@ -288,11 +298,14 @@ final class uninstall_manager {
                     if (!$fresh['canuninstall'] || $this->confirmation_rows($fresh['rows']) !== $this->confirmation_rows($group)) {
                         throw new \moodle_exception('uninstallstale', 'local_bulkinstall');
                     }
+                    uninstall_diagnostics::phase('progress', $component);
                     if ($progress) {
                         $progress($position, count($plan['order']), $component);
                     }
                     $trace = new \progress_trace_buffer(new \null_progress_trace(), true);
+                    uninstall_diagnostics::phase('native_uninstall', $component);
                     $ok = $pm->uninstall_plugin($component, $trace);
+                    uninstall_diagnostics::phase('verify_uninstall', $component);
                     $trace->finished();
                     \core_plugin_manager::reset_caches();
                     if (!$ok || !$this->uninstalled(array_keys($group))) {
@@ -320,10 +333,17 @@ final class uninstall_manager {
                             $manual[] = $child;
                             continue;
                         }
+                        $removedcode = true;
+                        uninstall_diagnostics::phase('remove_files', $child);
                         $pm->remove_plugin_folder($info);
                         if (file_exists($row['rootdir'])) {
                             $manual[] = $child;
                         }
+                    }
+                    if ($removedcode) {
+                        // Core purges caches before code removal; refresh this request after changing the tree.
+                        uninstall_diagnostics::phase('refresh_components', $component);
+                        \core_component::reset();
                     }
                     $receipt['results'][] = ['component' => $component, 'affected' => array_keys($group),
                         'status' => $manual ? 'manual' : 'done', 'manual' => $manual];
@@ -334,14 +354,23 @@ final class uninstall_manager {
                         break;
                     }
                 } catch (\Throwable $exception) {
+                    uninstall_diagnostics::exception($exception, true);
+                    if ($removedcode) {
+                        // Also discard stale paths after an incomplete code-removal attempt. No disk purge.
+                        \core_component::reset();
+                    }
                     // Core's legacy uninstaller may throw while it has an output buffer open.
                     while (ob_get_level() > $buffers) {
-                        ob_end_clean();
+                        $level = ob_get_level();
+                        @ob_end_clean();
+                        if (ob_get_level() >= $level) {
+                            // A third-party non-removable buffer must not turn failure handling into an infinite loop.
+                            break;
+                        }
                     }
                     $receipt['results'][] = ['component' => $component, 'affected' => array_keys($group ?? []),
                         'status' => 'failed', 'message' => get_string('uninstallfailed', 'local_bulkinstall')];
                     $receipt['state'] = 'stopped';
-                    debugging($exception->getMessage(), DEBUG_DEVELOPER);
                     break;
                 }
             }
@@ -351,10 +380,12 @@ final class uninstall_manager {
             $receipt['current'] = null;
             $this->save_receipt($receipt);
             $finished = true;
+            uninstall_diagnostics::phase('batch_event');
             \local_bulkinstall\event\uninstall_batch_finished::create([
                 'context' => \context_system::instance(),
                 'other' => ['components' => $receipt['affected'], 'state' => $receipt['state']],
             ])->trigger();
+            uninstall_diagnostics::executing(false);
             return $receipt;
         } finally {
             $lock->release();
@@ -363,6 +394,7 @@ final class uninstall_manager {
 
     /** Show only the current session's receipt, with a current-user binding in Core session and an independent receipt-ID/expiry check. */
     public function receipt(): ?array {
+        uninstall_diagnostics::phase('receipt_read');
         global $SESSION, $USER;
         $reference = $SESSION->local_bulkinstall_uninstall_receipt ?? null;
         if (!is_array($reference) || ($reference['userid'] ?? null) !== (int)$USER->id) {
@@ -385,6 +417,7 @@ final class uninstall_manager {
         global $CFG;
         self::require_access();
         $receipt = $this->receipt();
+        uninstall_diagnostics::phase('completion');
         if (!$receipt || ($receiptid !== null && !hash_equals($receipt['id'], $receiptid))) {
             throw new \moodle_exception('uninstallreceiptunavailable', 'local_bulkinstall');
         }
@@ -453,6 +486,7 @@ final class uninstall_manager {
     }
 
     private function save_receipt(array $receipt): void {
+        uninstall_diagnostics::phase('receipt_write', $receipt['current'] ?? null);
         $file = $this->receipt_directory() . '/' . $receipt['id'] . '.json';
         $temporary = $file . '.tmp';
         $data = json_encode($receipt, JSON_THROW_ON_ERROR);
