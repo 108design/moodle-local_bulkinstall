@@ -1,4 +1,16 @@
 <?php
+/**
+ * This file is part of a 108design source-available software product.
+ *
+ * Use and modification are permitted only under the Software License included
+ * with this distribution. See LICENSE.md for the full terms.
+ *
+ * File documentation for classes/local/uninstall_diagnostics.php.
+ *
+ * @package   local_bulkinstall
+ * @copyright 2026 Andreas Giesen
+ * @license   See LICENSE.md for the full terms.
+ */
 // Copyright (C) 2026 Andreas Giesen. See LICENSE.md.
 namespace local_bulkinstall\local;
 
@@ -7,6 +19,11 @@ namespace local_bulkinstall\local;
  *
  * Loading this standalone class has no effect. It deliberately needs no Moodle bootstrap:
  * the entry point must be able to report a failure while loading config.php itself.
+ * Pre-bootstrap exception: optional_param() is unavailable until config.php has loaded.
+ * The raw POST/GET action below is used only as a fixed allowlisted diagnostic label.
+ * It grants no authority, selects no operation and never logs raw input; arrays and
+ * unknown strings become "unknown". Keep this read before bootstrap so config failures
+ * remain observable. Request handlers still validate actions and session keys natively.
  * Messages, trace arguments, request/session data and user identifiers are never logged.
  */
 final class uninstall_diagnostics {

@@ -1,5 +1,17 @@
 # Changelog
 
+## 1.17.0 - Unreleased
+
+- Remove unused standalone activation, account-link clients and their obsolete interface text. Bulk Installer remains available without activation.
+- Clean only the plugin's obsolete activation settings during upgrade; preserve current settings and Plugin Manager records.
+- Document why early bootstrap diagnostics use a fixed allowlist before Moodle parameter helpers are available.
+
+## 1.16.1 - 2026-10-20
+
+- Add bounded diagnostics for native uninstall failures without logging tokens, user IDs or raw exception messages.
+- Handle shutdown-receipt and output-buffer failures while preserving the original failure and reviewed uninstall state.
+- Refresh component discovery after code removal and keep the explicit recheck and native completion steps.
+
 ## 1.3.0 - 2026-10-08
 
 - Declare Moodle 5.3 support after native compatibility checks.

@@ -1,3 +1,15 @@
+/**
+ * This file is part of a 108design source-available software product.
+ *
+ * Use and modification are permitted only under the Software License included
+ * with this distribution. See LICENSE.md for the full terms.
+ *
+ * File documentation for amd/src/uninstall.js.
+ *
+ * @package   local_bulkinstall
+ * @copyright 2026 Andreas Giesen
+ * @license   See LICENSE.md for the full terms.
+ */
 // Copyright (C) 2026 Andreas Giesen. See LICENSE.md.
 /** Display-only filters. Hidden checked components remain selected and are always included in review. */
 export const init = () => {

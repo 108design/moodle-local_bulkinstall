@@ -1,4 +1,11 @@
 <?php
+/**
+ * File documentation for version.php.
+ *
+ * @package   local_bulkinstall
+ * @copyright 2026 Andreas Giesen <andreas@108design.com>
+ * @license   See LICENSE.md for the full terms.
+ */
 // This file is part of a 108design source-available software product.
 //
 // Copyright (C) 2026 Andreas Giesen <andreas@108design.com>
@@ -10,8 +17,8 @@
 defined('MOODLE_INTERNAL') || die();
 
 $plugin->component = 'local_bulkinstall';
-$plugin->version = 2026102000;
+$plugin->version = 2026102400;
 $plugin->requires = 2024100700;
 $plugin->supported = [405, 503];
 $plugin->maturity = MATURITY_STABLE;
-$plugin->release = '1.16.1';
+$plugin->release = '1.17.0';

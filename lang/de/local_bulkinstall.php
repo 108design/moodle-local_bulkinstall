@@ -1,4 +1,11 @@
 <?php
+/**
+ * File documentation for lang/de/local_bulkinstall.php.
+ *
+ * @package   local_bulkinstall
+ * @copyright 2026 Andreas Giesen <andreas@108design.com>
+ * @license   See LICENSE.md for the full terms.
+ */
 $string['errorupdateproof'] = 'Der signierte Update-Nachweis ist ungültig, abgelaufen, unvollständig oder wird nicht mehr unterstützt. Kehre zum Plugin Manager zurück und bereite eine neue Auswahl vor.';
 $string['errorupdateversion'] = 'Der Paket-Build stimmt nicht mit dem ausgewählten signierten Release überein.';
 $string['errorupdatechanged'] = 'Die Installation wurde seit der Vorbereitung dieser Updates verändert. Bereite eine neue Update-Auswahl vor.';
@@ -155,54 +162,9 @@ $string['eventbundleinstallationstarted'] = 'Installation einer Plugin-Gruppe ge
 $string['taskcleanupstaging'] = 'Temporäre Dateien der Plugin-Bulk-Installation bereinigen';
 $string['taskcleanupresult'] = '{$a} abgelaufene temporäre Verzeichnisse der Bulk-Installation wurden entfernt.';
 $string['privacy:metadata'] = 'Der Bulk Installer speichert keine Teilnehmerdaten. Upload-Metadaten, Bestätigungen und Zugriffsverweise auf temporäre Ergebnisprotokolle liegen nur in der nativen Administrator-Sitzung. Temporäre Ergebnisdateien enthalten Komponenten und Status, aber keine Benutzerkennung oder Plugin-Inhalte. Moodle verwaltet Sitzungen und administrative Audit-Ereignisse.';
-$string['licenseactivation'] = 'Lizenzen';
-$string['licenseproductname'] = '108design Bulk-Installation';
-$string['licensestatusactive'] = 'Die kostenlose Lizenz ist für diese Moodle-Installation aktiviert.';
-$string['licensestatushub'] = 'Die kostenlose Lizenz ist aktiviert und wird vom 108design Plugin Manager verwaltet.';
-$string['licensestatusactivatedshort'] = 'Aktiviert';
-$string['licensestatusnotactivatedshort'] = 'Nicht aktiviert';
-$string['licenseproduct'] = 'Produkt';
-$string['licensedetails'] = 'Aktivierungsdetails';
-$string['licensesite'] = 'Lizenzierte Moodle-URL';
-$string['licenseenvironment'] = 'Umgebung';
-$string['licenseauthority'] = 'Verwaltet durch';
-$string['licenseauthorityhub'] = '108design Plugin Manager';
-$string['licenseauthorityplugin'] = 'Dieses Plugin';
-$string['licensehandoverpending'] = 'Die Lizenz wurde bereits in den 108design Plugin Manager übertragen. Aktiviere jetzt dessen kostenlose Lizenz, damit die zentrale Verwaltung wirksam wird.';
-$string['openlicensemanager'] = 'Plugin Manager öffnen';
-$string['managewithlicensemanager'] = 'Im Plugin Manager verwalten';
-$string['completehandover'] = 'Zentrale Lizenzverwaltung abschließen';
-$string['activateinlicensemanager'] = 'Kostenlose Lizenz im Plugin Manager aktivieren';
-$string['managelicense'] = 'Lizenz verwalten';
-$string['licensestatusinactive'] = 'Die kostenlose Lizenz muss vor der Verwendung aktiviert werden.';
-$string['licenserequired'] = 'Bitte aktiviere zuerst die kostenlose Lizenz.';
-$string['sitelinkintro'] = 'Die Aktivierung besteht aus zwei kurzen Schritten: Verbinde zuerst diese Moodle-Website einmalig mit Deinem 108design-Konto. Aktiviere anschließend hier die kostenlose Lizenz für diese Installation.';
-$string['connectaccount'] = 'Mit 108design-Konto verbinden';
-$string['sitelinkstarted'] = 'Die Verbindungsanfrage wurde erstellt. Führe jetzt Schritt 1 auf der Kontoseite aus und kehre danach hierher zurück.';
-$string['sitelinkpending'] = 'Schritt 1 ist noch nicht abgeschlossen. Verbinde die Website zuerst auf der Kontoseite.';
-$string['sitelinkcode'] = 'Dein Verbindungscode: {$a}';
-$string['sitelinkstep2'] = 'Nach der Kontoverbindung kehrst Du zu dieser Seite zurück und führst Schritt 2 aus. Dabei wird die kostenlose Lizenz abgerufen und für diese Moodle-Installation aktiviert.';
-$string['sitelinkaccountconnected'] = 'Schritt 1 ist abgeschlossen. Aktiviere jetzt mit Schritt 2 die kostenlose Lizenz für diese Moodle-Installation.';
-$string['opensitelink'] = 'Schritt 1: Konto verbinden';
-$string['checksitelink'] = 'Schritt 2: Kostenlose Lizenz aktivieren';
-$string['manualactivation'] = 'Bereits vorhandenen Lizenzcode verwenden';
-$string['licensekey'] = 'Lizenzcode';
-$string['activateplugin'] = 'Plugin aktivieren';
-$string['licenseactivated'] = 'Die kostenlose Lizenz ist aktiviert.';
-$string['licenserefreshed'] = 'Die Lizenz wurde aktualisiert.';
-$string['licensedeactivated'] = 'Die Aktivierung wurde aufgehoben.';
-$string['deactivatelicense'] = 'Aktivierung aufheben';
-$string['refreshlicense'] = 'Lizenz aktualisieren';
-$string['openbulkinstall'] = 'Bulk-Installation öffnen';
-$string['environmentproduction'] = 'Produktivsystem';
-$string['environmentdevelopment'] = 'Entwicklung';
-$string['taskrefreshlicense'] = 'Kostenlose Bulk-Installation-Lizenz aktualisieren';
-$string['licenseclienterror'] = 'Lizenzdienst: {$a->detail} ({$a->code})';
 $string['errorbundlepublisher'] = 'Die Herausgeberangaben des signierten Bundles sind ungültig.';
 $string['errorbundlesignature'] = 'Die Signatur des vorbereiteten Bundles ist ungültig. Das Bundle wurde möglicherweise verändert oder stammt nicht von 108design.';
 $string['warningbundlepublisherfilename'] = 'Das signierte 108design-Bundle „{$a}“ ist gültig, sein Dateiname entspricht aber nicht der bundle_-Konvention. Die Installation wird dadurch nicht blockiert; behalte möglichst einen ursprünglichen Namen wie bundle_kurswerkzeuge-1.0.0.zip bei.';
-$string['licensepolicydegradation'] = 'Neue Paketprüfungen und Installationen sind gesperrt. Bereits bereitgestellte Daten bleiben bis zum normalen Ablauf erhalten; die Aktivierungsoberfläche bleibt erreichbar.';
-$string['licensepolicydeactivation'] = 'Bulk Installation funktioniert vollständig nicht mehr. Gespeicherte Einstellungen und bereitgestellte Daten bleiben erhalten; Aktivierung und Wiederherstellung bleiben erreichbar.';
 
 // Contextual administration help.
 $string['adminhelp'] = 'Hilfe zur Verwaltung';
