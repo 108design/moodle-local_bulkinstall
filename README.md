@@ -2,7 +2,7 @@
   <img src="https://raw.githubusercontent.com/108design/moodle-local_bulkinstall/main/docs/branding/logo.svg" alt="Bulk Installer logo" width="125" height="125">
 </p>
 
-# Bulk Installer
+# Bulk Installer/Uninstaller
 
 Install, update and uninstall multiple Moodle plugins in guided batches.
 `local_bulkinstall` adds **Site administration → Plugins → Bulk installation**

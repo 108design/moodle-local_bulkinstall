@@ -19,9 +19,9 @@ $string['signedupdatesnotice'] = 'These packages were downloaded from the signed
 // with this distribution. Redistribution and circumvention of Pro feature or
 // licensing restrictions are prohibited. See LICENSE.md for the full terms.
 
-$string['pluginname'] = 'Bulk plugin installation';
-$string['menulabel'] = 'Bulk installation';
-$string['pagetitle'] = 'Bulk plugin installation';
+$string['pluginname'] = 'Bulk Installer/Uninstaller';
+$string['menulabel'] = 'Bulk Installer/Uninstaller';
+$string['pagetitle'] = 'Bulk Installer/Uninstaller';
 $string['uploadheading'] = 'Upload plugin packages';
 $string['uploadintro'] = 'Select up to 50 ordinary Moodle plugin ZIP packages, or one bundle ZIP containing bundle.json and its plugin ZIPs at the ZIP root. All packages are checked together before any plugin code is changed.';
 $string['backupnotice'] = 'Back up the site code and database before installing or updating a large plugin batch.';
