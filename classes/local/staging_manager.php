@@ -36,6 +36,13 @@ class staging_manager {
     /** Raw inspections reused only while computing one exclusion preview, never across confirmations. */
     private ?array $previewinspections = null;
 
+    /** Installed replacement checks are shared by preview and final locked handover. */
+    private replacement_guard $replacementguard;
+
+    public function __construct(?replacement_guard $replacementguard = null) {
+        $this->replacementguard = $replacementguard ?? new replacement_guard();
+    }
+
     /**
      * Copy draft files to a request-independent staging directory.
      *
@@ -117,6 +124,7 @@ class staging_manager {
      * @return array
      */
     public function analyse(string $storageid, bool $overridecompatibility = false, ?array $selection = null): array {
+        $this->replacementguard->reset_verification();
         $record = $this->get_record($storageid);
         $selection = $selection ?? $record['selection'] ?? array_column($record['files'], 'storedname');
         if (array_diff($selection, array_column($record['files'], 'storedname'))
@@ -126,7 +134,7 @@ class staging_manager {
         $selectedfiles = array_values(array_filter($record['files'],
             static fn(array $file): bool => in_array($file['storedname'], $selection, true)));
         $directory = $this->directory($storageid);
-        $inspector = new package_inspector();
+        $inspector = new package_inspector($this->replacementguard);
         $packages = [];
         $totaluncompressed = 0;
         $prooferrors = [];
@@ -151,6 +159,7 @@ class staging_manager {
                 $package['errors'][] = get_string('errorintegritychanged', 'local_bulkinstall');
             }
             $package['storedname'] = $file['storedname'];
+            $package['activitychoice'] = $record['frontpagechoice'] ?? null;
             $package['sha256'] = $file['sha256'];
             $package['expectedcomponent'] = $file['expectedcomponent'] ?? null;
             // Only a freshly verified catalogue can supply the selected display label.
@@ -186,7 +195,14 @@ class staging_manager {
             $packages[] = $package;
         }
 
-        $batcherrors = $prooferrors;
+        $batcherrors = array_merge($prooferrors, storefront_transition::errors($packages), frontpage_transition::errors($packages, $record['frontpagechoice'] ?? null));
+        foreach ($packages as $package) {
+            $batcherrors = array_merge($batcherrors, $package['guarderrors'] ?? []);
+        }
+        if (array_filter(array_column($packages, 'transition'))
+                && array_intersect(['local_lmh108', 'local_bulkinstall'], array_column($packages, 'component'))) {
+            $batcherrors[] = get_string('transitionprerequisitesfirst', 'local_bulkinstall');
+        }
         if (!$selectedfiles) {
             $batcherrors[] = get_string('selectionempty', 'local_bulkinstall');
         }
@@ -260,8 +276,8 @@ class staging_manager {
                     $source = get_string('dependencyinbatch', 'local_bulkinstall');
                 } else {
                     $dependencyinfo = $pluginmanager->get_plugin_info($dependency);
-                    if ($dependencyinfo !== null && $dependencyinfo->versiondb !== null) {
-                        $availableversion = (int)$dependencyinfo->versiondb;
+                    if ($dependencyinfo !== null && $dependencyinfo->versiondisk !== null) {
+                        $availableversion = (int)$dependencyinfo->versiondisk;
                         $source = get_string('dependencyinstalled', 'local_bulkinstall');
                     }
                 }
@@ -317,6 +333,8 @@ class staging_manager {
         }
 
         return [
+            'frontpagechoiceoffered' => frontpage_transition::choice_required($packages) || isset($record['frontpagechoice']),
+            'frontpagechoice' => $record['frontpagechoice'] ?? null,
             'mode' => $record['mode'] ?? 'packages',
             'bundle' => $record['bundle'] ?? null,
             'updates' => isset($record['updateproof']),
@@ -337,13 +355,37 @@ class staging_manager {
     /** Bind a confirmation to the actual reviewed selection and its consequential check results. */
     public function review_token(array $analysis): string {
         $packages = array_map(static fn(array $package): array => array_intersect_key($package, array_flip([
-            'storedname', 'sha256', 'component', 'version', 'installedversion', 'action', 'dependencies', 'errors', 'warnings',
+            'storedname', 'sha256', 'component', 'version', 'installedversion', 'installeddiskversion', 'action', 'dependencies', 'errors', 'warnings', 'transition', 'activitychoice',
         ])), $analysis['packages']);
         return hash('sha256', json_encode([$analysis['revision'], $analysis['selection'], $packages,
             $analysis['batcherrors'], $analysis['activation']], JSON_THROW_ON_ERROR));
     }
 
     /** Preview a fixed point: removing blockers can expose further missing/too-old dependencies. */
+    public function choose_frontpage(string $storageid, string $choice, string $token): void {
+        global $SESSION;
+        require_capability('moodle/site:config', \context_system::instance());
+        if (!in_array($choice, ['keep_le', 'paid'], true)) { throw new \invalid_parameter_exception('Unknown Activity choice.'); }
+        $analysis = $this->analyse($storageid);
+        if (!hash_equals($this->review_token($analysis), $token)) {
+            throw new \moodle_exception('selectionchanged', 'local_bulkinstall');
+        }
+        $record = $this->get_record($storageid);
+        $all = $this->analyse($storageid, false, array_column($record['files'], 'storedname'));
+        if (!frontpage_transition::choice_required($all['packages'])) {
+            throw new \moodle_exception('frontpagechoicerequired', 'local_bulkinstall');
+        }
+        $modules = array_column(array_filter($all['packages'], static fn(array $p): bool =>
+            ($p['transition']['component'] ?? '') === 'mod_frontpage'), 'storedname');
+        $selection = $analysis['selection'];
+        $selection = $choice === 'keep_le' ? array_values(array_diff($selection, $modules))
+            : array_values(array_unique(array_merge($selection, $modules)));
+        $record['selection'] = $selection;
+        $record['frontpagechoice'] = $choice;
+        $record['revision'] = (int)($record['revision'] ?? 0) + 1;
+        $SESSION->{self::SESSION_KEY}[$storageid] = $record;
+    }
+
     public function exclusion_plan(string $storageid): array {
         $this->previewinspections = [];
         try {
@@ -399,14 +441,7 @@ class staging_manager {
         if (empty($analysis['caninstall'])) {
             throw new \coding_exception('A failed batch cannot be converted to installables.');
         }
-        $installables = [];
-        foreach ($analysis['packages'] as $package) {
-            $installables[] = (object)[
-                'component' => $package['component'],
-                'zipfilepath' => $package['path'],
-            ];
-        }
-        return $installables;
+        return $this->replacementguard->freeze($analysis['packages']);
     }
 
     /**

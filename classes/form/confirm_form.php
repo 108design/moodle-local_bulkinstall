@@ -28,6 +28,11 @@ class confirm_form extends \moodleform {
         $mform->setType('storage', PARAM_ALPHANUM);
         $mform->addElement('hidden', 'reviewtoken', $this->_customdata['reviewtoken']);
         $mform->setType('reviewtoken', PARAM_ALPHANUM);
+        if (!empty($this->_customdata['transitions'])) {
+            $mform->addElement('advcheckbox', 'editionconsent', get_string('editionconsent', 'local_bulkinstall'));
+            $mform->addRule('editionconsent', get_string('required'), 'required', null, 'client');
+            $mform->addHelpButton('editionconsent', 'editionconsent', 'local_bulkinstall');
+        }
         $this->add_action_buttons(true, get_string('installbatch', 'local_bulkinstall'));
     }
 }

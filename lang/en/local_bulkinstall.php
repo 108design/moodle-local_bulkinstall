@@ -424,3 +424,79 @@ $string['uninstallrecheck'] = 'Check files again';
 $string['uninstallcompletionuncertain'] = 'Completion cannot yet be confirmed safely. Check the errors reported above and the plugin status before continuing. The file check does not retry uninstallation or restore data.';
 
 $string['uninstallnextstep'] = 'Next step';
+
+// Installed publisher and edition protection.
+$string['errorupdateguard'] = 'The update for {$a} was blocked by the installed publisher or edition protection. Use an approved package for the installed edition; the current installation remains unchanged.';
+$string['adminhelp_review_article'] .= '<p>Protected installed plugins also verify the publisher signature and edition of their replacement. A failed check blocks the entire batch. Use an approved package for the installed edition. Bulk Installer checks the exact package bytes again before handing them to Moodle.</p>';
+
+$string['errorpendingcodedowngrade'] = 'Newer plugin files (build {$a}) are already present. This older package cannot replace them.';
+
+// Shared independent signed update protection.
+$string['updateguard_heading'] = 'Update stopped';
+$string['updateguard_component'] = 'The package for {$a} was rejected.';
+$string['updateguard_hint'] = 'Use an approved package for the installed edition. You can review the operation again.';
+$string['updateguard_unchanged'] = 'This request did not replace plugin files.';
+$string['updateguard_help'] = 'The installed plugin checks the publisher signature, package contents, permitted update channel and compatibility before replacement. A valid signature does not authorise a different edition. If one package is rejected, the whole batch stops.';
+$string['updateguard_signature'] = 'The publisher signature or package contents could not be verified.';
+$string['updateguard_policy'] = 'This package does not match the installed edition or permitted package profile.';
+$string['updateguard_channel'] = 'Updates through this channel are not enabled for this plugin.';
+$string['updateguard_metadata'] = 'The version or dependency information is inconsistent.';
+$string['updateguard_dependency'] = 'A required plugin version is missing. Update the dependency together with this plugin or beforehand.';
+$string['updateguard_approval'] = 'The packages or installed state have changed since the preview. Review the operation again.';
+$string['updateguard_busy'] = 'Another installation is running. Try again after it finishes.';
+$string['updateguard_installed'] = 'The installed update protection is incomplete. Restore the files of the last approved installed version.';
+$string['updateguard_operation'] = 'This combination of installation actions is not supported. Start a single update operation again.';
+$string['updateguard_failed'] = 'The update could not be verified. No installation was started.';
+$string['updateguard_back'] = 'Return to plugin overview';
+// End shared independent signed update protection.
+
+$string['errorupdateguardstale'] = 'The active update protection is outdated in this request. Reload the page and review the batch again. If this message persists, purge the Moodle caches and ask the administrator to refresh the PHP opcode cache. The installation has not started.';
+
+// Explicit LE to Pro transition.
+$string['errortransitionconsent'] = 'Confirm the selected edition change explicitly before installing.';
+$string['errortransitionlicence'] = 'Verified activation for this installation is missing. Prepare the free activation or Pro licence specified for this component.';
+$string['editionconsent'] = 'I agree to the edition change described above and the displayed conditions of use.';
+$string['editionconsent_help'] = 'This confirmation applies to the displayed site, source versions, target packages and any Course Activity choice. Without consent the LE editions remain installed. Free activation or a paid licence is prepared separately. The review describes the effect on editing for each component.';
+$string['transitionconsequences'] = 'Your content, history, ownership and placements are retained. Script Manager requires Pro for editing and for script execution; execution continues only through its signed outage grace. Menu Builder requires Pro for central editing; ordinary saved menus continue to render after licence expiry. This change cannot be undone by installing the lower-build LE ZIP. Keep a backup for a complete site restore. No purchase or payment is made by this installer.';
+$string['transitionready'] = 'A current Pro licence assigned to this installation has been verified. Installation still requires your explicit confirmation.';
+$string['transitionnotready'] = 'The LE edition remains installed. Prepare or refresh its Pro licence before confirming this change. A trial, grace state, another site or missing signed licence origin is insufficient.';
+$string['transitionpreparelicence'] = 'Prepare Pro licence';
+$string['transitionlicencekey'] = 'Existing Pro licence key';
+$string['transitionlicencekey_help'] = 'Enter a Pro key you already own. It is sent to the configured licence service for deliberate activation on this installation. The installer does not buy a licence or retain the raw key. An already assigned valid Pro licence needs no new key.';
+$string['transitionactivate'] = 'Activate existing licence';
+$string['transitionactivationfailed'] = 'The licence could not be verified for this change. LE remains installed. Check the product, assignment, environment and current signed licence status, then return to review.';
+$string['transitionactivationintro'] = 'Activation and installation are separate decisions. Activating an existing licence may occupy its site slot. Cancelling installation keeps LE installed and leaves that deliberate activation in the Plugin Manager, where you can manage or release it. Return to the package review afterwards; its installation confirmation is still required.';
+$string['transitionmanagerrequired'] = 'First install Plugin Manager 0.29 or later and connect this installation. Select its production or development environment deliberately. The licence service must support signed licence origin; older assertions need a refresh. You can return and cancel without replacing LE.';
+$string['transitionmanager'] = 'Open Plugin Manager';
+$string['adminhelp_review_article'] .= '<p>The explicit Script Manager or Menu Builder LE to Pro change is available only here. Verify a current Pro licence for this installation, then confirm the displayed usage consequences and exact target packages. Preparing a licence does not install files. Cancelling keeps LE installed; a deliberately activated licence remains manageable in Plugin Manager. Once file replacement starts, Moodle continues its database upgrade. After an interruption, resume with the same verified packages and the saved transition receipt. Do not uninstall the plugin to recover. Reverting requires a complete backup restore.</p>';
+$string['transitionprerequisitesfirst'] = 'Update BI and Plugin Manager in a separate step first, then review and confirm the LE change again.';
+
+$string['frontpagechoicerequired'] = 'Choose whether to keep the free Course Activity or switch to the paid edition first.';
+$string['frontpagechoicepackages'] = 'The paid Course Activity requires its regular mod_frontpage package and a valid licence. You can return to “Keep the free Course Activity”. If the package is missing, upload both target packages together in a new batch.';
+$string['frontpagecorefirst'] = 'Migrate Frontpage Free Core first, or select its verified target package in the same batch.';
+$string['frontpagecoreconsequences'] = 'Frontpage Free Core remains free. Pages, revisions, files, visibility and the existing site-home replacement setting are retained. Its free activation through your connected account is prepared before files are replaced. Choose the Course Activity path separately.';
+$string['frontpagepaidconsequences'] = 'Switching to the paid regular Course Activity has the following conditions. A valid licence for this installation is checked before replacement. Existing content remains viewable if that licence later becomes unavailable; editing requires activation. The lower LE edition cannot subsequently be installed as an update. This installer does not purchase a licence.';
+$string['frontpagechoiceintro'] = 'Keep the free Course Activity: its package stays installed and its existing limited editor remains available, including for new activities. Paid edition: the uploaded regular module package is checked separately. Each choice returns to this review; installation requires your final consent.';
+$string['frontpagechoice_keep_le'] = 'Keep the free Course Activity';
+$string['frontpagechoice_paid'] = 'Switch to the paid Course Activity';
+$string['frontpagechosen'] = 'Selected: {$a}';
+$string['frontpagefreeprepare'] = 'Free Core activation uses your existing connected account and occupies its activation. It does not trigger a payment. If installation is cancelled, this deliberately prepared activation remains visible and manageable in Plugin Manager. Without an account connection, return and keep using LE unchanged.';
+$string['frontpagefreeclaim'] = 'Activate the free Core for this installation';
+
+$string['frontpagefreeready'] = 'Free Core activation has been verified. Confirm the selected installation when ready.';
+
+$string['frontpagefreenotready'] = 'The LE edition remains installed. Prepare free Core activation first. A connected account in Plugin Manager is required; no payment is triggered.';
+
+$string['frontpagepolicyblocked'] = 'The signed feature policy for the selected Core target does not permit the paid Activity transition with this activation. Installed editions remain unchanged.';
+
+$string['adminhelp_review_article'] .= '<p>When moving Frontpage from its Marketplace edition, Free Core remains free. Its free account activation is prepared separately. Keep the free Course Activity with its existing limited editor, or explicitly switch to the paid regular module. The paid path requires its package and a verified licence before files are replaced. For later Core updates, you can also remove an offered paid module package from the selection. Each change returns to a fresh review; final consent is still required. Missing activation or cancellation keeps LE installed.</p>';
+
+$string['transitionupgradecontinuation'] = 'Plan for maintenance while Moodle completes its database upgrade. Cancelling after file replacement does not undo it. After an interruption, resume the same confirmed packages; do not uninstall the plugin to recover.';
+
+$string['frontpagefreepreparetitle'] = 'Prepare free Core activation';
+
+$string['storefrontcoreconsequences'] = 'Free Core keeps your products, course offers, orders and sales history. Moodle payment remains included. Existing course access, payment evidence and queued messages are retained. Migration does not charge a payment, extend access or send mail. You may keep the compatible installed free enrolment plugin. Other fulfilment features are not enabled automatically.';
+$string['storefrontcompanionconsequences'] = 'The enrolment companion remains free. Existing mappings, roles and purchased access are kept. It uses the Storefront Free Core activation and needs no separate paid licence. Prepare the selected Core first, or use Plugin Manager for an already installed Core. Updating Storefront alone may retain the compatible LE companion.';
+$string['storefrontfreecompanion'] = 'Free enrolment companion';
+$string['storefronttransitionblocked'] = 'This Storefront change is blocked. Check the verified free activation and the target policy for the included Moodle payment path. Installed plugin code is retained until the whole selected change can proceed.';
+$string['storefronttransitioncorefirst'] = 'Select the compatible Storefront Free Core package as well, or update Core first. You may retain the existing compatible free enrolment companion when updating Core alone.';

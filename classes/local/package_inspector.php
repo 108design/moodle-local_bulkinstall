@@ -20,6 +20,13 @@ use core\update\validator;
  * @license    See LICENSE.md for the full terms.
  */
 class package_inspector {
+    /** Check installed replacement trust before full Core archive validation. */
+    private replacement_guard $replacementguard;
+
+    public function __construct(?replacement_guard $replacementguard = null) {
+        $this->replacementguard = $replacementguard ?? new replacement_guard();
+    }
+
     /** Maximum number of archive entries in one package. */
     public const MAX_ENTRIES = 10000;
 
@@ -37,6 +44,7 @@ class package_inspector {
         global $CFG;
 
         $result = [
+            'guarderrors' => [],
             'filename' => $filename,
             'path' => $path,
             'component' => null,
@@ -48,6 +56,7 @@ class package_inspector {
             'supported' => null,
             'dependencies' => [],
             'installedversion' => null,
+            'installeddiskversion' => null,
             'installedrelease' => '',
             'displayname' => '',
             'targetpath' => '',
@@ -202,6 +211,8 @@ class package_inspector {
         $result['displayname'] = $plugininfo === null ? '' : $plugininfo->displayname;
         if ($plugininfo !== null && $plugininfo->versiondb !== null) {
             $result['installedversion'] = (int)$plugininfo->versiondb;
+            $result['installeddiskversion'] = isset($plugininfo->versiondisk) ? (int)$plugininfo->versiondisk
+                : $result['installedversion'];
             if ($metadata['version'] < $result['installedversion']) {
                 $result['action'] = 'downgrade';
                 $this->error($result, get_string('errordowngrade', 'local_bulkinstall', $result['installedversion']), 'downgrade');
@@ -213,6 +224,24 @@ class package_inspector {
             }
         } else {
             $result['action'] = 'install';
+        }
+
+        // Code may already be newer than the DB while its normal upgrade is pending.
+        if ($result['installeddiskversion'] !== null && $metadata['version'] < $result['installeddiskversion']) {
+            $result['action'] = 'downgrade';
+            $this->error($result, get_string('errorpendingcodedowngrade', 'local_bulkinstall',
+                $result['installeddiskversion']), 'pendingcodedowngrade');
+        }
+
+        $result['transition'] = null;
+        try {
+            $result['transition'] = $this->replacementguard->transition($path, $result['component'], $result['version']);
+        } catch (\Throwable) {
+            // The normal guard below supplies the hard failure; no unverified preview is displayed.
+        }
+        $result['guarderrors'] = $this->replacementguard->analyse([$result]);
+        foreach ($result['guarderrors'] as $message) {
+            $this->error($result, $message);
         }
 
         // A declared support-range mismatch is the one error the private service edition may explicitly waive.

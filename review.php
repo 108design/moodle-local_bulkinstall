@@ -37,7 +37,11 @@ if ($selectionaction !== '') {
     if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
         throw new invalid_parameter_exception('Selection changes require POST');
     }
-    if ($selectionaction === 'apply') {
+    if ($selectionaction === 'frontpage') {
+        $manager->choose_frontpage($storageid, required_param('activitychoice', PARAM_ALPHAEXT),
+            required_param('selectiontoken', PARAM_ALPHANUM));
+        redirect($PAGE->url);
+    } else if ($selectionaction === 'apply') {
         try {
             $manager->exclude_blocked($storageid, required_param('selectiontoken', PARAM_ALPHANUM));
             redirect($PAGE->url);
@@ -129,6 +133,47 @@ if ($analysis['bundle'] !== null) {
 }
 
 $presentation = \local_bulkinstall\local\review_presentation::export($analysis);
+$transitions = array_filter(array_column($analysis['packages'], 'transition'));
+    if (!empty($analysis['frontpagechoiceoffered'])) {
+        echo html_writer::tag('p', get_string('frontpagechoiceintro', 'local_bulkinstall'));
+        foreach (['keep_le', 'paid'] as $choice) {
+            echo $OUTPUT->single_button(new moodle_url('/local/bulkinstall/review.php', [
+                'storage' => $storageid, 'selectionaction' => 'frontpage', 'activitychoice' => $choice,
+                'selectiontoken' => $manager->review_token($analysis), 'sesskey' => sesskey(),
+            ]), get_string('frontpagechoice_' . $choice, 'local_bulkinstall'), 'post');
+        }
+        echo html_writer::tag('p', get_string('frontpagechosen', 'local_bulkinstall',
+            $analysis['frontpagechoice'] ? get_string('frontpagechoice_' . $analysis['frontpagechoice'], 'local_bulkinstall')
+                : get_string('choosedots')));
+    }
+
+foreach ($transitions as $transition) {
+    $freecore = in_array($transition['component'], ['local_frontpage', 'local_storefront'], true);
+    $storefrontcompanion = $transition['component'] === 'enrol_storefront';
+    echo html_writer::start_tag('section', ['class' => 'alert alert-warning']);
+    echo html_writer::tag('h3', s($transition['component']) . ': LE → '
+        . ($freecore ? 'Free Core' : ($storefrontcompanion ? get_string('storefrontfreecompanion', 'local_bulkinstall') : 'Pro')), ['class' => 'h5']);
+    echo html_writer::tag('p', get_string($transition['component'] === 'local_storefront' ? 'storefrontcoreconsequences'
+        : ($storefrontcompanion ? 'storefrontcompanionconsequences' : ($transition['component'] === 'local_frontpage'
+        ? 'frontpagecoreconsequences' : ($transition['component'] === 'mod_frontpage'
+            ? 'frontpagepaidconsequences' : 'transitionconsequences'))), 'local_bulkinstall'));
+    echo html_writer::tag('p', get_string($freecore || $storefrontcompanion
+        ? ($transition['ready'] ? 'frontpagefreeready' : 'frontpagefreenotready')
+        : ($transition['ready'] ? 'transitionready' : 'transitionnotready'),
+        'local_bulkinstall'));
+    echo html_writer::tag('p', s($transition['sourceversion'] . ' → ' . $transition['targetversion']));
+    echo html_writer::tag('code', s($transition['sha256']), ['class' => 'text-break']);
+    echo html_writer::tag('p', get_string('transitionupgradecontinuation', 'local_bulkinstall'));
+    if (!$transition['ready'] && $storefrontcompanion) {
+        echo html_writer::link(new moodle_url('/local/lmh108/index.php'), get_string('transitionmanager', 'local_bulkinstall'));
+    } else if (!$transition['ready']) {
+        echo $OUTPUT->single_button(new moodle_url('/local/bulkinstall/transition_license.php', [
+            'storage' => $storageid, 'component' => $transition['component'],
+        ]), get_string($freecore
+            ? 'frontpagefreepreparetitle' : 'transitionpreparelicence', 'local_bulkinstall'), 'get');
+    }
+    echo html_writer::end_tag('section');
+}
 if ($plan !== null && $plan['canapply']) {
     $presentation['headline'] = get_string('selectionpreviewready', 'local_bulkinstall');
     $presentation['groupmessage'] = get_string('selectionpreviewreadybody', 'local_bulkinstall');
@@ -152,7 +197,7 @@ if ($plan !== null) {
 } else if ($analysis['caninstall']) {
     $confirmform = new \local_bulkinstall\form\confirm_form(
         new moodle_url('/local/bulkinstall/install.php'),
-        ['storage' => $storageid, 'reviewtoken' => $manager->review_token($analysis)]
+        ['storage' => $storageid, 'reviewtoken' => $manager->review_token($analysis), 'transitions' => $transitions]
     );
     $confirmform->display();
 } else {

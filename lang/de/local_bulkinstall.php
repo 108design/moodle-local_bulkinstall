@@ -424,3 +424,79 @@ $string['uninstallrecheck'] = 'Dateien erneut prüfen';
 $string['uninstallcompletionuncertain'] = 'Der Abschluss lässt sich noch nicht sicher bestätigen. Prüfe die oben gemeldeten Fehler und den Plugin-Status, bevor Du fortfährst. Die Dateinachprüfung wiederholt keine Deinstallation und stellt keine Daten wieder her.';
 
 $string['uninstallnextstep'] = 'Nächster Schritt';
+
+// Installed publisher and edition protection.
+$string['errorupdateguard'] = 'Das Update für {$a} wurde vom Herausgeber- oder Editionsschutz der installierten Ausgabe abgewiesen. Verwende ein freigegebenes Paket für die installierte Edition; die vorhandene Installation bleibt erhalten.';
+$string['adminhelp_review_article'] .= '<p>Geschützte installierte Plugins prüfen zusätzlich die Herausgebersignatur und Edition ihres Ersatzpakets. Eine fehlgeschlagene Prüfung blockiert den gesamten Stapel. Verwende ein freigegebenes Paket für die installierte Edition. Der Bulk Installer prüft die genauen Paketdateien erneut, bevor er sie an Moodle übergibt.</p>';
+
+$string['errorpendingcodedowngrade'] = 'Es sind bereits neuere Plugindateien (Build {$a}) vorhanden. Dieses ältere Paket kann sie nicht ersetzen.';
+
+// Shared independent signed update protection.
+$string['updateguard_heading'] = 'Update angehalten';
+$string['updateguard_component'] = 'Das Paket für {$a} wurde abgewiesen.';
+$string['updateguard_hint'] = 'Verwende ein freigegebenes Paket für die installierte Ausgabe. Du kannst den Vorgang erneut prüfen.';
+$string['updateguard_unchanged'] = 'Dieser Vorgang hat keine Plugin-Dateien ersetzt.';
+$string['updateguard_help'] = 'Das installierte Plugin prüft vor dem Ersetzen die Herausgebersignatur, den Paketinhalt, den erlaubten Updatekanal und die Kompatibilität. Eine gültige Signatur erlaubt keinen Wechsel auf eine andere Ausgabe. Wird ein Paket abgewiesen, stoppt die gesamte Sammelaktion.';
+$string['updateguard_signature'] = 'Die Herausgebersignatur oder der Paketinhalt konnte nicht bestätigt werden.';
+$string['updateguard_policy'] = 'Das Paket passt nicht zur installierten Ausgabe oder zum erlaubten Paketprofil.';
+$string['updateguard_channel'] = 'Updates über diesen Kanal sind für dieses Plugin nicht freigegeben.';
+$string['updateguard_metadata'] = 'Die Versions- oder Abhängigkeitsangaben sind nicht konsistent.';
+$string['updateguard_dependency'] = 'Eine benötigte Plugin-Version fehlt. Aktualisiere die Abhängigkeit gemeinsam mit diesem Plugin oder vorher.';
+$string['updateguard_approval'] = 'Die Pakete oder der installierte Stand haben sich seit der Vorschau geändert. Prüfe den Vorgang erneut.';
+$string['updateguard_busy'] = 'Eine andere Installation läuft. Versuche es nach deren Abschluss erneut.';
+$string['updateguard_installed'] = 'Der installierte Updateschutz ist unvollständig. Stelle die Dateien der zuletzt installierten freigegebenen Version wieder her.';
+$string['updateguard_operation'] = 'Diese Kombination von Installationsaktionen wird nicht unterstützt. Starte einen einzelnen Updatevorgang erneut.';
+$string['updateguard_failed'] = 'Das Update konnte nicht geprüft werden. Es wurde keine Installation gestartet.';
+$string['updateguard_back'] = 'Zur Pluginübersicht';
+// End shared independent signed update protection.
+
+$string['errorupdateguardstale'] = 'In dieser Anfrage ist noch ein veralteter Updateschutz aktiv. Lade die Seite neu und prüfe den Stapel erneut. Bleibt die Meldung bestehen, leere die Moodle-Caches und lass den PHP-Opcodecache durch die Administration erneuern. Die Installation wurde nicht gestartet.';
+
+// Explicit LE to Pro transition.
+$string['errortransitionconsent'] = 'Bestätige den ausgewählten Editionswechsel ausdrücklich vor der Installation.';
+$string['errortransitionlicence'] = 'Für diesen Wechsel fehlt die geprüfte, dieser Installation zugewiesene Freischaltung. Bereite die im jeweiligen Abschnitt genannte kostenlose Aktivierung oder Pro-Lizenz vor.';
+$string['editionconsent'] = 'Ich stimme dem oben beschriebenen Editionswechsel und den angezeigten Nutzungsbedingungen zu.';
+$string['editionconsent_help'] = 'Diese Zustimmung gilt für die angezeigte Installation, Ausgangsversionen, Zielpakete und gegebenenfalls die gewählte Kursaktivität. Ohne Zustimmung bleiben die LE-Ausgaben installiert. Eine kostenlose Aktivierung oder eine bezahlte Lizenz wird getrennt vorbereitet. Die jeweiligen Folgen für die Bearbeitung stehen in der Vorschau.';
+$string['transitionconsequences'] = 'Deine Inhalte, Historien, Eigentümerschaft und Platzierungen bleiben erhalten. Script Manager benötigt Pro zum Bearbeiten und Ausführen von Skripten; die Ausführung bleibt nur innerhalb seiner signierten Ausfallfrist aktiv. Menu Builder benötigt Pro für die zentrale Bearbeitung; gewöhnliche gespeicherte Menüs werden auch nach Lizenzablauf weiter ausgegeben. Ein Rückwechsel durch Installation des LE-ZIPs mit niedrigerer Buildnummer ist ausgeschlossen. Bewahre ein Backup für eine vollständige Wiederherstellung der Installation auf. Dieser Installer löst keinen Kauf und keine Zahlung aus.';
+$string['transitionready'] = 'Eine aktuelle Pro-Lizenz für diese Installation ist geprüft. Die Installation erfordert weiterhin Deine ausdrückliche Zustimmung.';
+$string['transitionnotready'] = 'LE bleibt installiert. Bereite die Pro-Lizenz vor oder aktualisiere ihren Nachweis, bevor Du den Wechsel bestätigst. Testlizenz, Grace-Status, eine andere Installation oder eine fehlende signierte Lizenzherkunft reichen nicht aus.';
+$string['transitionpreparelicence'] = 'Pro-Lizenz vorbereiten';
+$string['transitionlicencekey'] = 'Vorhandener Pro-Lizenzschlüssel';
+$string['transitionlicencekey_help'] = 'Gib einen Pro-Schlüssel ein, den Du bereits besitzt. Er wird zur bewussten Aktivierung auf dieser Installation an den eingerichteten Lizenzdienst übermittelt. Der Installer kauft keine Lizenz und speichert den Rohschlüssel nicht. Eine bereits gültig zugewiesene Pro-Lizenz benötigt keinen neuen Schlüssel.';
+$string['transitionactivate'] = 'Vorhandene Lizenz aktivieren';
+$string['transitionactivationfailed'] = 'Die Lizenz konnte für diesen Wechsel nicht geprüft werden. LE bleibt installiert. Prüfe Produkt, Zuweisung, Umgebung und aktuellen signierten Lizenzstatus und kehre danach zur Paketprüfung zurück.';
+$string['transitionactivationintro'] = 'Aktivierung und Installation sind getrennte Entscheidungen. Das Aktivieren einer vorhandenen Lizenz kann ihren Installationsplatz belegen. Beim Abbruch der Installation bleibt LE installiert; die bewusst vorgenommene Aktivierung bleibt im Plugin Manager verwaltbar und kann dort freigegeben werden. Kehre anschließend zur Paketprüfung zurück. Die Zustimmung zur Installation ist weiterhin erforderlich.';
+$string['transitionmanagerrequired'] = 'Installiere zuerst Plugin Manager 0.29 oder neuer und verbinde diese Installation. Wähle ihre Produktions- oder Entwicklungsumgebung bewusst aus. Der Lizenzdienst muss die signierte Lizenzherkunft unterstützen; ältere Nachweise benötigen eine Aktualisierung. Du kannst zurückkehren und abbrechen, ohne LE zu ersetzen.';
+$string['transitionmanager'] = 'Plugin Manager öffnen';
+$string['adminhelp_review_article'] .= '<p>Der ausdrückliche Wechsel von Script Manager oder Menu Builder LE zu Pro erfolgt nur hier. Prüfe zuerst die aktuelle Pro-Lizenz für diese Installation und bestätige danach die angezeigten Nutzungsfolgen und Zielpakete. Die Lizenzvorbereitung installiert keine Dateien. Beim Abbruch bleibt LE erhalten; eine zuvor bewusst aktivierte Lizenz bleibt im Plugin Manager verwaltbar. Nach Beginn des Dateiaustauschs führt Moodle das Datenbankupgrade fort. Bei einer Unterbrechung setzt Du es mit denselben geprüften Paketen und dem gespeicherten Wechselnachweis fort. Deinstalliere das Plugin dafür nicht. Ein Rückwechsel benötigt eine vollständige Wiederherstellung des Backups.</p>';
+$string['transitionprerequisitesfirst'] = 'Aktualisiere BI und Plugin Manager zuerst in einem getrennten Schritt. Prüfe und bestätige danach den LE-Wechsel erneut.';
+
+$string['frontpagechoicerequired'] = 'Wähle zuerst, ob die kostenlose Kursaktivität beibehalten oder zur bezahlten Ausgabe gewechselt werden soll.';
+$string['frontpagechoicepackages'] = 'Für die bezahlte Kursaktivität müssen das reguläre mod_frontpage-Paket und eine gültige Lizenz vorliegen. Du kannst jederzeit „Kostenlose Kursaktivität beibehalten“ wählen. Fehlt das Paket, lade beide Zielpakete gemeinsam in einen neuen Stapel hoch.';
+$string['frontpagecorefirst'] = 'Migriere zuerst den Frontpage Free Core oder wähle sein geprüftes Zielpaket im selben Stapel aus.';
+$string['frontpagecoreconsequences'] = 'Der Frontpage Free Core bleibt kostenlos. Seiten, Revisionen, Dateien, Freigaben und der bisherige Startseitenschalter werden übernommen. Seine kostenlose Aktivierung über Dein verbundenes Konto wird vor dem Dateiaustausch vorbereitet. Für die Kursaktivität wählst Du den weiteren Weg gesondert.';
+$string['frontpagepaidconsequences'] = 'Für den Wechsel zur kostenpflichtigen regulären Kursaktivität gelten die folgenden Bedingungen. Vor dem Austausch wird eine gültige, zu dieser Installation gehörende Lizenz geprüft. Bestehende Inhalte bleiben bei späterem Lizenzverlust darstellbar; ihre Bearbeitung benötigt die Freischaltung. Die niedrigere LE-Ausgabe kann anschließend nicht als Update zurückinstalliert werden. Es erfolgt kein Kauf durch diesen Installer.';
+$string['frontpagechoiceintro'] = 'Kostenlose Kursaktivität beibehalten: Ihr Paket bleibt installiert und ihr bisheriger begrenzter Editor bleibt nutzbar, auch für neue Aktivitäten. Bezahlte Ausgabe: Das hochgeladene reguläre Modulpaket wird zusätzlich geprüft. Jede Änderung führt in diese Vorschau zurück; installiert wird erst nach Deiner abschließenden Zustimmung.';
+$string['frontpagechoice_keep_le'] = 'Kostenlose Kursaktivität beibehalten';
+$string['frontpagechoice_paid'] = 'Zur bezahlten Kursaktivität wechseln';
+$string['frontpagechosen'] = 'Gewählt: {$a}';
+$string['frontpagefreeprepare'] = 'Die kostenlose Core-Aktivierung nutzt Dein bereits verbundenes Konto und belegt die zugehörige Aktivierung. Sie löst keine Zahlung aus. Bei Abbruch der Installation bleibt eine bewusst vorbereitete Aktivierung im Plugin Manager sichtbar und kann dort verwaltet werden. Ohne Kontoverbindung kannst Du zurückgehen und die LE unverändert weiterverwenden.';
+$string['frontpagefreeclaim'] = 'Kostenlosen Core für diese Installation aktivieren';
+
+$string['frontpagefreeready'] = 'Die kostenlose Core-Aktivierung ist geprüft. Bestätige anschließend die gewählte Installation.';
+
+$string['frontpagefreenotready'] = 'Die LE bleibt installiert. Bereite zuerst die kostenlose Core-Aktivierung vor. Dazu ist ein verbundenes Konto im Plugin Manager nötig; es entsteht keine Zahlung.';
+
+$string['frontpagepolicyblocked'] = 'Die signierte Funktionsregel des gewählten Core-Ziels erlaubt den bezahlten Activity-Wechsel mit dieser Freischaltung nicht. Die installierten Ausgaben bleiben erhalten.';
+
+$string['adminhelp_review_article'] .= '<p>Beim Wechsel von Frontpage aus dem Marketplace bleibt der Free Core kostenlos. Seine kostenlose Kontoaktivierung wird gesondert vorbereitet. Du kannst die kostenlose Kursaktivität mit dem bisherigen begrenzten Editor beibehalten oder ausdrücklich zur bezahlten regulären Ausgabe wechseln. Der bezahlte Wechsel verlangt Paket und geprüfte Lizenz vor dem Dateiaustausch. Auch bei späteren Core-Updates kannst Du ein zusätzlich angebotenes bezahltes Modulpaket aus der Auswahl nehmen. Jede Änderung führt in eine neue Vorschau; die abschließende Zustimmung bleibt erforderlich. Ohne Lizenz oder bei Abbruch bleibt die LE erhalten.</p>';
+
+$string['transitionupgradecontinuation'] = 'Plane für den anschließenden Moodle-Datenbankupgrade eine Wartungsunterbrechung ein. Nach dem Dateiaustausch ist Abbrechen keine Rücknahme. Setze nach einer Unterbrechung denselben bestätigten Stand fort; deinstalliere das Plugin dafür nicht.';
+
+$string['frontpagefreepreparetitle'] = 'Kostenlose Core-Aktivierung vorbereiten';
+
+$string['storefrontcoreconsequences'] = 'Free Core erhält Deine Produkte, Kursangebote, Bestellungen und Verkaufshistorie. Der Moodle-Zahlungsweg bleibt enthalten. Bestehende Kurszugänge, Zahlungsnachweise und vorgemerkte Nachrichten bleiben erhalten. Die Migration löst keine Zahlung, Zugangsverlängerung oder Mail aus. Der kompatible kostenlose Einschreibebegleiter darf installiert bleiben. Weitere Lieferfunktionen werden nicht automatisch aktiviert.';
+$string['storefrontcompanionconsequences'] = 'Der Einschreibebegleiter bleibt kostenlos. Vorhandene Zuordnungen, Rollen und gekaufte Zugänge bleiben erhalten. Er nutzt die Storefront-Free-Core-Aktivierung und benötigt keine eigene kostenpflichtige Lizenz. Bereite zuerst das ausgewählte Core-Paket vor oder nutze bei bereits installiertem Core den Plugin Manager. Beim alleinigen Core-Update darf der kompatible LE-Begleiter bleiben.';
+$string['storefrontfreecompanion'] = 'Kostenloser Einschreibebegleiter';
+$string['storefronttransitionblocked'] = 'Der Storefront-Wechsel ist gesperrt. Prüfe die bestätigte kostenlose Aktivierung und die Zielrichtlinie für den enthaltenen Moodle-Zahlungsweg. Installierter Plugincode bleibt erhalten, bis die gesamte ausgewählte Umstellung möglich ist.';
+$string['storefronttransitioncorefirst'] = 'Wähle das kompatible Storefront-Free-Core-Paket mit aus oder aktualisiere zuerst den Core. Beim alleinigen Core-Update darf der vorhandene kompatible kostenlose Einschreibebegleiter bleiben.';

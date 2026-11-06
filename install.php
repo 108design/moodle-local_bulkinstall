@@ -35,6 +35,25 @@ if (!empty($CFG->disableupdateautodeploy)) {
     throw new moodle_exception('featuredisabled', 'tool_installaddon');
 }
 
+// Share the exact installation boundary with guarded native updates.
+if (!class_exists(\design108\update_guard\v1\guard::class, false)) {
+    require_once(__DIR__ . '/update-guard.php');
+}
+// A cached older wrapper must not reach coordination changes or the final writer.
+if (!defined(\design108\update_guard\v1\guard::class . '::IMPLEMENTATION')
+        || \design108\update_guard\v1\guard::IMPLEMENTATION < 2
+        || !method_exists(\design108\update_guard\v1\guard::class, 'install_plugins')) {
+    throw new moodle_exception('errorupdateguardstale', 'local_bulkinstall');
+}
+try {
+    $guardlock = \design108\update_guard\v1\guard::acquire_lock(0);
+} catch (\RuntimeException $exception) {
+    throw new moodle_exception('errorinstallbusy', 'local_bulkinstall');
+}
+register_shutdown_function(static function() use ($guardlock): void {
+    $guardlock->release();
+});
+
 // Serialise BI code deployment across sessions. Moodle owns the subsequent database upgrade lock.
 $installlock = \core\lock\lock_config::get_lock_factory('local_bulkinstall')->get_lock('install_batch', 0);
 if (!$installlock) {
@@ -44,6 +63,8 @@ register_shutdown_function(static function() use ($installlock): void {
     $installlock->release();
 });
 
+// Bootstrap may have cached installed versions before either deployment lock.
+\core_plugin_manager::reset_caches();
 \core_php_time_limit::raise(0);
 $analysis = $manager->analyse($storageid);
 if (!$analysis['caninstall'] || !hash_equals($manager->review_token($analysis),
@@ -56,7 +77,36 @@ if (!$analysis['caninstall'] || !hash_equals($manager->review_token($analysis),
     );
 }
 
+// Keep refresh/deactivation and ownership handover from changing authority across the final boundary.
+$transitionlocks = [];
+$transitioncomponents = array_column(array_filter(array_column($analysis['packages'], 'transition')), 'component');
+if ($transitioncomponents && !optional_param('editionconsent', false, PARAM_BOOL)) {
+    redirect(new moodle_url('/local/bulkinstall/review.php', ['storage' => $storageid]),
+        get_string('errortransitionconsent', 'local_bulkinstall'), null, \core\output\notification::NOTIFY_ERROR);
+}
+sort($transitioncomponents);
+$lockkeys = $transitioncomponents ? [['108design_licensing', 'rotation']] : [];
+foreach ($transitioncomponents as $component) {
+    $feature = match ($component) {
+        'local_frontpage' => 'frontpage.free', 'mod_frontpage' => 'frontpage.course_activity',
+        'local_storefront', 'enrol_storefront' => 'storefront.free',
+        default => substr($component, 6) . '.pro',
+    };
+    $lockkeys[] = ['108design_licensing', 'feature:' . $feature];
+    $lockkeys[] = ['local_frontpage_modules', substr($component, 6)];
+}
+$seenlockkeys = [];
+foreach ($lockkeys as [$factory, $key]) {
+    $identity = $factory . ':' . $key;
+    if (isset($seenlockkeys[$identity])) { continue; }
+    $seenlockkeys[$identity] = true;
+    $lock = \core\lock\lock_config::get_lock_factory($factory)->get_lock($key, 0);
+    if (!$lock) { throw new moodle_exception('errorinstallbusy', 'local_bulkinstall'); }
+    $transitionlocks[] = $lock;
+    register_shutdown_function(static function() use ($lock): void { $lock->release(); });
+}
 $installables = $manager->installables($analysis);
+\local_bulkinstall\local\edition_transition::prepare($analysis['packages'], optional_param('editionconsent', false, PARAM_BOOL));
 $components = array_column($analysis['packages'], 'component');
 $activation = $analysis['activation'];
 if (is_array($activation)) {
@@ -80,6 +130,10 @@ if (is_array($activation)) {
         'packages' => array_map(static fn(array $package): array => [
             'component' => $package['component'], 'version' => $package['version'], 'sha256' => $package['sha256'],
         ], $analysis['packages']),
+        'editiontransitions' => array_map(static fn(array $transition): array => [
+            'component' => $transition['component'], 'sourceversion' => $transition['sourceversion'],
+            'targetversion' => $transition['targetversion'], 'sha256' => $transition['sha256'],
+        ], array_values(array_filter(array_column($analysis['packages'], 'transition')))),
     ],
 ])->trigger();
 
@@ -94,7 +148,7 @@ $PAGE->set_url(new moodle_url('/local/bulkinstall/install.php', ['storage' => $s
 $PAGE->set_pagelayout('maintenance');
 $PAGE->set_popup_notification_allowed(false);
 $reviewurl = new moodle_url('/local/bulkinstall/review.php', ['storage' => $storageid]);
-upgrade_install_plugins(
+\design108\update_guard\v1\guard::install_plugins(
     $installables,
     true,
     get_string('installingbatch', 'local_bulkinstall'),

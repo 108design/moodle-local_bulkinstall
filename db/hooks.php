@@ -33,3 +33,10 @@ $callbacks[] = [
     'hook' => \core\hook\output\before_standard_footer_html_generation::class,
     'callback' => [\local_bulkinstall\local\admin_help::class, 'footer'],
 ];
+
+// Installed update trust must be checked before native deployment controllers run.
+$callbacks[] = [
+    'hook' => \core\hook\after_config::class,
+    'callback' => [\local_bulkinstall\local\update_guard::class, 'after_config'],
+    'priority' => 1002,
+];
