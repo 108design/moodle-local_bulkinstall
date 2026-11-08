@@ -7,7 +7,10 @@ defined('MOODLE_INTERNAL') || die();
 
 /** The sole, explicit SM/MB LE to standalone Pro exception to the installed edition policy. */
 final class edition_transition {
-    private const SOURCES = ['local_scriptmanager' => 2026010101, 'local_menubuilder' => 2026010102];
+    private const SOURCES = [
+        'local_scriptmanager' => ['version' => 2026010105, 'family' => 'scriptmanager-schema-v2'],
+        'local_menubuilder' => ['version' => 2026010102, 'family' => 'default'],
+    ];
 
     /** Authenticate the target with installed publisher pins before reading its migration contract. */
     public static function inspect(string $zipfile, string $root, string $component, int $version): ?array {
@@ -33,11 +36,14 @@ final class edition_transition {
         } catch (\Throwable) {
             // The projected policy retains exactly the installed publisher authority and guard floor.
         }
-        if (!in_array('bi', $policy['channels'], true) || ($policy['upgrade_family'] ?? 'default') !== 'default') {
+        $sourcefamily = self::SOURCES[$component]['family'];
+        if (!in_array('bi', $policy['channels'], true) || ($policy['upgrade_family'] ?? 'default') !== $sourcefamily) {
             throw new \RuntimeException('transition-source-policy');
         }
         $projected = $policy;
         $projected['edition'] = 'pro';
+        // Both supported Pro packages belong to the default family. The installed policy still supplies the trust pins.
+        $projected['upgrade_family'] = 'default';
         $projected['profiles'] = ['normal'];
         $manifest = $guard::verify($zipfile, $projected, $component, $version);
         $zip = new \ZipArchive();
@@ -59,9 +65,11 @@ final class edition_transition {
         $disk = $guard::metadata((string)file_get_contents($root . '/version.php'));
         if (($contract['schema'] ?? null) !== 1 || ($contract['component'] ?? '') !== $component
                 || ($contract['from'] ?? '') !== 'le' || ($contract['to'] ?? '') !== 'pro'
+                || ($contract['from_family'] ?? 'default') !== $sourcefamily
+                || ($contract['to_family'] ?? 'default') !== $projected['upgrade_family']
                 || ($contract['feature'] ?? '') !== substr($component, 6) . '.pro'
                 || !in_array($source, $contract['source_versions'] ?? [], true)
-                || $source !== self::SOURCES[$component] || $disk['version'] !== $source
+                || $source !== self::SOURCES[$component]['version'] || $disk['version'] !== $source
                 || ($contract['source_schema_sha256'] ?? '') !== hash_file('sha256', $root . '/db/install.xml')
                 || ($contract['target_schema_sha256'] ?? '') !== ($manifest['files']['db/install.xml'] ?? '')
                 || !isset($manifest['files']['db/le_upgrade.php'])
@@ -70,7 +78,15 @@ final class edition_transition {
             throw new \RuntimeException('transition-source-contract');
         }
         global $DB;
-        foreach ($contract['tables'] ?? [] as $table => $expected) {
+        $tables = $contract['tables'] ?? [];
+        if ($component === 'local_scriptmanager' && (!$tables || array_key_exists('table_renames', $contract))) {
+            throw new \RuntimeException('transition-source-contract');
+        }
+        $dbman = $DB->get_manager();
+        foreach ($tables as $table => $expected) {
+            if (!$dbman->table_exists($table)) {
+                throw new \RuntimeException('transition-source-schema');
+            }
             $actual = array_keys($DB->get_columns($table));
             sort($actual); sort($expected);
             if ($actual !== $expected) { throw new \RuntimeException('transition-source-schema'); }

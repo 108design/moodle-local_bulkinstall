@@ -6,7 +6,10 @@ defined('MOODLE_INTERNAL') || die();
 
 /** Authenticated Free Core migration and optional compatible free companion-family migration. */
 final class storefront_transition {
-    private const SOURCES = ['local_storefront' => 2026010102, 'enrol_storefront' => 2026010101];
+    private const SOURCES = [
+        'local_storefront' => [2026010102, 2026010103, 2026010104, 2026010105, 2026010106, 2026010107],
+        'enrol_storefront' => [2026010101],
+    ];
 
     public static function inspect(string $zipfile, string $root, string $component, int $version): ?array {
         global $CFG, $DB, $USER;
@@ -34,7 +37,7 @@ final class storefront_transition {
                 || ($contract['from'] ?? '') !== $policy['edition'] || ($contract['to'] ?? '') !== $edition
                 || ($contract['from_family'] ?? 'default') !== ($policy['upgrade_family'] ?? 'default')
                 || ($contract['to_family'] ?? 'default') !== $family || ($contract['feature'] ?? '') !== 'storefront.free'
-                || $source !== self::SOURCES[$component] || $disk['version'] !== $source
+                || !in_array($source, self::SOURCES[$component], true) || $disk['version'] !== $source || $version <= $source
                 || !in_array($source, $contract['source_versions'] ?? [], true)
                 || get_config($component, 'distribution') !== 'course'
                 || ($contract['source_schema_sha256'] ?? '') !== hash_file('sha256', $root . '/db/install.xml')
@@ -48,14 +51,14 @@ final class storefront_transition {
             'sourcefingerprint' => edition_transition::fingerprint($root), 'owner' => $component,
             'sha256' => hash_file('sha256', $zipfile), 'manifestsha256' => hash('sha256', $manifestbytes),
             'feature' => 'storefront.free', 'site' => (string)$CFG->wwwroot, 'userid' => (int)$USER->id];
-        if ($core) { $base['companion'] = self::companion($contract['companion_schema_sha256'] ?? ''); }
+        if ($core) { $base['companion'] = self::companion($contract['companion_schema_sha256'] ?? '', $version); }
         try { $base['licence'] = self::licence($component, $version);$base['ready'] = true; }
         catch (\Throwable) { $base['licence'] = null;$base['ready'] = false; }
         return $base;
     }
 
     /** Bind the actual existing companion without requiring an exchange of compatible LE code. */
-    private static function companion(string $schemahash): ?array {
+    private static function companion(string $schemahash, int $targetversion): ?array {
         global $CFG;
         $version = (int)get_config('enrol_storefront', 'version');if (!$version) { return null; }
         $root = $CFG->dirroot . '/enrol/storefront';$guard = \design108\update_guard\v1\guard::class;
@@ -64,8 +67,18 @@ final class storefront_transition {
         if ($disk['version'] !== $version || $policy['edition'] !== 'free'
                 || hash_file('sha256', $root . '/db/install.xml') !== $schemahash
                 || (($policy['upgrade_family'] ?? '') === 'le-storefront' && ($version < 2026010101 || get_config('enrol_storefront', 'distribution') !== 'course'))
-                || !in_array($policy['upgrade_family'] ?? '', ['le-storefront', 'legacy-storefront'], true)
+                || !in_array($policy['upgrade_family'] ?? '', ['le-storefront', 'legacy-storefront', 'storefront-enrolment'], true)
                 || !array_intersect_assoc($policy['keys'], $authority['keys'])) { throw new \RuntimeException('transition-companion-contract'); }
+        if ($policy['upgrade_family'] === 'storefront-enrolment') {
+            $descriptor = $root . '/host-compatibility.json';
+            $contract = is_file($descriptor)
+                ? json_decode(file_get_contents($descriptor), true, 16, JSON_THROW_ON_ERROR) : [];
+            $minimum = $contract['host_minimums']['free-core'] ?? null;
+            if (($contract['schema'] ?? null) !== 1 || ($contract['component'] ?? '') !== 'enrol_storefront'
+                    || !is_int($minimum) || $targetversion < $minimum) {
+                throw new \RuntimeException('transition-companion-host');
+            }
+        }
         return ['version' => $version, 'fingerprint' => edition_transition::fingerprint($root),
             'schema_sha256' => hash_file('sha256', $root . '/db/install.xml'), 'family' => $policy['upgrade_family']];
     }
