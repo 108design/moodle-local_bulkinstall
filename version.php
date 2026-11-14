@@ -1,4 +1,5 @@
 <?php
+// This file is part of Moodle - https://moodle.org/
 /**
  * File documentation for version.php.
  *
@@ -17,8 +18,8 @@
 defined('MOODLE_INTERNAL') || die();
 
 $plugin->component = 'local_bulkinstall';
-$plugin->version = 2026110800;
+$plugin->version = 2026111400;
 $plugin->requires = 2024100700;
 $plugin->supported = [405, 503];
 $plugin->maturity = MATURITY_STABLE;
-$plugin->release = '1.26.0';
+$plugin->release = '1.26.1';

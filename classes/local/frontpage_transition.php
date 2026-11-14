@@ -1,4 +1,7 @@
 <?php
+// This file is part of Moodle - https://moodle.org/
+// @copyright 2026 Andreas Giesen <andreas@108design.com>
+// @license 108design source-available software license; see LICENSE.md
 // Copyright (C) 2026 Andreas Giesen. See LICENSE.md for the full terms.
 namespace local_bulkinstall\local;
 defined('MOODLE_INTERNAL') || die();
