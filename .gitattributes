@@ -59,6 +59,7 @@
 "/classes/local/uninstall_plan.php" -export-ignore -export-subst
 "/classes/local/uninstall_view.php" -export-ignore -export-subst
 "/classes/local/update_guard.php" -export-ignore -export-subst
+"/classes/local/update_notice.php" -export-ignore -export-subst
 "/classes/local/version_parser.php" -export-ignore -export-subst
 "/classes/privacy" -export-ignore -export-subst
 "/classes/privacy/provider.php" -export-ignore -export-subst
@@ -112,7 +113,9 @@
 "/pix/helpbrand.svg" -export-ignore -export-subst
 "/release-guard-policy.json" -export-ignore -export-subst
 "/release-manifest.json" -export-ignore -export-subst
+"/release-metadata.php" -export-ignore -export-subst
 "/release-signature.txt" -export-ignore -export-subst
+"/release-verifier.php" -export-ignore -export-subst
 "/review.php" -export-ignore -export-subst
 "/schemas" -export-ignore -export-subst
 "/schemas/bundle-v1.schema.json" -export-ignore -export-subst
@@ -147,4 +150,5 @@
 "/transition_license.php" -export-ignore -export-subst
 "/uninstall.php" -export-ignore -export-subst
 "/update-guard.php" -export-ignore -export-subst
+"/update-notice.php" -export-ignore -export-subst
 "/version.php" -export-ignore -export-subst
