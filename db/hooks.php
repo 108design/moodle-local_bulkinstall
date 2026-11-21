@@ -35,9 +35,15 @@ $callbacks[] = [
     'callback' => [\local_bulkinstall\local\admin_help::class, 'footer'],
 ];
 
-// Installed update trust must be checked before native deployment controllers run.
+// Native installation and updates are handled by Moodle Core.
+
+// Optional package information; Core owns preview, confirmation and installation.
 $callbacks[] = [
     'hook' => \core\hook\after_config::class,
-    'callback' => [\local_bulkinstall\local\update_guard::class, 'after_config'],
-    'priority' => 1002,
+    'callback' => [\local_bulkinstall\local\update_notice::class, 'after_config'],
+    'priority' => 1003,
+];
+$callbacks[] = [
+    'hook' => \core\hook\output\before_standard_top_of_body_html_generation::class,
+    'callback' => [\local_bulkinstall\local\update_notice::class, 'before_body'],
 ];

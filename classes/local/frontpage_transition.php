@@ -8,11 +8,11 @@ defined('MOODLE_INTERNAL') || die();
 
 /** Frontpage Free Core migration and its independently optional paid Course Activity. */
 final class frontpage_transition {
-    private const SOURCES = ['local_frontpage' => 2026010103, 'mod_frontpage' => 2026010102];
+    private const SOURCES = ['local_frontpage' => [2026010103, 2026010118, 2026010121, 2026010122], 'mod_frontpage' => [2026010102, 2026010107, 2026010108, 2026010109]];
 
     public static function inspect(string $zipfile, string $root, string $component, int $version): ?array {
         global $CFG, $DB, $USER;
-        $guard = \design108\update_guard\v1\guard::class;
+        $guard = \design108\release_guard\v1\guard::class;
         $policy = $guard::load_policy($root, $component);
         if ($policy['edition'] !== 'le') { return null; }
         try { $guard::verify_replacement($zipfile, $root, $component, $version, 'bi'); return null; }
@@ -38,20 +38,22 @@ final class frontpage_transition {
         } finally { $zip->close(); }
         $source = (int)get_config($component, 'version');
         $disk = $guard::metadata((string)file_get_contents($root . '/version.php'));
+        $sourcecontract = edition_transition::source_contract($contract, $source);
         if (($contract['schema'] ?? null) !== 1 || ($contract['component'] ?? '') !== $component
                 || ($contract['from'] ?? '') !== 'le' || ($contract['to'] ?? '') !== $edition
-                || ($contract['feature'] ?? '') !== $feature || $source !== self::SOURCES[$component]
+                || ($contract['feature'] ?? '') !== $feature || !in_array($source, self::SOURCES[$component], true)
                 || $disk['version'] !== $source || !in_array($source, $contract['source_versions'] ?? [], true)
                 || get_config($component, 'distributionorigin') !== 'marketplace'
-                || ($contract['source_schema_sha256'] ?? '') !== hash_file('sha256', $root . '/db/install.xml')
+                || ($sourcecontract['source_schema_sha256'] ?? '') !== hash_file('sha256', $root . '/db/install.xml')
                 || ($contract['target_schema_sha256'] ?? '') !== ($manifest['files']['db/install.xml'] ?? '')
                 || !isset($manifest['files']['db/le_upgrade.php'])) {
             throw new \RuntimeException('transition-source-contract');
         }
-        foreach ($contract['tables'] ?? [] as $table => $expected) {
+        foreach ($sourcecontract['tables'] ?? [] as $table => $expected) {
             $actual = array_keys($DB->get_columns($table)); sort($actual); sort($expected);
             if ($actual !== $expected) { throw new \RuntimeException('transition-source-schema'); }
         }
+        edition_transition::assert_source_schema($root);
         $base = ['component' => $component, 'sourceversion' => $source, 'targetversion' => $version,
             'sourcefingerprint' => edition_transition::fingerprint($root), 'owner' => $component,
             'sha256' => hash_file('sha256', $zipfile), 'manifestsha256' => hash('sha256', $manifestbytes),
@@ -68,10 +70,10 @@ final class frontpage_transition {
         $version = (int)get_config('mod_frontpage', 'version');
         if (!$version) { return null; }
         $root = $CFG->dirroot . '/mod/frontpage';
-        $guard = \design108\update_guard\v1\guard::class;
+        $guard = \design108\release_guard\v1\guard::class;
         $policy = $guard::load_policy($root, 'mod_frontpage');
         $disk = $guard::metadata((string)file_get_contents($root . '/version.php'));
-        if ($policy['edition'] !== 'le' || $version !== self::SOURCES['mod_frontpage']
+        if ($policy['edition'] !== 'le' || !in_array($version, self::SOURCES['mod_frontpage'], true)
                 || $disk['version'] !== $version || get_config('mod_frontpage', 'distributionorigin') !== 'marketplace') {
             throw new \RuntimeException('transition-companion-source');
         }
@@ -129,7 +131,7 @@ final class frontpage_transition {
         if (!in_array('mod_frontpage', array_column($packages, 'component'), true)
                 || get_config('mod_frontpage', 'distributionorigin') !== 'marketplace') { return false; }
         try {
-            $policy = \design108\update_guard\v1\guard::load_policy($CFG->dirroot . '/mod/frontpage', 'mod_frontpage');
+            $policy = \design108\release_guard\v1\guard::load_policy($CFG->dirroot . '/mod/frontpage', 'mod_frontpage');
             return $policy['edition'] === 'le';
         } catch (\Throwable) { return false; }
     }

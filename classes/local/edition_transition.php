@@ -11,9 +11,36 @@ defined('MOODLE_INTERNAL') || die();
 /** The sole, explicit SM/MB LE to standalone Pro exception to the installed edition policy. */
 final class edition_transition {
     private const SOURCES = [
-        'local_scriptmanager' => ['version' => 2026010105, 'family' => 'scriptmanager-schema-v2'],
-        'local_menubuilder' => ['version' => 2026010102, 'family' => 'default'],
+        'local_scriptmanager' => ['versions' => [2026010105, 2026010107, 2026010110, 2026010111], 'family' => 'scriptmanager-schema-v2'],
+        'local_menubuilder' => ['versions' => [2026010102, 2026010109, 2026010112, 2026010113], 'family' => 'default'],
     ];
+
+    /** Exact signed version-to-schema binding; historical targets retain their original literal profile. */
+    public static function source_contract(array $contract, int $version): array {
+        if (!in_array($version, $contract['source_versions'] ?? [], true)) {
+            throw new \RuntimeException('transition-source-contract');
+        }
+        if (isset($contract['source_contracts'])) {
+            $profile = $contract['source_contracts'][(string)$version] ?? null;
+            if (!is_array($profile) || empty($profile['tables'])
+                    || preg_match('/^[a-f0-9]{64}$/D', $profile['source_schema_sha256'] ?? '') !== 1) {
+                throw new \RuntimeException('transition-source-contract');
+            }
+            return $profile;
+        }
+        return ['source_schema_sha256' => $contract['source_schema_sha256'] ?? '', 'tables' => $contract['tables'] ?? []];
+    }
+
+    /** Verify actual column definitions and indexes against the authenticated installed XMLDB file. */
+    public static function assert_source_schema(string $root): void {
+        global $DB;
+        $dbman = $DB->get_manager();
+        $xml = new \xmldb_file($root . '/db/install.xml');
+        if (!$xml->loadXMLStructure()
+                || $dbman->check_database_schema($xml->getStructure(), ['extratables' => false])) {
+            throw new \RuntimeException('transition-source-schema');
+        }
+    }
 
     /** Authenticate the target with installed publisher pins before reading its migration contract. */
     public static function inspect(string $zipfile, string $root, string $component, int $version): ?array {
@@ -27,7 +54,7 @@ final class edition_transition {
         if (!isset(self::SOURCES[$component])) {
             return null;
         }
-        $guard = \design108\update_guard\v1\guard::class;
+        $guard = \design108\release_guard\v1\guard::class;
         $policy = $guard::load_policy($root, $component);
         if ($policy['edition'] !== 'le') {
             return null;
@@ -66,14 +93,15 @@ final class edition_transition {
         }
         $source = (int)get_config($component, 'version');
         $disk = $guard::metadata((string)file_get_contents($root . '/version.php'));
+        $sourcecontract = edition_transition::source_contract($contract, $source);
         if (($contract['schema'] ?? null) !== 1 || ($contract['component'] ?? '') !== $component
                 || ($contract['from'] ?? '') !== 'le' || ($contract['to'] ?? '') !== 'pro'
                 || ($contract['from_family'] ?? 'default') !== $sourcefamily
                 || ($contract['to_family'] ?? 'default') !== $projected['upgrade_family']
                 || ($contract['feature'] ?? '') !== substr($component, 6) . '.pro'
                 || !in_array($source, $contract['source_versions'] ?? [], true)
-                || $source !== self::SOURCES[$component]['version'] || $disk['version'] !== $source
-                || ($contract['source_schema_sha256'] ?? '') !== hash_file('sha256', $root . '/db/install.xml')
+                || !in_array($source, self::SOURCES[$component]['versions'], true) || $disk['version'] !== $source
+                || ($sourcecontract['source_schema_sha256'] ?? '') !== hash_file('sha256', $root . '/db/install.xml')
                 || ($contract['target_schema_sha256'] ?? '') !== ($manifest['files']['db/install.xml'] ?? '')
                 || !isset($manifest['files']['db/le_upgrade.php'])
                 || get_config($component, 'frontpagemigrationcompleted')
@@ -81,7 +109,7 @@ final class edition_transition {
             throw new \RuntimeException('transition-source-contract');
         }
         global $DB;
-        $tables = $contract['tables'] ?? [];
+        $tables = $sourcecontract['tables'] ?? [];
         if ($component === 'local_scriptmanager' && (!$tables || array_key_exists('table_renames', $contract))) {
             throw new \RuntimeException('transition-source-contract');
         }
@@ -94,6 +122,7 @@ final class edition_transition {
             sort($actual); sort($expected);
             if ($actual !== $expected) { throw new \RuntimeException('transition-source-schema'); }
         }
+        edition_transition::assert_source_schema($root);
         $base = [
             'component' => $component, 'sourceversion' => $source, 'targetversion' => $version,
             'sourcefingerprint' => self::fingerprint($root), 'owner' => $component,

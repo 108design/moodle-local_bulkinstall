@@ -37,17 +37,17 @@ if (!empty($CFG->disableupdateautodeploy)) {
 }
 
 // Share the exact installation boundary with guarded native updates.
-if (!class_exists(\design108\update_guard\v1\guard::class, false)) {
-    require_once(__DIR__ . '/update-guard.php');
+if (!class_exists(\design108\release_guard\v1\guard::class, false)) {
+    require_once(__DIR__ . '/release-verifier.php');
 }
 // A cached older wrapper must not reach coordination changes or the final writer.
-if (!defined(\design108\update_guard\v1\guard::class . '::IMPLEMENTATION')
-        || \design108\update_guard\v1\guard::IMPLEMENTATION < 2
-        || !method_exists(\design108\update_guard\v1\guard::class, 'install_plugins')) {
+if (!defined(\design108\release_guard\v1\guard::class . '::IMPLEMENTATION')
+        || \design108\release_guard\v1\guard::IMPLEMENTATION < 2
+        || !method_exists(\design108\release_guard\v1\guard::class, 'install_plugins')) {
     throw new moodle_exception('errorupdateguardstale', 'local_bulkinstall');
 }
 try {
-    $guardlock = \design108\update_guard\v1\guard::acquire_lock(0);
+    $guardlock = \design108\release_guard\v1\guard::acquire_lock(0);
 } catch (\RuntimeException $exception) {
     throw new moodle_exception('errorinstallbusy', 'local_bulkinstall');
 }
@@ -149,7 +149,7 @@ $PAGE->set_url(new moodle_url('/local/bulkinstall/install.php', ['storage' => $s
 $PAGE->set_pagelayout('maintenance');
 $PAGE->set_popup_notification_allowed(false);
 $reviewurl = new moodle_url('/local/bulkinstall/review.php', ['storage' => $storageid]);
-\design108\update_guard\v1\guard::install_plugins(
+\design108\release_guard\v1\guard::install_plugins(
     $installables,
     true,
     get_string('installingbatch', 'local_bulkinstall'),

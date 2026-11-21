@@ -290,7 +290,7 @@ $string['review_help'] = 'Compare the installed release with the package. Red re
 
 $string['adminhelp_review'] = 'Reviewing versions and results';
 
-$string['adminhelp_review_article'] = '<p><strong>Installed</strong> and <strong>In package</strong> show the readable release above its numeric Moodle build. If a reliable release is unavailable, the build is shown by itself. Moodle compares builds to determine an update, replacement or downgrade.</p><p>Filters change only the visible rows. Red errors block the entire batch. Warnings remain visible and need review; replacing the same build overwrites its code. <strong>Details</strong> contains the original messages, dependencies, destination and SHA-256.</p><p>Packages received from <strong>108design Plugin Manager</strong> retain the selected signed release. Catalogue validity, package hashes, components, builds and the installed state are checked again before deployment.</p><p><strong>Hand Packages to Moodle</strong> confirms the entire group. Moodle performs package validation, deploys directories sequentially and continues to its normal dependency and database upgrade checks. Back up site files and the database first: this is not one atomic transaction.</p>';
+$string['adminhelp_review_article'] = '<p><strong>Installed</strong> and <strong>In package</strong> show the readable release above its numeric Moodle build. If a reliable release is unavailable, the build is shown by itself. Moodle compares builds to determine an update, replacement or downgrade.</p><p>Filters change only the visible rows. Red errors block the entire batch. Warnings remain visible and need review; replacing the same build overwrites its code. <strong>Details</strong> contains the original messages, dependencies, destination and SHA-256.</p><p>Packages received from <strong>108design Plugin Manager</strong> retain the selected signed release. Catalogue validity, package hashes, components, builds and the installed state are checked again before deployment.</p><p><strong>Hand Packages to Moodle</strong> confirms the entire group. Moodle performs package validation, deploys directories sequentially and continues to its normal dependency and database upgrade checks. Back up site files and the database first: this is not one atomic transaction.</p><p><strong>Exclude Blocking Packages</strong> previews a reduced selection, including any additional packages that would lose a required dependency. <strong>Use Reduced Selection</strong> confirms this change; review the remaining packages before handing them to Moodle. Excluded files remain listed until the batch is discarded or installed. For a partial bundle, setup includes only complete products and requires a suitable Plugin Manager. Otherwise, set up licences separately.</p><p>Protected installed plugins also verify the publisher signature and edition of their replacement. A failed check blocks the entire batch. Use an approved package for the installed edition. Bulk Installer checks the exact package bytes again before handing them to Moodle.</p><p>The explicit Script Manager or Menu Builder LE to Pro change is available only here. Verify a current Pro licence for this installation, then confirm the displayed usage consequences and exact target packages. Preparing a licence does not install files. Cancelling keeps LE installed; a deliberately activated licence remains manageable in Plugin Manager. Once file replacement starts, Moodle continues its database upgrade. After an interruption, resume with the same verified packages and the saved transition receipt. Do not uninstall the plugin to recover. Reverting requires a complete backup restore.</p><p>When moving Frontpage from its Marketplace edition, Free Core remains free. Its free account activation is prepared separately. Keep the free Course Activity with its existing limited editor, or explicitly switch to the paid regular module. The paid path requires its package and a verified licence before files are replaced. For later Core updates, you can also remove an offered paid module package from the selection. Each change returns to a fresh review; final consent is still required. Missing activation or cancellation keeps LE installed.</p>';
 
 $string['reviewgroupbatchblockedbody'] = 'The batch failed its combined check. Resolve the following issues before continuing.';
 
@@ -323,7 +323,7 @@ $string['selectionexclude'] = 'Exclude Blocking Packages';
 $string['selectionpreviewready'] = 'The remaining selection has been checked';
 $string['selectionpreviewreadybody'] = 'Use the reduced selection. You can then hand the packages to Moodle.';
 
-$string['adminhelp_review_article'] .= '<p><strong>Exclude Blocking Packages</strong> previews a reduced selection, including any additional packages that would lose a required dependency. <strong>Use Reduced Selection</strong> confirms this change; review the remaining packages before handing them to Moodle. Excluded files remain listed until the batch is discarded or installed. For a partial bundle, setup includes only complete products and requires a suitable Plugin Manager. Otherwise, set up licences separately.</p>';
+
 
 // Bulk Uninstaller.
 $string['uninstalltab'] = 'Uninstaller';
@@ -428,7 +428,7 @@ $string['uninstallnextstep'] = 'Next step';
 
 // Installed publisher and edition protection.
 $string['errorupdateguard'] = 'The update for {$a} was blocked by the installed publisher or edition protection. Use an approved package for the installed edition; the current installation remains unchanged.';
-$string['adminhelp_review_article'] .= '<p>Protected installed plugins also verify the publisher signature and edition of their replacement. A failed check blocks the entire batch. Use an approved package for the installed edition. Bulk Installer checks the exact package bytes again before handing them to Moodle.</p>';
+
 
 $string['errorpendingcodedowngrade'] = 'Newer plugin files (build {$a}) are already present. This older package cannot replace them.';
 
@@ -469,7 +469,7 @@ $string['transitionactivationfailed'] = 'The licence could not be verified for t
 $string['transitionactivationintro'] = 'Activation and installation are separate decisions. Activating an existing licence may occupy its site slot. Cancelling installation keeps LE installed and leaves that deliberate activation in the Plugin Manager, where you can manage or release it. Return to the package review afterwards; its installation confirmation is still required.';
 $string['transitionmanagerrequired'] = 'First install Plugin Manager 0.29 or later and connect this installation. Select its production or development environment deliberately. The licence service must support signed licence origin; older assertions need a refresh. You can return and cancel without replacing LE.';
 $string['transitionmanager'] = 'Open Plugin Manager';
-$string['adminhelp_review_article'] .= '<p>The explicit Script Manager or Menu Builder LE to Pro change is available only here. Verify a current Pro licence for this installation, then confirm the displayed usage consequences and exact target packages. Preparing a licence does not install files. Cancelling keeps LE installed; a deliberately activated licence remains manageable in Plugin Manager. Once file replacement starts, Moodle continues its database upgrade. After an interruption, resume with the same verified packages and the saved transition receipt. Do not uninstall the plugin to recover. Reverting requires a complete backup restore.</p>';
+
 $string['transitionprerequisitesfirst'] = 'Update BI and Plugin Manager in a separate step first, then review and confirm the LE change again.';
 
 $string['frontpagechoicerequired'] = 'Choose whether to keep the free Course Activity or switch to the paid edition first.';
@@ -490,7 +490,7 @@ $string['frontpagefreenotready'] = 'The LE edition remains installed. Prepare fr
 
 $string['frontpagepolicyblocked'] = 'The signed feature policy for the selected Core target does not permit the paid Activity transition with this activation. Installed editions remain unchanged.';
 
-$string['adminhelp_review_article'] .= '<p>When moving Frontpage from its Marketplace edition, Free Core remains free. Its free account activation is prepared separately. Keep the free Course Activity with its existing limited editor, or explicitly switch to the paid regular module. The paid path requires its package and a verified licence before files are replaced. For later Core updates, you can also remove an offered paid module package from the selection. Each change returns to a fresh review; final consent is still required. Missing activation or cancellation keeps LE installed.</p>';
+
 
 $string['transitionupgradecontinuation'] = 'Plan for maintenance while Moodle completes its database upgrade. Cancelling after file replacement does not undo it. After an interruption, resume the same confirmed packages; do not uninstall the plugin to recover.';
 
@@ -501,3 +501,12 @@ $string['storefrontcompanionconsequences'] = 'The enrolment companion remains fr
 $string['storefrontfreecompanion'] = 'Free enrolment companion';
 $string['storefronttransitionblocked'] = 'This Storefront change is blocked. Check the verified free activation and the target policy for the included Moodle payment path. Installed plugin code is retained until the whole selected change can proceed.';
 $string['storefronttransitioncorefirst'] = 'Select the compatible Storefront Free Core package as well, or update Core first. You may retain the existing compatible free enrolment companion when updating Core alone.';
+
+// Optional information before native package confirmation.
+$string['updateinfo_heading'] = 'Package information: {$a}';
+$string['updateinfo_verified'] = 'The embedded publisher record matches the installed release line.';
+$string['updateinfo_missing'] = 'This package has no embedded publisher verification record.';
+$string['updateinfo_line'] = 'This package identifies a different release line from the installed plugin.';
+$string['updateinfo_mismatch'] = 'The embedded publisher record could not be verified against the installed plugin\'s publisher information.';
+$string['updateinfo_unavailable'] = 'Publisher information for the selected package could not be read.';
+$string['updateinfo_choice'] = 'Review the package source and Moodle\'s validation details before continuing. Use "{$a}" below to cancel.';

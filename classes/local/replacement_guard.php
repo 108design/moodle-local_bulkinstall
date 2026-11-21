@@ -24,10 +24,10 @@ final class replacement_guard {
     public function transition(string $zipfile, string $component, int $version): ?array {
         $root = $this->installed_root($component);
         if ($root === null) { return null; }
-        if (!class_exists(\design108\update_guard\v1\guard::class, false)) {
-            require_once(__DIR__ . '/../../update-guard.php');
+        if (!class_exists(\design108\release_guard\v1\guard::class, false)) {
+            require_once(__DIR__ . '/../../release-verifier.php');
         }
-        if (!\design108\update_guard\v1\guard::is_protected($root, $component)) { return null; }
+        if (!\design108\release_guard\v1\guard::is_protected($root, $component)) { return null; }
         $key = $root . '|' . $component . '|' . $version . '|' . hash_file('sha256', $zipfile);
         if (!array_key_exists($key, $this->transitions)) {
             $this->transitions[$key] = edition_transition::inspect($zipfile, $root, $component, $version);
@@ -101,7 +101,7 @@ final class replacement_guard {
                     }
                 }
                 try {
-                    \design108\update_guard\v1\guard::assert_requirements($manifests,
+                    \design108\release_guard\v1\guard::assert_requirements($manifests,
                         array_replace($available, $planned), (int)$CFG->version);
                 } catch (\Throwable $exception) {
                     throw new \moodle_exception('updateguard_dependency', 'local_bulkinstall');
@@ -118,10 +118,10 @@ final class replacement_guard {
     private function verify(string $zipfile, string $component, int $version): ?array {
         $root = $this->installed_root($component);
         if ($root === null) { return null; }
-        if (!class_exists(\design108\update_guard\v1\guard::class, false)) {
-            require_once(__DIR__ . '/../../update-guard.php');
+        if (!class_exists(\design108\release_guard\v1\guard::class, false)) {
+            require_once(__DIR__ . '/../../release-verifier.php');
         }
-        if (!\design108\update_guard\v1\guard::is_protected($root, $component)) { return null; }
+        if (!\design108\release_guard\v1\guard::is_protected($root, $component)) { return null; }
         $transition = $this->transition($zipfile, $component, $version);
         if ($transition !== null) {
             if (!$transition['ready']) {
@@ -139,7 +139,7 @@ final class replacement_guard {
             }
             return json_decode($raw, true, 32, JSON_THROW_ON_ERROR);
         }
-        return \design108\update_guard\v1\guard::verify_replacement($zipfile, $root, $component, $version, 'bi');
+        return \design108\release_guard\v1\guard::verify_replacement($zipfile, $root, $component, $version, 'bi');
     }
 
     /** Only a plugin recorded as installed supplies a policy; new installation stays ordinary. */

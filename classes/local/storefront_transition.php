@@ -10,13 +10,13 @@ defined('MOODLE_INTERNAL') || die();
 /** Authenticated Free Core migration and optional compatible free companion-family migration. */
 final class storefront_transition {
     private const SOURCES = [
-        'local_storefront' => [2026010102, 2026010103, 2026010104, 2026010105, 2026010106, 2026010107],
+        'local_storefront' => [2026010102, 2026010103, 2026010104, 2026010105, 2026010106, 2026010107, 2026010110, 2026010113, 2026010114],
         'enrol_storefront' => [2026010101],
     ];
 
     public static function inspect(string $zipfile, string $root, string $component, int $version): ?array {
         global $CFG, $DB, $USER;
-        $guard = \design108\update_guard\v1\guard::class;
+        $guard = \design108\release_guard\v1\guard::class;
         $policy = $guard::load_policy($root, $component);
         $core = $component === 'local_storefront';
         if ($core ? $policy['edition'] !== 'le' : ($policy['upgrade_family'] ?? 'default') !== 'le-storefront') { return null; }
@@ -36,6 +36,7 @@ final class storefront_transition {
             $contract = json_decode($raw, true, 32, JSON_THROW_ON_ERROR);
         } finally { $zip->close(); }
         $source = (int)get_config($component, 'version');$disk = $guard::metadata((string)file_get_contents($root . '/version.php'));
+        $sourcecontract = edition_transition::source_contract($contract, $source);
         if (($contract['schema'] ?? null) !== 1 || ($contract['component'] ?? '') !== $component
                 || ($contract['from'] ?? '') !== $policy['edition'] || ($contract['to'] ?? '') !== $edition
                 || ($contract['from_family'] ?? 'default') !== ($policy['upgrade_family'] ?? 'default')
@@ -43,32 +44,43 @@ final class storefront_transition {
                 || !in_array($source, self::SOURCES[$component], true) || $disk['version'] !== $source || $version <= $source
                 || !in_array($source, $contract['source_versions'] ?? [], true)
                 || get_config($component, 'distribution') !== 'course'
-                || ($contract['source_schema_sha256'] ?? '') !== hash_file('sha256', $root . '/db/install.xml')
+                || ($sourcecontract['source_schema_sha256'] ?? '') !== hash_file('sha256', $root . '/db/install.xml')
                 || ($contract['target_schema_sha256'] ?? '') !== ($manifest['files']['db/install.xml'] ?? '')
                 || !isset($manifest['files']['db/le_upgrade.php'])) { throw new \RuntimeException('transition-source-contract'); }
-        foreach ($contract['tables'] ?? [] as $table => $expected) {
+        foreach ($sourcecontract['tables'] ?? [] as $table => $expected) {
             $actual = array_keys($DB->get_columns($table));sort($actual);sort($expected);
             if ($actual !== $expected) { throw new \RuntimeException('transition-source-schema'); }
         }
+        edition_transition::assert_source_schema($root);
         $base = ['component' => $component, 'sourceversion' => $source, 'targetversion' => $version,
             'sourcefingerprint' => edition_transition::fingerprint($root), 'owner' => $component,
             'sha256' => hash_file('sha256', $zipfile), 'manifestsha256' => hash('sha256', $manifestbytes),
             'feature' => 'storefront.free', 'site' => (string)$CFG->wwwroot, 'userid' => (int)$USER->id];
-        if ($core) { $base['companion'] = self::companion($contract['companion_schema_sha256'] ?? '', $version); }
+        if ($core) { $base['companion'] = self::companion($contract, $version); }
         try { $base['licence'] = self::licence($component, $version);$base['ready'] = true; }
         catch (\Throwable) { $base['licence'] = null;$base['ready'] = false; }
         return $base;
     }
 
     /** Bind the actual existing companion without requiring an exchange of compatible LE code. */
-    private static function companion(string $schemahash, int $targetversion): ?array {
+    private static function companion(array $targetcontract, int $targetversion): ?array {
         global $CFG;
         $version = (int)get_config('enrol_storefront', 'version');if (!$version) { return null; }
-        $root = $CFG->dirroot . '/enrol/storefront';$guard = \design108\update_guard\v1\guard::class;
+        $root = $CFG->dirroot . '/enrol/storefront';$guard = \design108\release_guard\v1\guard::class;
         $policy = $guard::load_policy($root, 'enrol_storefront');$authority = $guard::load_policy($CFG->dirroot . '/local/storefront', 'local_storefront');
         $disk = $guard::metadata((string)file_get_contents($root . '/version.php'));
-        if ($disk['version'] !== $version || $policy['edition'] !== 'free'
-                || hash_file('sha256', $root . '/db/install.xml') !== $schemahash
+        $schemahash = hash_file('sha256', $root . '/db/install.xml');
+        $profiles = $targetcontract['companion_contracts'] ?? [[
+            'schema_sha256' => $targetcontract['companion_schema_sha256'] ?? '',
+            'families' => ['le-storefront', 'legacy-storefront', 'storefront-enrolment'], 'versions' => [],
+        ]];
+        $matched = false;
+        foreach ($profiles as $profile) {
+            if (($profile['schema_sha256'] ?? '') === $schemahash
+                    && in_array($policy['upgrade_family'] ?? '', $profile['families'] ?? [], true)
+                    && (empty($profile['versions']) || in_array($version, $profile['versions'], true))) { $matched = true; break; }
+        }
+        if (!$matched || $disk['version'] !== $version || $policy['edition'] !== 'free'
                 || (($policy['upgrade_family'] ?? '') === 'le-storefront' && ($version < 2026010101 || get_config('enrol_storefront', 'distribution') !== 'course'))
                 || !in_array($policy['upgrade_family'] ?? '', ['le-storefront', 'legacy-storefront', 'storefront-enrolment'], true)
                 || !array_intersect_assoc($policy['keys'], $authority['keys'])) { throw new \RuntimeException('transition-companion-contract'); }

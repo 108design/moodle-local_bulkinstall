@@ -290,7 +290,7 @@ $string['review_help'] = 'Vergleiche die installierte Version mit dem Paket. Rot
 
 $string['adminhelp_review'] = 'Versionen und Ergebnisse prüfen';
 
-$string['adminhelp_review_article'] = '<p><strong>Installiert</strong> und <strong>Im Paket</strong> zeigen die lesbare Version über ihrem numerischen Moodle-Build. Fehlt eine verlässliche Versionsangabe, erscheint allein der Build. Moodle entscheidet anhand der Builds über Update, Ersetzen oder Downgrade.</p><p>Die Filter ändern nur die sichtbaren Zeilen. Rote Fehler sperren die gesamte Gruppe. Hinweise müssen geprüft werden; das Ersetzen desselben Builds überschreibt dessen Code. <strong>Details</strong> enthält Originalmeldungen, Abhängigkeiten, Ziel und SHA-256.</p><p>Pakete aus dem <strong>108design Plugin Manager</strong> behalten die ausgewählte signierte Zielversion. Kataloggültigkeit, Paket-Hashes, Komponenten, Builds und Installationsstand werden vor dem Einspielen erneut geprüft.</p><p><strong>Pakete an Moodle übergeben</strong> bestätigt die gesamte Gruppe. Moodle prüft die Pakete, spielt Verzeichnisse nacheinander ein und setzt mit seinen normalen Abhängigkeits- und Datenbankprüfungen fort. Sichere vorher Dateien und Datenbank: Dies ist keine gemeinsame atomare Transaktion.</p>';
+$string['adminhelp_review_article'] = '<p><strong>Installiert</strong> und <strong>Im Paket</strong> zeigen die lesbare Version über ihrem numerischen Moodle-Build. Fehlt eine verlässliche Versionsangabe, erscheint allein der Build. Moodle entscheidet anhand der Builds über Update, Ersetzen oder Downgrade.</p><p>Die Filter ändern nur die sichtbaren Zeilen. Rote Fehler sperren die gesamte Gruppe. Hinweise müssen geprüft werden; das Ersetzen desselben Builds überschreibt dessen Code. <strong>Details</strong> enthält Originalmeldungen, Abhängigkeiten, Ziel und SHA-256.</p><p>Pakete aus dem <strong>108design Plugin Manager</strong> behalten die ausgewählte signierte Zielversion. Kataloggültigkeit, Paket-Hashes, Komponenten, Builds und Installationsstand werden vor dem Einspielen erneut geprüft.</p><p><strong>Pakete an Moodle übergeben</strong> bestätigt die gesamte Gruppe. Moodle prüft die Pakete, spielt Verzeichnisse nacheinander ein und setzt mit seinen normalen Abhängigkeits- und Datenbankprüfungen fort. Sichere vorher Dateien und Datenbank: Dies ist keine gemeinsame atomare Transaktion.</p><p><strong>Blockierende Pakete ausschließen</strong> zeigt eine reduzierte Auswahl als Vorschau, einschließlich weiterer Pakete mit dann fehlenden Abhängigkeiten. <strong>Reduzierte Auswahl übernehmen</strong> bestätigt die Änderung; prüfe die verbleibenden Pakete vor der Übergabe an Moodle. Ausgeschlossene Dateien bleiben bis zum Verwerfen oder Einspielen aufgelistet. Bei einem Teil-Bundle enthält die Einrichtung nur vollständige Produkte und benötigt einen passenden Plugin Manager. Andernfalls richtest Du Lizenzen separat ein.</p><p>Geschützte installierte Plugins prüfen zusätzlich die Herausgebersignatur und Edition ihres Ersatzpakets. Eine fehlgeschlagene Prüfung blockiert den gesamten Stapel. Verwende ein freigegebenes Paket für die installierte Edition. Der Bulk Installer prüft die genauen Paketdateien erneut, bevor er sie an Moodle übergibt.</p><p>Der ausdrückliche Wechsel von Script Manager oder Menu Builder LE zu Pro erfolgt nur hier. Prüfe zuerst die aktuelle Pro-Lizenz für diese Installation und bestätige danach die angezeigten Nutzungsfolgen und Zielpakete. Die Lizenzvorbereitung installiert keine Dateien. Beim Abbruch bleibt LE erhalten; eine zuvor bewusst aktivierte Lizenz bleibt im Plugin Manager verwaltbar. Nach Beginn des Dateiaustauschs führt Moodle das Datenbankupgrade fort. Bei einer Unterbrechung setzt Du es mit denselben geprüften Paketen und dem gespeicherten Wechselnachweis fort. Deinstalliere das Plugin dafür nicht. Ein Rückwechsel benötigt eine vollständige Wiederherstellung des Backups.</p><p>Beim Wechsel von Frontpage aus dem Marketplace bleibt der Free Core kostenlos. Seine kostenlose Kontoaktivierung wird gesondert vorbereitet. Du kannst die kostenlose Kursaktivität mit dem bisherigen begrenzten Editor beibehalten oder ausdrücklich zur bezahlten regulären Ausgabe wechseln. Der bezahlte Wechsel verlangt Paket und geprüfte Lizenz vor dem Dateiaustausch. Auch bei späteren Core-Updates kannst Du ein zusätzlich angebotenes bezahltes Modulpaket aus der Auswahl nehmen. Jede Änderung führt in eine neue Vorschau; die abschließende Zustimmung bleibt erforderlich. Ohne Lizenz oder bei Abbruch bleibt die LE erhalten.</p>';
 
 $string['reviewgroupbatchblockedbody'] = 'Die gemeinsame Prüfung der Gruppe ist fehlgeschlagen. Behebe die folgenden Probleme, bevor Du fortfährst.';
 
@@ -323,7 +323,7 @@ $string['selectionexclude'] = 'Blockierende Pakete ausschließen';
 $string['selectionpreviewready'] = 'Die verbleibende Auswahl ist geprüft';
 $string['selectionpreviewreadybody'] = 'Übernimm die reduzierte Auswahl. Anschließend kannst Du die Pakete an Moodle übergeben.';
 
-$string['adminhelp_review_article'] .= '<p><strong>Blockierende Pakete ausschließen</strong> zeigt eine reduzierte Auswahl als Vorschau, einschließlich weiterer Pakete mit dann fehlenden Abhängigkeiten. <strong>Reduzierte Auswahl übernehmen</strong> bestätigt die Änderung; prüfe die verbleibenden Pakete vor der Übergabe an Moodle. Ausgeschlossene Dateien bleiben bis zum Verwerfen oder Einspielen aufgelistet. Bei einem Teil-Bundle enthält die Einrichtung nur vollständige Produkte und benötigt einen passenden Plugin Manager. Andernfalls richtest Du Lizenzen separat ein.</p>';
+
 
 // Bulk Uninstaller.
 $string['uninstalltab'] = 'Uninstaller';
@@ -428,7 +428,7 @@ $string['uninstallnextstep'] = 'Nächster Schritt';
 
 // Installed publisher and edition protection.
 $string['errorupdateguard'] = 'Das Update für {$a} wurde vom Herausgeber- oder Editionsschutz der installierten Ausgabe abgewiesen. Verwende ein freigegebenes Paket für die installierte Edition; die vorhandene Installation bleibt erhalten.';
-$string['adminhelp_review_article'] .= '<p>Geschützte installierte Plugins prüfen zusätzlich die Herausgebersignatur und Edition ihres Ersatzpakets. Eine fehlgeschlagene Prüfung blockiert den gesamten Stapel. Verwende ein freigegebenes Paket für die installierte Edition. Der Bulk Installer prüft die genauen Paketdateien erneut, bevor er sie an Moodle übergibt.</p>';
+
 
 $string['errorpendingcodedowngrade'] = 'Es sind bereits neuere Plugindateien (Build {$a}) vorhanden. Dieses ältere Paket kann sie nicht ersetzen.';
 
@@ -469,7 +469,7 @@ $string['transitionactivationfailed'] = 'Die Lizenz konnte für diesen Wechsel n
 $string['transitionactivationintro'] = 'Aktivierung und Installation sind getrennte Entscheidungen. Das Aktivieren einer vorhandenen Lizenz kann ihren Installationsplatz belegen. Beim Abbruch der Installation bleibt LE installiert; die bewusst vorgenommene Aktivierung bleibt im Plugin Manager verwaltbar und kann dort freigegeben werden. Kehre anschließend zur Paketprüfung zurück. Die Zustimmung zur Installation ist weiterhin erforderlich.';
 $string['transitionmanagerrequired'] = 'Installiere zuerst Plugin Manager 0.29 oder neuer und verbinde diese Installation. Wähle ihre Produktions- oder Entwicklungsumgebung bewusst aus. Der Lizenzdienst muss die signierte Lizenzherkunft unterstützen; ältere Nachweise benötigen eine Aktualisierung. Du kannst zurückkehren und abbrechen, ohne LE zu ersetzen.';
 $string['transitionmanager'] = 'Plugin Manager öffnen';
-$string['adminhelp_review_article'] .= '<p>Der ausdrückliche Wechsel von Script Manager oder Menu Builder LE zu Pro erfolgt nur hier. Prüfe zuerst die aktuelle Pro-Lizenz für diese Installation und bestätige danach die angezeigten Nutzungsfolgen und Zielpakete. Die Lizenzvorbereitung installiert keine Dateien. Beim Abbruch bleibt LE erhalten; eine zuvor bewusst aktivierte Lizenz bleibt im Plugin Manager verwaltbar. Nach Beginn des Dateiaustauschs führt Moodle das Datenbankupgrade fort. Bei einer Unterbrechung setzt Du es mit denselben geprüften Paketen und dem gespeicherten Wechselnachweis fort. Deinstalliere das Plugin dafür nicht. Ein Rückwechsel benötigt eine vollständige Wiederherstellung des Backups.</p>';
+
 $string['transitionprerequisitesfirst'] = 'Aktualisiere BI und Plugin Manager zuerst in einem getrennten Schritt. Prüfe und bestätige danach den LE-Wechsel erneut.';
 
 $string['frontpagechoicerequired'] = 'Wähle zuerst, ob die kostenlose Kursaktivität beibehalten oder zur bezahlten Ausgabe gewechselt werden soll.';
@@ -490,7 +490,7 @@ $string['frontpagefreenotready'] = 'Die LE bleibt installiert. Bereite zuerst di
 
 $string['frontpagepolicyblocked'] = 'Die signierte Funktionsregel des gewählten Core-Ziels erlaubt den bezahlten Activity-Wechsel mit dieser Freischaltung nicht. Die installierten Ausgaben bleiben erhalten.';
 
-$string['adminhelp_review_article'] .= '<p>Beim Wechsel von Frontpage aus dem Marketplace bleibt der Free Core kostenlos. Seine kostenlose Kontoaktivierung wird gesondert vorbereitet. Du kannst die kostenlose Kursaktivität mit dem bisherigen begrenzten Editor beibehalten oder ausdrücklich zur bezahlten regulären Ausgabe wechseln. Der bezahlte Wechsel verlangt Paket und geprüfte Lizenz vor dem Dateiaustausch. Auch bei späteren Core-Updates kannst Du ein zusätzlich angebotenes bezahltes Modulpaket aus der Auswahl nehmen. Jede Änderung führt in eine neue Vorschau; die abschließende Zustimmung bleibt erforderlich. Ohne Lizenz oder bei Abbruch bleibt die LE erhalten.</p>';
+
 
 $string['transitionupgradecontinuation'] = 'Plane für den anschließenden Moodle-Datenbankupgrade eine Wartungsunterbrechung ein. Nach dem Dateiaustausch ist Abbrechen keine Rücknahme. Setze nach einer Unterbrechung denselben bestätigten Stand fort; deinstalliere das Plugin dafür nicht.';
 
@@ -501,3 +501,12 @@ $string['storefrontcompanionconsequences'] = 'Der Einschreibebegleiter bleibt ko
 $string['storefrontfreecompanion'] = 'Kostenloser Einschreibebegleiter';
 $string['storefronttransitionblocked'] = 'Der Storefront-Wechsel ist gesperrt. Prüfe die bestätigte kostenlose Aktivierung und die Zielrichtlinie für den enthaltenen Moodle-Zahlungsweg. Installierter Plugincode bleibt erhalten, bis die gesamte ausgewählte Umstellung möglich ist.';
 $string['storefronttransitioncorefirst'] = 'Wähle das kompatible Storefront-Free-Core-Paket mit aus oder aktualisiere zuerst den Core. Beim alleinigen Core-Update darf der vorhandene kompatible kostenlose Einschreibebegleiter bleiben.';
+
+// Optional information before native package confirmation.
+$string['updateinfo_heading'] = 'Paketinformationen: {$a}';
+$string['updateinfo_verified'] = 'Der eingebettete Herausgebernachweis passt zur installierten Ausgabe.';
+$string['updateinfo_missing'] = 'Dieses Paket enthält keinen eingebetteten Herausgebernachweis.';
+$string['updateinfo_line'] = 'Dieses Paket gehört zu einer anderen Ausgabe als das installierte Plugin.';
+$string['updateinfo_mismatch'] = 'Der eingebettete Herausgebernachweis konnte mit den Angaben des installierten Plugins nicht bestätigt werden.';
+$string['updateinfo_unavailable'] = 'Die Herausgeberinformationen für das ausgewählte Paket konnten nicht gelesen werden.';
+$string['updateinfo_choice'] = 'Kontrolliere vor dem Fortfahren die Paketquelle und Moodles Prüfergebnisse. Mit „{$a}“ unten kannst Du abbrechen.';
