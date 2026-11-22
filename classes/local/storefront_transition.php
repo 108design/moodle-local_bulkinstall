@@ -10,7 +10,7 @@ defined('MOODLE_INTERNAL') || die();
 /** Authenticated Free Core migration and optional compatible free companion-family migration. */
 final class storefront_transition {
     private const SOURCES = [
-        'local_storefront' => [2026010102, 2026010103, 2026010104, 2026010105, 2026010106, 2026010107, 2026010110, 2026010113, 2026010114],
+        'local_storefront' => [2026010102, 2026010103, 2026010104, 2026010105, 2026010106, 2026010107, 2026010110, 2026010113, 2026010114, 2026010115],
         'enrol_storefront' => [2026010101],
     ];
 
