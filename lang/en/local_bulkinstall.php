@@ -7,19 +7,12 @@
  * @copyright 2026 Andreas Giesen <andreas@108design.com>
  * @license   See LICENSE.md for the full terms.
  */
-$string['errorupdateproof'] = 'The signed update evidence is invalid, expired, incomplete or no longer supported. Return to Plugin Manager and prepare a new selection.';
+
+$string['errorupdateproof'] = 'The signed update evidence is not valid, has expired, is incomplete or is no longer supported. Return to Plugin Manager and prepare a new selection.';
 $string['errorupdateversion'] = 'The package build does not match the selected signed release.';
 $string['errorupdatechanged'] = 'The installation changed after these updates were prepared. Prepare a new update selection.';
 $string['errorinstallbusy'] = 'Another Bulk Installer deployment is running. Wait for it to finish before trying again.';
 $string['signedupdatesnotice'] = 'These packages were downloaded from the signed update catalogue. Their hashes, components, builds and installation state are checked again before installation. Confirm once to hand over the entire batch to Moodle and complete the subsequent Moodle upgrade.';
-// This file is part of a 108design source-available software product.
-//
-// Copyright (C) 2026 Andreas Giesen <andreas@108design.com>
-//
-// Use and modification are permitted only under the Software License included
-// with this distribution. Redistribution and circumvention of Pro feature or
-// licensing restrictions are prohibited. See LICENSE.md for the full terms.
-
 $string['pluginname'] = 'Bulk Installer/Uninstaller';
 $string['menulabel'] = 'Bulk Installer/Uninstaller';
 $string['pagetitle'] = 'Bulk Installer/Uninstaller';
@@ -42,7 +35,7 @@ $string['bundleformatrequired'] = 'Required';
 $string['bundleformatrules'] = 'Rules';
 $string['bundleformatruleformat'] = 'Must equal moodle-plugin-bundle.';
 $string['bundleformatruleformatversion'] = '1 is an unsigned compatibility bundle; 2 and 3 are signed 108design bundles. Version 3 adds activation metadata.';
-$string['bundleformatruleactivation'] = 'Required only in signed version 3. Coordinates the Plugin Manager wizard and never grants a license.';
+$string['bundleformatruleactivation'] = 'Required only in signed version 3. Coordinates the Plugin Manager wizard and never grants a licence.';
 $string['bundleformatrulestoreproduct'] = 'Stable Storefront product identifier used to find matching purchases in the connected account.';
 $string['bundleformatruleentitlements'] = 'Expected commercial or free entitlement codes and the bundled components they cover.';
 $string['bundleformatruleid'] = '2–100 lower-case ASCII characters; starts with a letter, followed by letters, digits, underscore, or hyphen.';
@@ -82,14 +75,13 @@ $string['actionunknown'] = 'Unknown';
 $string['reviewsummary'] = '{$a->count} package(s), {$a->size} uncompressed in total.';
 $string['sequentialwarning'] = 'Moodle validates all packages first, but deploys their code directories sequentially. Filesystem deployment and subsequent database upgrades are not one atomic transaction.';
 $string['confirmationtext'] = 'I have reviewed the listed components and want Moodle to deploy all packages in this batch.';
-$string['installbatch'] = 'Hand Packages to Moodle';
+$string['installbatch'] = 'Hand packages to Moodle';
 $string['discardbatch'] = 'Discard batch';
 $string['batchblocked'] = 'This batch cannot be installed. Correct the errors and upload the packages again.';
 $string['batchchanged'] = 'The staged batch no longer passes validation. Review it again.';
 $string['installingbatch'] = 'Installing plugin batch';
 $string['dependencyinbatch'] = 'package batch';
 $string['dependencyinstalled'] = 'installed site';
-
 $string['errornofiles'] = 'Select at least one ZIP package.';
 $string['errortoomanypackages'] = 'A batch may contain no more than {$a} packages.';
 $string['errorcreatestaging'] = 'The temporary staging directory could not be created.';
@@ -118,13 +110,13 @@ $string['errorbundleunknownproperty'] = 'Unknown top-level property or propertie
 $string['errorbundlemissingproperty'] = 'Missing required top-level property: {$a}';
 $string['errorbundleformat'] = 'format must equal {$a}.';
 $string['errorbundleformatversion'] = 'Supported versions are formatversion 1 and signed formatversions 2 and 3.';
-$string['errorbundleactivation'] = 'The signed activation section is invalid.';
+$string['errorbundleactivation'] = 'The signed activation section is not valid.';
 $string['errorbundleactivationcomponent'] = 'Activation metadata refers to a component that is not uniquely present in the bundle: {$a}';
 $string['errorbundlelmhmissing'] = 'This bundle requires the 108design Plugin Manager, but it is neither installed nor included.';
 $string['errorbundlelmhversion'] = 'This bundle requires Plugin Manager version {$a->required}; available is {$a->available}.';
 $string['continuebundleactivation'] = 'Continue bundle activation';
 $string['errorbundleid'] = 'id must match ^[a-z][a-z0-9_-]{1,99}$.';
-$string['errorbundletextproperty'] = 'The {$a} text field is invalid or too long.';
+$string['errorbundletextproperty'] = 'The {$a} text field is not valid or is too long.';
 $string['errorbundleplugincount'] = 'plugins must contain between 1 and {$a} entries.';
 $string['errorbundlepluginobject'] = 'Plugin entry {$a} must be a JSON object.';
 $string['errorbundlepluginproperties'] = 'Plugin entry {$a} must contain exactly file, component, and sha256.';
@@ -140,7 +132,7 @@ $string['errorinvalidlayout'] = 'The ZIP has an invalid package layout.';
 $string['errormultipleroots'] = 'The ZIP must contain exactly one root directory.';
 $string['errorpackageuncompressedlimit'] = 'The package exceeds the uncompressed size limit of {$a}.';
 $string['errorbatchuncompressedlimit'] = 'The batch exceeds the uncompressed size limit of {$a}.';
-$string['errorinvalidroot'] = 'The ZIP root directory name is invalid: {$a}';
+$string['errorinvalidroot'] = 'The ZIP root directory name is not valid: {$a}';
 $string['errormissingversionphp'] = 'No version.php was found directly in the plugin root.';
 $string['errorextractmetadata'] = 'The package metadata could not be extracted safely.';
 $string['errormissingcomponent'] = 'version.php does not declare $plugin->component.';
@@ -157,175 +149,95 @@ $string['errorcorevalidation'] = 'Moodle core package validation failed.';
 $string['errorduplicatecomponent'] = 'The component {$a} occurs more than once in this batch.';
 $string['errormissingdependency'] = 'Required dependency {$a} is neither installed nor included in this batch.';
 $string['errordependencyversion'] = 'Dependency {$a->component} requires version {$a->required}; version {$a->available} is available from the {$a->source}.';
-
 $string['eventbundlevalidated'] = 'Plugin batch validated';
 $string['eventbundleinstallationstarted'] = 'Plugin batch installation started';
 $string['taskcleanupstaging'] = 'Clean up bulk plugin installation staging';
 $string['taskcleanupresult'] = 'Removed {$a} expired bulk installation staging directories.';
 $string['privacy:metadata'] = 'Bulk Installer stores no participant data. Upload metadata, confirmations and access references for temporary receipts are held only in the native administrator session. Temporary receipt files contain components and statuses without user identifiers or plugin content. Moodle manages sessions and administrative audit events.';
-$string['errorbundlepublisher'] = 'The signed bundle publisher information is invalid.';
-$string['errorbundlesignature'] = 'The prepared bundle signature is invalid. The bundle may have been modified or may not originate from 108design.';
+$string['errorbundlepublisher'] = 'The signed bundle publisher information is not valid.';
+$string['errorbundlesignature'] = 'The prepared bundle signature is not valid. The bundle may have been modified or may not originate from 108design.';
 $string['warningbundlepublisherfilename'] = 'The signed 108design bundle “{$a}” is valid, but its filename does not follow the bundle_ convention. This does not block installation; keep an original name such as bundle_course_tools-1.0.0.zip where possible.';
-
-// Contextual administration help.
 $string['adminhelp'] = 'Administration help';
 $string['adminhelpmore'] = 'More in the help panel';
-$string['adminhelptopics'] = 'Help Topics';
+$string['adminhelptopics'] = 'Help topics';
 $string['adminhelp_overview'] = 'Preparing plugin packages';
 $string['adminhelp_overview_article'] = '<p>Upload the plugin package or supported bundle, then review its components, versions and prerequisites.</p><p>Reviewing does not install anything. Before confirming installation, create a suitable backup of Moodle and its database. Check existing plugin versions and local customisations.</p>';
-$string['adminhelp_bundles'] = 'Bundles and licenses';
-$string['adminhelp_bundles_article'] = '<p>A bundle can contain several related plugins. Review the complete selection and required dependencies before continuing.</p><p>Successful installation does not automatically activate paid features. Manage applicable activations afterwards in <strong>108design Plugin Manager</strong> or on the product\'s license page.</p>';
-
+$string['adminhelp_bundles'] = 'Bundles and licences';
+$string['adminhelp_bundles_article'] = '<p>A bundle can contain several related plugins. Review the complete selection and required dependencies before continuing.</p><p>Successful installation does not automatically activate paid features. Manage applicable activations afterwards in <strong>108design Plugin Manager</strong> or on the product\'s licence page.</p>';
 $string['reviewnotinstalled'] = 'Not installed';
-
 $string['reviewbuild'] = 'Moodle build';
-
 $string['reviewreasonrequires'] = 'This package requires Moodle build {$a->build} or newer.';
-
 $string['reviewreasondowngrade'] = 'The package is older than the installed build. Select a newer package.';
-
 $string['reviewreasonsameversion'] = 'The same build is installed. Its plugin code will be replaced.';
-
 $string['reviewreasonsupported'] = 'This package declares support for Moodle branches {$a->minimum}–{$a->maximum}. Select a package for this Moodle version.';
-
 $string['reviewreasontargetexists'] = 'The destination directory already exists.';
-
 $string['reviewreasonmaturity'] = 'The package is marked as a development release. Review its maturity in the details.';
-
 $string['reviewnomessages'] = 'No errors or warnings in this package check.';
-
 $string['reviewanyversion'] = 'Any version';
-
 $string['reviewerror'] = 'Error';
-
 $string['reviewwarning'] = 'Warning';
-
 $string['reviewinfo'] = 'Information';
-
 $string['reviewstateerror'] = 'Blocked';
-
 $string['reviewstatewarning'] = 'Review warnings';
-
 $string['reviewstateready'] = 'Checked · ready';
-
 $string['reviewmessagecounts'] = '{$a->errors} errors · {$a->warnings} warnings';
-
 $string['reviewfilterall'] = 'All';
-
 $string['reviewfiltererror'] = 'Blocked';
-
-$string['reviewfilterwarning'] = 'Warnings Only';
-
+$string['reviewfilterwarning'] = 'Warnings only';
 $string['reviewfilterready'] = 'Ready';
-
 $string['reviewgroupready'] = 'The batch is ready for handover';
-
 $string['reviewgroupblocked'] = 'This batch is blocked';
-
 $string['reviewgroupreadybody'] = 'There are no blocking errors. Confirm once to hand over the entire batch.';
-
 $string['reviewgroupblockedbody'] = '{$a} packages have errors. Correct the errors or select suitable packages before handing over the batch.';
-
 $string['reviewwarningpackages'] = 'Packages with warnings and no errors: {$a}.';
-
 $string['reviewsource'] = 'Source';
-
 $string['reviewsourceupdates'] = '108design Plugin Manager';
-
 $string['reviewsourcesbundle'] = 'Bundle ZIP';
-
 $string['reviewsourceupload'] = 'ZIP upload';
-
 $string['reviewstepmanager'] = 'Selected in Plugin Manager';
-
 $string['reviewstepselected'] = 'Packages selected';
-
 $string['reviewstepcheck'] = 'Review batch';
-
 $string['reviewstepmoodle'] = 'Moodle installation';
-
 $string['reviewsteps'] = 'Installation progress';
-
 $string['reviewbatchmeta'] = '{$a->count} packages · {$a->size} uncompressed · Moodle {$a->moodle}';
-
 $string['reviewfilters'] = 'Filter validation results';
-
 $string['reviewidentity'] = 'Plugin · planned action';
-
 $string['reviewinstalled'] = 'Installed';
-
 $string['reviewtarget'] = 'In package';
-
 $string['reviewresult'] = 'Validation result';
-
 $string['reviewpackages'] = 'Detected plugins';
-
 $string['reviewdetails'] = 'Details';
-
 $string['reviewto'] = 'to';
-
 $string['reviewfilecomponent'] = 'File and component';
-
 $string['reviewcompatibility'] = 'Compatibility and destination';
-
 $string['reviewrequires'] = 'Minimum Moodle build';
-
 $string['reviewsupported'] = 'Supported Moodle branches';
-
 $string['reviewtargetpath'] = 'Destination directory';
-
 $string['reviewdependency'] = 'Required dependency';
-
 $string['revieworiginals'] = 'Validation details and original messages';
-
 $string['reviewcorechecked'] = 'Handover to Moodle.';
-
 $string['reviewhandoff'] = 'After confirmation, Moodle validates the packages, deploys the plugin files sequentially and leads you through the normal upgrade process.';
-
-$string['reviewbackup'] = 'Back up the site files and database before installation. If installation is interrupted after “Hand Packages to Moodle”, some plugins may already have been updated. “Cancel” only discards the prepared batch here.';
-
+$string['reviewbackup'] = 'Back up the site files and database before installation. If installation is interrupted after “Hand packages to Moodle”, some plugins may already have been updated. “Cancel” only discards the prepared batch here.';
 $string['review'] = 'Reviewing the batch';
-
-$string['review_help'] = 'Compare the installed release with the package. Red results block the entire batch; open Details for complete messages and prerequisites.';
-
+$string['review_help'] = 'Compare the installed release with the package. Red results block the entire batch; open details for complete messages and prerequisites.';
 $string['adminhelp_review'] = 'Reviewing versions and results';
-
-$string['adminhelp_review_article'] = '<p><strong>Installed</strong> and <strong>In package</strong> show the readable release above its numeric Moodle build. If a reliable release is unavailable, the build is shown by itself. Moodle compares builds to determine an update, replacement or downgrade.</p><p>Filters change only the visible rows. Red errors block the entire batch. Warnings remain visible and need review; replacing the same build overwrites its code. <strong>Details</strong> contains the original messages, dependencies, destination and SHA-256.</p><p>Packages received from <strong>108design Plugin Manager</strong> retain the selected signed release. Catalogue validity, package hashes, components, builds and the installed state are checked again before deployment.</p><p><strong>Hand Packages to Moodle</strong> confirms the entire group. Moodle performs package validation, deploys directories sequentially and continues to its normal dependency and database upgrade checks. Back up site files and the database first: this is not one atomic transaction.</p><p><strong>Exclude Blocking Packages</strong> previews a reduced selection, including any additional packages that would lose a required dependency. <strong>Use Reduced Selection</strong> confirms this change; review the remaining packages before handing them to Moodle. Excluded files remain listed until the batch is discarded or installed. For a partial bundle, setup includes only complete products and requires a suitable Plugin Manager. Otherwise, set up licences separately.</p><p>Protected installed plugins also verify the publisher signature and edition of their replacement. A failed check blocks the entire batch. Use an approved package for the installed edition. Bulk Installer checks the exact package bytes again before handing them to Moodle.</p><p>The explicit Script Manager or Menu Builder LE to Pro change is available only here. Verify a current Pro licence for this installation, then confirm the displayed usage consequences and exact target packages. Preparing a licence does not install files. Cancelling keeps LE installed; a deliberately activated licence remains manageable in Plugin Manager. Once file replacement starts, Moodle continues its database upgrade. After an interruption, resume with the same verified packages and the saved transition receipt. Do not uninstall the plugin to recover. Reverting requires a complete backup restore.</p><p>When moving Frontpage from its Marketplace edition, Free Core remains free. Its free account activation is prepared separately. Keep the free Course Activity with its existing limited editor, or explicitly switch to the paid regular module. The paid path requires its package and a verified licence before files are replaced. For later Core updates, you can also remove an offered paid module package from the selection. Each change returns to a fresh review; final consent is still required. Missing activation or cancellation keeps LE installed.</p>';
-
+$string['adminhelp_review_article'] = '<p><strong>Installed</strong> and <strong>In package</strong> show the readable release above its numeric Moodle build. If a reliable release is unavailable, the build is shown by itself. Moodle compares builds to determine an update, replacement or downgrade.</p><p>Filters change only the visible rows. Red errors block the entire batch. Warnings remain visible and need review; replacing the same build overwrites its code. <strong>Details</strong> contains the original messages, dependencies, destination and SHA-256.</p><p>Packages received from <strong>108design Plugin Manager</strong> retain the selected signed release. Catalogue validity, package hashes, components, builds and the installed state are checked again before deployment.</p><p><strong>Hand packages to Moodle</strong> confirms the entire group. Moodle performs package validation, deploys directories sequentially and continues to its normal dependency and database upgrade checks. Back up site files and the database first: this is not one atomic transaction.</p><p><strong>Exclude blocking packages</strong> previews a reduced selection, including any additional packages that would lose a required dependency. <strong>Use reduced selection</strong> confirms this change; review the remaining packages before handing them to Moodle. Excluded files remain listed until the batch is discarded or installed. For a partial bundle, setup includes only complete products and requires a suitable Plugin Manager. Otherwise, set up licences separately.</p><p>Protected installed plugins also verify the publisher signature and edition of their replacement. A failed check blocks the entire batch. Use an approved package for the installed edition. Bulk Installer checks the exact package bytes again before handing them to Moodle.</p><p>The explicit Script Manager or Menu Builder LE to Pro change is available only here. Verify a current Pro licence for this installation, then confirm the displayed usage consequences and exact target packages. Preparing a licence does not install files. Cancelling keeps LE installed; a deliberately activated licence remains manageable in Plugin Manager. Once file replacement starts, Moodle continues its database upgrade. After an interruption, resume with the same verified packages and the saved transition receipt. Do not uninstall the plugin to recover. Reverting requires a complete backup restore.</p><p>When moving Frontpage from its Marketplace edition, free core remains free. Its free account activation is prepared separately. Keep the free course activity with its existing limited editor, or explicitly switch to the paid regular module. The paid path requires its package and a verified licence before files are replaced. For later core updates, you can also remove an offered paid module package from the selection. Each change returns to a fresh review; final consent is still required. Missing activation or cancellation keeps LE installed.</p>';
 $string['reviewgroupbatchblockedbody'] = 'The batch failed its combined check. Resolve the following issues before continuing.';
-
 $string['reviewerrorcount'] = 'Errors: {$a}';
-
 $string['reviewwarningcount'] = 'Warnings: {$a}';
-
 $string['selectionempty'] = 'No packages remain in this selection.';
-
 $string['selectionchanged'] = 'The selection or its check results have changed. Review the batch again.';
-
-$string['selectionpreview'] = 'Review Reduced Selection';
-
+$string['selectionpreview'] = 'Review reduced selection';
 $string['selectionpreviewintro'] = 'These packages will be excluded. This also includes packages whose required dependencies would no longer be available. Review the remaining selection below.';
-
 $string['selectionpartial'] = 'Reduced selection: {$a} package(s) excluded.';
-
-$string['selectionexcluded'] = 'Excluded Packages';
-
+$string['selectionexcluded'] = 'Excluded packages';
 $string['selectionbundlemanual'] = 'This installs only part of the bundle. Set up licences separately in the installed plugins or the Plugin Manager.';
-
 $string['selectionbundleactivation'] = 'This installs only part of the bundle. The subsequent setup includes only products whose components are all in this selection.';
-
-$string['selectionconfirm'] = 'Use Reduced Selection';
-
+$string['selectionconfirm'] = 'Use reduced selection';
 $string['selectionunavailable'] = 'No installable selection remains. Return to the batch and review its errors.';
-
-$string['selectionexclude'] = 'Exclude Blocking Packages';
-
+$string['selectionexclude'] = 'Exclude blocking packages';
 $string['selectionpreviewready'] = 'The remaining selection has been checked';
 $string['selectionpreviewreadybody'] = 'Use the reduced selection. You can then hand the packages to Moodle.';
-
-
-
-// Bulk Uninstaller.
 $string['uninstalltab'] = 'Uninstaller';
 $string['uninstallheading'] = 'Uninstall plugins together';
 $string['uninstallintro'] = 'Select additional plugins and review the complete selection and its consequences before uninstalling.';
@@ -337,14 +249,14 @@ $string['uninstallallstates'] = 'All statuses';
 $string['uninstallinstalled'] = 'Installed';
 $string['uninstallmissing'] = 'Missing from disk';
 $string['uninstallcandidate'] = 'Available for selection; dependencies are checked in the next step.';
-$string['uninstallselectvisible'] = 'Select Filtered Plugins';
-$string['uninstallclear'] = 'Clear Selection';
+$string['uninstallselectvisible'] = 'Select filtered plugins';
+$string['uninstallclear'] = 'Clear selection';
 $string['uninstallcount'] = '{selected} selected · {hidden} hidden by filters';
 $string['uninstallfilterhelp'] = 'Core plugins are excluded. Filters only change the display; hidden checked plugins remain selected and appear in the complete review.';
 $string['uninstallremovefiles'] = 'Also remove plugin files where this can be done safely';
 $string['uninstallempty'] = 'No additional installed plugins found.';
 $string['uninstallnomatches'] = 'No plugins match these filters.';
-$string['uninstallreview'] = 'Review Selection';
+$string['uninstallreview'] = 'Review selection';
 $string['uninstallready'] = 'The selection can be uninstalled';
 $string['uninstallblocked'] = 'The selection contains blockers';
 $string['uninstallaffectedcount'] = 'Affected plugins, including associated subplugins: {$a}.';
@@ -359,16 +271,16 @@ $string['uninstallusagelimit'] = 'Usage counts show existing activity and block 
 $string['uninstallorder'] = 'Planned order';
 $string['uninstallconsequences'] = 'Uninstalling may permanently delete settings, content, files and other data belonging to the listed plugins. Subplugins are included. Have a complete backup ready. The batch processes plugins sequentially, stops on errors or manual follow-up, and provides no automatic undo.';
 $string['uninstallacknowledge'] = 'I confirm the complete displayed selection, including subplugins, and understand that data may be permanently lost.';
-$string['uninstallconfirm'] = 'Permanently Uninstall Selection ({$a})';
-$string['uninstallexclude'] = 'Exclude Blocking Plugins';
+$string['uninstallconfirm'] = 'Permanently uninstall selection ({$a})';
+$string['uninstallexclude'] = 'Exclude blocking plugins';
 $string['uninstallexclusionheading'] = 'Reduced selection preview';
 $string['uninstallexclusionintro'] = 'These plugins would be excluded. The reduced selection is applied only after confirmation. Nothing is uninstalled at this step.';
-$string['uninstallapplyexclusion'] = 'Use Reduced Selection';
+$string['uninstallapplyexclusion'] = 'Use reduced selection';
 $string['uninstallexcluded'] = 'Excluded plugins and reasons';
 $string['uninstallerrorselection'] = 'Select between 1 and 50 plugins.';
 $string['uninstallerrorunknown'] = '{$a->component}: plugin could not be reliably identified.';
 $string['uninstallerrorself'] = '{$a->component}: Bulk Installer cannot uninstall itself here.';
-$string['uninstallerrorstandard'] = '{$a->component}: Core plugins and components of unknown origin are excluded.';
+$string['uninstallerrorstandard'] = '{$a->component}: core plugins and components of unknown origin are excluded.';
 $string['uninstallerrorpending'] = '{$a->component}: installation or upgrade is pending. Resolve this state in the plugin overview first.';
 $string['uninstallerrornative'] = '{$a->component}: This plugin type cannot be safely uninstalled in this batch. Review its individual uninstall in Moodle.';
 $string['uninstallerrorrequired'] = '{$a->component} is required by {$a->detail}. That dependent plugin is outside the selection.';
@@ -392,8 +304,8 @@ $string['uninstallnotrun'] = 'Not processed';
 $string['uninstalluncertain'] = 'Last started step with an uncertain outcome: {$a}';
 $string['uninstallfinishnotice'] = 'The uninstalled plugins and their files have been removed. Select “Open Moodle completion check” to open the final check. Moodle checks the changed plugin inventory and shows any further steps required. Finish this check to complete uninstallation.';
 $string['uninstallfinish'] = 'Open Moodle completion check';
-$string['uninstallback'] = 'Back to Plugin Selection';
-$string['uninstalllastresult'] = 'View Last Batch Result';
+$string['uninstallback'] = 'Back to plugin selection';
+$string['uninstalllastresult'] = 'View last batch result';
 $string['uninstallprogress'] = 'Uninstall progress';
 $string['bulkinstall:uninstall'] = 'Uninstall multiple additional plugins after explicit confirmation';
 $string['uninstall_help'] = 'Core and Bulk Installer itself are excluded. Review the complete selection, including subplugins and data loss, before confirming.';
@@ -401,38 +313,22 @@ $string['uninstall'] = 'Uninstalling';
 $string['uninstallfiles'] = 'Removing plugin files';
 $string['uninstallfiles_help'] = 'Database uninstall and file removal are separate steps. Files that cannot be safely removed or are managed externally require manual follow-up.';
 $string['adminhelp_uninstall'] = 'Uninstalling plugins together';
-$string['adminhelp_uninstall_article'] = '<p>Select additional plugins and open <strong>Review Selection</strong>. Core plugins are excluded and Bulk Installer is protected. A separate uninstall permission is required in addition to site configuration.</p><p>Filters only change the display. Hidden checked plugins remain part of the complete review. Associated subplugins are explicitly listed. Dependents outside the selection block removal and are never added automatically.</p><p><strong>Exclude Blocking Plugins</strong> previews a reduced selection with every excluded plugin and reason. <strong>Use Reduced Selection</strong> applies it. A separate final uninstall confirmation is still required.</p><p>Review usage counts and additional Moodle warnings. Counts cover activity and block instances, not every kind of data or consequence. A disabled plugin or a count of 0 does not mean no data will be lost.</p><p>Confirmation expires after one hour and can only be used once. Changed files, versions, dependencies or counted usage require a fresh review. Errors stop the batch and completed steps are not rolled back. Cancel only discards preparation.</p>';
+$string['adminhelp_uninstall_article'] = '<p>Select additional plugins and open <strong>Review selection</strong>. Core plugins are excluded and Bulk Installer is protected. A separate uninstall permission is required in addition to site configuration.</p><p>Filters only change the display. Hidden checked plugins remain part of the complete review. Associated subplugins are explicitly listed. Dependents outside the selection block removal and are never added automatically.</p><p><strong>Exclude blocking plugins</strong> previews a reduced selection with every excluded plugin and reason. <strong>Use reduced selection</strong> applies it. A separate final uninstall confirmation is still required.</p><p>Review usage counts and additional Moodle warnings. Counts cover activity and block instances, not every kind of data or consequence. A disabled plugin or a count of 0 does not mean no data will be lost.</p><p>Confirmation expires after one hour and can only be used once. Changed files, versions, dependencies or counted usage require a fresh review. Errors stop the batch and completed steps are not rolled back. Cancel only discards preparation.</p>';
 $string['adminhelp_uninstallfiles'] = 'Files and completion';
-$string['adminhelp_uninstallfiles_article'] = '<p>Moodle first removes installed plugin data. With file removal enabled, the reviewed plugin directories are then removed where this is safe. Links and paths outside this Moodle installation are blocked.</p><p>Read-only or externally managed plugin files are not removed automatically. The batch stops and identifies affected components. Disabling file removal has the same effect.</p><p>The active completion stage lists directories that are actually still present. Remove these on the server and select “Check files again”. This button does not delete files or retry uninstallation. Only a successful check makes “Open Moodle completion check” available. Moodle then checks the changed plugin inventory and shows further steps required. Remaining code may otherwise trigger reinstallation. There is no cancel button after execution.</p><p>“View Last Batch Result” opens the historical receipt without completion actions. It records the state during the batch; later file checks do not change it.</p><p>Have a complete backup ready before execution. The uninstaller creates no automatic backup and provides no automatic undo. Temporary receipts contain components, reviewed plugin paths and statuses, remain available for up to 24 hours and are removed by the existing cleanup task.</p><p>If a request fails, Bulk Installer adds technical diagnostic entries to the PHP or web server error log. They identify the request, processing stage, affected component and technical failure locations. These BI entries omit exception message text, form contents, confirmation tokens and user identifiers. Server log retention follows your server configuration; the 24-hour limit applies only to batch receipts. Logging does not retry uninstallation.</p>';
-
+$string['adminhelp_uninstallfiles_article'] = '<p>Moodle first removes installed plugin data. With file removal enabled, the reviewed plugin directories are then removed where this is safe. Links and paths outside this Moodle installation are blocked.</p><p>Read-only or externally managed plugin files are not removed automatically. The batch stops and identifies affected components. Disabling file removal has the same effect.</p><p>The active completion stage lists directories that are actually still present. Remove these on the server and select “Check files again”. This button does not delete files or retry uninstallation. Only a successful check makes “Open Moodle completion check” available. Moodle then checks the changed plugin inventory and shows further steps required. Remaining code may otherwise trigger reinstallation. There is no cancel button after execution.</p><p>“View last batch result” opens the historical receipt without completion actions. It records the state during the batch; later file checks do not change it.</p><p>Have a complete backup ready before execution. The uninstaller creates no automatic backup and provides no automatic undo. Temporary receipts contain components, reviewed plugin paths and statuses, remain available for up to 24 hours and are removed by the existing cleanup task.</p><p>If a request fails, Bulk Installer adds technical diagnostic entries to the PHP or web server error log. They identify the request, processing stage, affected component and technical failure locations. These BI entries omit exception message text, form contents, confirmation tokens and user identifiers. Server log retention follows your server configuration; the 24-hour limit applies only to batch receipts. Logging does not retry uninstallation.</p>';
 $string['eventuninstallbatchstarted'] = 'Plugin uninstall batch started';
 $string['eventuninstallbatchfinished'] = 'Plugin uninstall batch finished';
-
 $string['uninstallproposalready'] = 'The reduced selection is ready to apply';
-
 $string['uninstallhistoryheading'] = 'Last uninstall batch results';
-
 $string['uninstallcompletionheading'] = 'Complete uninstallation';
-
 $string['uninstallreceiptunavailable'] = 'No receipt is available for your session. Receipts are retained for up to 24 hours.';
-
 $string['uninstallremainingfiles'] = 'The following plugin directories are still present:';
-
 $string['uninstallmanualnotice'] = 'Remove these plugin directories on the server. Remaining code may otherwise trigger reinstallation. Then select “Check files again” to verify that all listed directories have been removed. This button checks files; it does not delete them.';
-
 $string['uninstallrecheck'] = 'Check files again';
-
 $string['uninstallcompletionuncertain'] = 'Completion cannot yet be confirmed safely. Check the errors reported above and the plugin status before continuing. The file check does not retry uninstallation or restore data.';
-
 $string['uninstallnextstep'] = 'Next step';
-
-// Installed publisher and edition protection.
 $string['errorupdateguard'] = 'The update for {$a} was blocked by the installed publisher or edition protection. Use an approved package for the installed edition; the current installation remains unchanged.';
-
-
 $string['errorpendingcodedowngrade'] = 'Newer plugin files (build {$a}) are already present. This older package cannot replace them.';
-
-// Shared independent signed update protection.
 $string['updateguard_heading'] = 'Update stopped';
 $string['updateguard_component'] = 'The package for {$a} was rejected.';
 $string['updateguard_hint'] = 'Use an approved package for the installed edition. You can review the operation again.';
@@ -449,15 +345,11 @@ $string['updateguard_installed'] = 'The installed update protection is incomplet
 $string['updateguard_operation'] = 'This combination of installation actions is not supported. Start a single update operation again.';
 $string['updateguard_failed'] = 'The update could not be verified. No installation was started.';
 $string['updateguard_back'] = 'Return to plugin overview';
-// End shared independent signed update protection.
-
 $string['errorupdateguardstale'] = 'The active update protection is outdated in this request. Reload the page and review the batch again. If this message persists, purge the Moodle caches and ask the administrator to refresh the PHP opcode cache. The installation has not started.';
-
-// Explicit LE to Pro transition.
 $string['errortransitionconsent'] = 'Confirm the selected edition change explicitly before installing.';
 $string['errortransitionlicence'] = 'Verified activation for this installation is missing. Prepare the free activation or Pro licence specified for this component.';
 $string['editionconsent'] = 'I agree to the edition change described above and the displayed conditions of use.';
-$string['editionconsent_help'] = 'This confirmation applies to the displayed site, source versions, target packages and any Course Activity choice. Without consent the LE editions remain installed. Free activation or a paid licence is prepared separately. The review describes the effect on editing for each component.';
+$string['editionconsent_help'] = 'This confirmation applies to the displayed site, source versions, target packages and any Course activity choice. Without consent the LE editions remain installed. Free activation or a paid licence is prepared separately. The review describes the effect on editing for each component.';
 $string['transitionconsequences'] = 'Your content, history, ownership and placements are retained. Script Manager requires Pro for editing and for script execution; execution continues only through its signed outage grace. Menu Builder requires Pro for central editing; ordinary saved menus continue to render after licence expiry. This change cannot be undone by installing the lower-build LE ZIP. Keep a backup for a complete site restore. No purchase or payment is made by this installer.';
 $string['transitionready'] = 'A current Pro licence assigned to this installation has been verified. Installation still requires your explicit confirmation.';
 $string['transitionnotready'] = 'The LE edition remains installed. Prepare or refresh its Pro licence before confirming this change. A trial, grace state, another site or missing signed licence origin is insufficient.';
@@ -469,40 +361,28 @@ $string['transitionactivationfailed'] = 'The licence could not be verified for t
 $string['transitionactivationintro'] = 'Activation and installation are separate decisions. Activating an existing licence may occupy its site slot. Cancelling installation keeps LE installed and leaves that deliberate activation in the Plugin Manager, where you can manage or release it. Return to the package review afterwards; its installation confirmation is still required.';
 $string['transitionmanagerrequired'] = 'First install Plugin Manager 0.29 or later and connect this installation. Select its production or development environment deliberately. The licence service must support signed licence origin; older assertions need a refresh. You can return and cancel without replacing LE.';
 $string['transitionmanager'] = 'Open Plugin Manager';
-
 $string['transitionprerequisitesfirst'] = 'Update BI and Plugin Manager in a separate step first, then review and confirm the LE change again.';
-
-$string['frontpagechoicerequired'] = 'Choose whether to keep the free Course Activity or switch to the paid edition first.';
-$string['frontpagechoicepackages'] = 'The paid Course Activity requires its regular mod_frontpage package and a valid licence. You can return to “Keep the free Course Activity”. If the package is missing, upload both target packages together in a new batch.';
-$string['frontpagecorefirst'] = 'Migrate Frontpage Free Core first, or select its verified target package in the same batch.';
-$string['frontpagecoreconsequences'] = 'Frontpage Free Core remains free. Pages, revisions, files, visibility and the existing site-home replacement setting are retained. Its free activation through your connected account is prepared before files are replaced. Choose the Course Activity path separately.';
-$string['frontpagepaidconsequences'] = 'Switching to the paid regular Course Activity has the following conditions. A valid licence for this installation is checked before replacement. Existing content remains viewable if that licence later becomes unavailable; editing requires activation. The lower LE edition cannot subsequently be installed as an update. This installer does not purchase a licence.';
-$string['frontpagechoiceintro'] = 'Keep the free Course Activity: its package stays installed and its existing limited editor remains available, including for new activities. Paid edition: the uploaded regular module package is checked separately. Each choice returns to this review; installation requires your final consent.';
-$string['frontpagechoice_keep_le'] = 'Keep the free Course Activity';
-$string['frontpagechoice_paid'] = 'Switch to the paid Course Activity';
+$string['frontpagechoicerequired'] = 'Choose whether to keep the free course activity or switch to the paid edition first.';
+$string['frontpagechoicepackages'] = 'The paid Course activity requires its regular mod_frontpage package and a valid licence. You can return to “Keep the free course activity”. If the package is missing, upload both target packages together in a new batch.';
+$string['frontpagecorefirst'] = 'Migrate Frontpage free core first, or select its verified target package in the same batch.';
+$string['frontpagecoreconsequences'] = 'Frontpage free core remains free. Pages, revisions, files, visibility and the existing site-home replacement setting are retained. Its free activation through your connected account is prepared before files are replaced. Choose the Course activity path separately.';
+$string['frontpagepaidconsequences'] = 'Switching to the paid regular Course activity has the following conditions. A valid licence for this installation is checked before replacement. Existing content remains viewable if that licence later becomes unavailable; editing requires activation. The lower LE edition cannot subsequently be installed as an update. This installer does not purchase a licence.';
+$string['frontpagechoiceintro'] = 'Keep the free course activity: its package stays installed and its existing limited editor remains available, including for new activities. Paid edition: the uploaded regular module package is checked separately. Each choice returns to this review; installation requires your final consent.';
+$string['frontpagechoice_keep_le'] = 'Keep the free course activity';
+$string['frontpagechoice_paid'] = 'Switch to the paid course activity';
 $string['frontpagechosen'] = 'Selected: {$a}';
-$string['frontpagefreeprepare'] = 'Free Core activation uses your existing connected account and occupies its activation. It does not trigger a payment. If installation is cancelled, this deliberately prepared activation remains visible and manageable in Plugin Manager. Without an account connection, return and keep using LE unchanged.';
-$string['frontpagefreeclaim'] = 'Activate the free Core for this installation';
-
-$string['frontpagefreeready'] = 'Free Core activation has been verified. Confirm the selected installation when ready.';
-
-$string['frontpagefreenotready'] = 'The LE edition remains installed. Prepare free Core activation first. A connected account in Plugin Manager is required; no payment is triggered.';
-
-$string['frontpagepolicyblocked'] = 'The signed feature policy for the selected Core target does not permit the paid Activity transition with this activation. Installed editions remain unchanged.';
-
-
-
+$string['frontpagefreeprepare'] = 'Free core activation uses your existing connected account and occupies its activation. It does not trigger a payment. If installation is cancelled, this deliberately prepared activation remains visible and manageable in Plugin Manager. Without an account connection, return and keep using LE unchanged.';
+$string['frontpagefreeclaim'] = 'Activate the free core for this installation';
+$string['frontpagefreeready'] = 'Free core activation has been verified. Confirm the selected installation when ready.';
+$string['frontpagefreenotready'] = 'The LE edition remains installed. Prepare free core activation first. A connected account in Plugin Manager is required; no payment is triggered.';
+$string['frontpagepolicyblocked'] = 'The signed feature policy for the selected core target does not permit the paid activity transition with this activation. Installed editions remain unchanged.';
 $string['transitionupgradecontinuation'] = 'Plan for maintenance while Moodle completes its database upgrade. Cancelling after file replacement does not undo it. After an interruption, resume the same confirmed packages; do not uninstall the plugin to recover.';
-
-$string['frontpagefreepreparetitle'] = 'Prepare free Core activation';
-
-$string['storefrontcoreconsequences'] = 'Free Core keeps your products, course offers, orders and sales history. Moodle payment remains included. Existing course access, payment evidence and queued messages are retained. Migration does not charge a payment, extend access or send mail. You may keep the compatible installed free enrolment plugin. Other fulfilment features are not enabled automatically.';
-$string['storefrontcompanionconsequences'] = 'The enrolment companion remains free. Existing mappings, roles and purchased access are kept. It uses the Storefront Free Core activation and needs no separate paid licence. Prepare the selected Core first, or use Plugin Manager for an already installed Core. Updating Storefront alone may retain the compatible LE companion.';
+$string['frontpagefreepreparetitle'] = 'Prepare free core activation';
+$string['storefrontcoreconsequences'] = 'Free core keeps your products, course offers, orders and sales history. Moodle payment remains included. Existing course access, payment evidence and queued messages are retained. Migration does not charge a payment, extend access or send mail. You may keep the compatible installed free enrolment plugin. Other fulfilment features are not enabled automatically.';
+$string['storefrontcompanionconsequences'] = 'The enrolment companion remains free. Existing mappings, roles and purchased access are kept. It uses the Storefront free core activation and needs no separate paid licence. Prepare the selected core first, or use Plugin Manager for an already installed core. Updating Storefront alone may retain the compatible LE companion.';
 $string['storefrontfreecompanion'] = 'Free enrolment companion';
 $string['storefronttransitionblocked'] = 'This Storefront change is blocked. Check the verified free activation and the target policy for the included Moodle payment path. Installed plugin code is retained until the whole selected change can proceed.';
-$string['storefronttransitioncorefirst'] = 'Select the compatible Storefront Free Core package as well, or update Core first. You may retain the existing compatible free enrolment companion when updating Core alone.';
-
-// Optional information before native package confirmation.
+$string['storefronttransitioncorefirst'] = 'Select the compatible Storefront free core package as well, or update core first. You may retain the existing compatible free enrolment companion when updating core alone.';
 $string['updateinfo_heading'] = 'Package information: {$a}';
 $string['updateinfo_verified'] = 'The embedded publisher record matches the installed release line.';
 $string['updateinfo_missing'] = 'This package has no embedded publisher verification record.';
